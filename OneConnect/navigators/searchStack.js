@@ -1,25 +1,22 @@
 import { createStackNavigator, createAppContainer } from "react-navigation";
-import Icon from 'react-native-vector-icons/FontAwesome5';
-import Button from '../custom/button';
-import {Colors} from '../constants'
+import Search from '../screens/search';
 
-// Routes
-import NewsFeed from '../screens/newsFeed';
 import OpenFeed from '../screens/openFeed';
-import Batch from '../screens/batch';
 import Institution from '../screens/institution';
 import Courses from '../screens/courses';
 import BatchItem from '../screens/batchItem';
 import BatchMates from '../screens/batchmates';
+import Batch from '../screens/batch';
 import Profile from '../screens/profile';
 
+import {Colors} from '../constants'
 
 const navigatorConfig = {
-    initialRouteName: 'NewsFeed',
+    initialRouteName: 'Search',
     defaultNavigationOptions: {
         headerStyle: {
             backgroundColor: Colors.primary,
-            borderBottomWidth: 0,
+            borderBottomWidth: 0
         },
         headerTitleStyle: {
             fontSize: 17
@@ -30,21 +27,12 @@ const navigatorConfig = {
     },
 };
 
-const FeedStack = createStackNavigator({
-    NewsFeed: {
-        screen: NewsFeed,
-    },
-    OpenFeed: {
-        screen: OpenFeed
+const SearchStack = createStackNavigator({
+    Search: {
+        screen: Search,
     },
     Batch: {
         screen: Batch
-    },
-    Institution: {
-        screen: Institution
-    },
-    Courses: {
-        screen: Courses
     },
     BatchItem: {
         screen: BatchItem
@@ -52,9 +40,18 @@ const FeedStack = createStackNavigator({
     BatchMates: {
         screen: BatchMates
     },
+    OpenFeed: {
+        screen: OpenFeed
+    },
+    Institution: {
+        screen: Institution
+    },
+    Courses: {
+        screen: Courses
+    },
     Profile: {
         screen: Profile,
     },
 }, navigatorConfig);
 
-export default FeedStack;
+export default SearchStack;

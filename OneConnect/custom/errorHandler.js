@@ -2,80 +2,102 @@ import React from "react";
 import { View, Text, StyleSheet, Animated, Easing, TouchableWithoutFeedback, SafeAreaView} from "react-native";
 import {Colors} from '../constants';
 
+const defaultProps = {
+    error: false,
+    errorText: "Error",
+    backgroundColor: Colors.error
+};
+const MAX_HEIGHT = 100;
 
 export default class ErrorHandler extends React.Component {
     constructor(props) {
         super(props)
         this.error_box_Y = new Animated.Value(0);
         this.opacity = new Animated.Value(0);
+        this.height = MAX_HEIGHT
         this.state = {
-            error: props.error,
-            errorText: props.errorText
+            error: props.error || defaultProps.error,
+            errorText: props.errorText || defaultProps.errorText,
+            backgroundColor: props.backgroundColor || defaultProps.backgroundColor,
+            opacityModal: new Animated.Value(0),
+            translateYValue: new Animated.Value(0),
         }
     }
 
     componentWillReceiveProps(nextProps) {
-        console.log("will receive props")
         if(this.state.error != nextProps.error) {
             console.log("current state and next props not match")
             this.setState({
-                error: nextProps.error,
-                errorText: nextProps.errorText
+                error: nextProps.error || defaultProps.error,
+                errorText: nextProps.errorText || defaultProps.errorText,
+                backgroundColor: nextProps.backgroundColor || defaultProps.backgroundColor
             })
         }
     }
 
-    _translateY = () => {
-        this.error_box_Y.setValue(0);
-        Animated.parallel([
-            Animated.timing(this.opacity, {
-                toValue: 1,
-                duration: 100,
-                easing: Easing.linear
-            }),
-            Animated.spring(this.error_box_Y, {
-                toValue: 1,
-                duration: 1000,
-                easing: Easing.linear
-            })
-        ]).start();
+    onLayoutChanged = event => {
+        try {
+            // get width and height of wrapper
+            const {nativeEvent: { layout: { width, height },},} = event;
+            this.height = height
+        } catch (e) {
+            this.height = MAX_HEIGHT
+        }
+    };
 
+    _translateY = () => {
+        const {translateYValue, opacityModal} = this.state
+        translateYValue.setValue(-this.height);
+        Animated.parallel([
+            Animated.spring(translateYValue, {
+                toValue: 0,
+                duration: 1000,
+                easing: Easing.in(Easing.ease),
+                useNativeDriver: true,
+            }),
+            Animated.timing(opacityModal, {
+                toValue: 1,
+                duration: 500,
+                delay: 10,
+                easing: Easing.in(Easing.linear),
+                useNativeDriver: true,
+            }),
+        ]).start();
     }
 
     _closeModal = () => {
+        const {translateYValue, opacityModal} = this.state
         Animated.parallel([
-            Animated.timing(this.opacity, {
-                toValue: 0,
+            Animated.spring(translateYValue, {
+                toValue: -this.height,
                 duration: 1000,
-                easing: Easing.linear
+                easing: Easing.out(Easing.ease),
+                useNativeDriver: true,
             }),
-            Animated.spring(this.error_box_Y, {
+            Animated.timing(opacityModal, {
                 toValue: 0,
-                duration: 1000,
-                easing: Easing.linear
-            })
+                duration: 100,
+                delay: 10,
+                easing: Easing.out(Easing.ease),
+                useNativeDriver: true,
+            }),
         ]).start(() => {
             this.setState({
-                error: false,
-                errorText: null
+                error: defaultProps.error,
+                errorText: defaultProps.errorText
             })
             this.props.callback(false)
         })
     }
 
     _renderErrorComponent = () => {
-        const {error, errorText} = this.state
+        const {error, errorText, backgroundColor, translateYValue, opacityModal} = this.state
         if(error){
-            const error_box_translateY = this.error_box_Y.interpolate({
-                inputRange: [0, 1],
-                outputRange: [-100, 0],
-            });
             this._translateY()
-            console.log('error text : ', errorText)
             return(
-                <Animated.View style={[styles.errorContainer, {opacity: this.opacity, transform: [{translateY: error_box_translateY}]}]}>
+                <Animated.View onLayout={this.onLayoutChanged} style={[styles.errorContainer, {opacity: opacityModal, transform: [{translateY: translateYValue}]}]}>
                     <SafeAreaView forceInset={{ top: 'always'}}>
-                        <View style={styles.errorSubContainer}>
+                        <View style={[styles.errorSubContainer, {backgroundColor: backgroundColor}]}>
                             <View style={styles.errorTextContainer}>
                                 <Text style={styles.errorText}>{errorText}</Text>
                             </View>
@@ -108,7 +130,6 @@ const styles = StyleSheet.create({
     },
     errorContainer: {
         position: 'absolute',
-        // top:0,
         left: 0,
         width: '100%',
         padding: 5,

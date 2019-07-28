@@ -1,23 +1,22 @@
 import React from "react";
-import { View, Text, Button, StyleSheet, ActivityIndicator, ScrollView, Dimensions, FlatList, TouchableWithoutFeedback} from "react-native";
+import { View, Text, StyleSheet, ActivityIndicator, ScrollView, FlatList, Alert} from "react-native";
 import { DrawerActions } from 'react-navigation-drawer';
 import Feed from '../custom/feed';
 import {Colors} from '../constants';
 import Manager from '../service/dataManager';
 import Icon from 'react-native-vector-icons/FontAwesome5';
-
-var {D_height, D_width} = Dimensions.get('window');
+import Button from '../custom/button';
 
 export default class NewsFeed extends React.Component {
     static navigationOptions = ({navigation}) => ({
-        title: 'NewsFeed',
+        title: 'NEWS FEEDS',
         headerLeft: (
-            <TouchableWithoutFeedback onPress={navigation.getParam('hamPressed')} hitSlop={{top: 5, left: 5, bottom: 5, right: 5}}>
-                <Icon name="bars" size={22} color={Colors.onPrimary} />
-            </TouchableWithoutFeedback>
+            <Button style={{borderRadius: 20}} onPress={navigation.getParam('hamPressed')} >
+                <Icon name="bars" size={22} color={Colors.onPrimary} style={{padding:10}}/>
+            </Button>
         ),
         headerLeftContainerStyle: {
-            paddingLeft: 20
+            paddingLeft: 15
         }
     })
 
@@ -25,8 +24,12 @@ export default class NewsFeed extends React.Component {
         super(props)
         this.data = []
         this.state = {
+            data: [],
             loading: true,
             error: false,
+            totalPage: 0,
+            currentPage: 0,
+            updateToggle: false
         }
     }
 
@@ -35,34 +38,67 @@ export default class NewsFeed extends React.Component {
         Manager.addListener('NEWS_S', this._newsSuccess)
         Manager.addListener('NEWS_E', this._newsError)
 
-        Manager.newsFeeds('/api/newsfeeds', 'GET')
+        Manager.addListener('LIKE_S', this._likeSuccess)
+        Manager.addListener('LIKE_E', this._likeError)
+
+        Manager.addListener('UPDATENEWS', this._updateNews)
+
+        Manager.newsFeeds('/api/newsfeeds?page=1', 'GET')
 
         this.props.navigation.setParams({ hamPressed: this._hamPressed });
     }
 
     componentWillUnmount() {
+        console.log("news feed component did un mount")
         Manager.removeListener('NEWS_S', this._newsSuccess)
         Manager.removeListener('NEWS_E', this._newsError)
+
+        Manager.removeListener('LIKE_S', this._likeSuccess)
+        Manager.removeListener('LIKE_E', this._likeError)
+
+        Manager.removeListener('UPDATENEWS', this._updateNews)
     }
 
     _hamPressed = () => {
         this.props.navigation.dispatch(DrawerActions.toggleDrawer())
     }
 
+    _updateNews = () => {
+        console.log("updating news")
+        this.setState(previousState => ({
+            updateToggle: !previousState.updateToggle
+        }))
+    }
+
     _newsSuccess = (data) => {
-        this.data = data.data
-        console.log("news feed data : ", this.data)
-        this.setState({
+        console.log("news feed successfull : ", data)
+        // TODO: FIX IT.
+        this.data = [...this.data, ...data.data]
+        this.setState(state => ({
             loading: false,
-        })
+            data: this.data,
+            totalPage: data.meta.total,
+            currentPage: data.meta.current_page
+        }));
     }
 
     _newsError = (error) => {
         console.log("newsFeed, error received :", error)
         this.setState({
             loading: false,
-            error: true
+            error: true,
+            totalPage: 0,
+            currentPage: 0
         })
+    }
+
+    _likeSuccess = (data) => {
+        console.log("like success data : ", data)
+        this._updateNews()
+    }
+
+    _likeError = (error) => {
+        console.log("like success data : ", error)
     }
 
     _openFeed = (item) => {
@@ -74,14 +110,25 @@ export default class NewsFeed extends React.Component {
         this.props.navigation.navigate("OpenFeed", {comment: true, item: item})
     }
 
+    _like = (item) => {
+        console.log("item after like: ", item)
+        Manager.like(item.resource_url+'/likes', 'POST', {'body':item.likes})
+
+    }
+
+    _institute = (item) => {
+        console.log("reached institute callback with ", item)
+        this.props.navigation.navigate("Institution", {item: item.institution})
+    }
 
     _renderFeeds = ({item}) => {
-        console.log("inside render feeds", item)
         return(
             <Feed
                 data={item}
                 callback={() => this._openFeed(item)}
                 commentCallback={() => this._comment(item)}
+                instituteCallback={() => this._institute(item)}
+                likeCallback = {() => this._like(item)}
                 touchable
             />
         )
@@ -114,7 +161,7 @@ export default class NewsFeed extends React.Component {
 
     _listFooter = () => {
         const {loading} = this.state
-        if(!loading) {
+        if(!loading && this.data) {
             return(
                 <View style={{backgroundColor:Colors.background, padding: 10, justifyContent:"center", alignItems: "center"}}><Text style={{color: Colors.secondaryDark, fontWeight: '500', opacity: 0.4}}>End of list.</Text></View>
             )
@@ -128,21 +175,57 @@ export default class NewsFeed extends React.Component {
         }
     }
 
+    _loadMore = ({distanceFromEnd}) => {
+        console.log("inside load more")
+        const {currentPage, totalPage, loading} = this.state
+
+        if(currentPage != totalPage && !loading) {
+            console.log("loading more data from ", currentPage + 1)
+            Manager.newsFeeds(`/api/newsfeeds?page=${currentPage+1}`, 'GET')
+            this.setState(state => ({
+                loading: true
+            }))
+        }
+    }
+
     _keyExtractor = (item, index) => `nsfd-${Math.random(1)}`;
 
+    _searchFilter = (text) => {
+        if(!text){
+            console.log("no txt")
+            this.setState({data: this.data})
+        }
+        else {
+            console.log("search text is :", text)
+            const {data} = this.state;
+            let regex = new RegExp(text, "i");
+            const searchedData = data.filter(item => {
+                const match = regex.test(item.institution.name)
+                return match
+            })
+            console.log("searched list : ", searchedData)
+            this.setState({data: searchedData})
+        }
+    };
+
     render() {
-        console.log("this.data", this.data)
-      return (
-          <FlatList
-            data={this.data}
-            keyExtractor={this._keyExtractor}
-            renderItem={this._renderFeeds}
-            ItemSeparatorComponent={this._itemSeparator}
-            ListEmptyComponent={this._renderEmptyList}
-            ListFooterComponent={this._listFooter}
-            style={{backgroundColor: Colors.background}}
-        />
-      );
+        const {data} = this.state
+        console.log("render data is ", data)
+        return (
+            <View style={styles.container}>
+                <FlatList
+                data={this.state.data}
+                keyExtractor={this._keyExtractor}
+                renderItem={this._renderFeeds}
+                ItemSeparatorComponent={this._itemSeparator}
+                ListEmptyComponent={this._renderEmptyList}
+                ListFooterComponent={this._listFooter}
+                onEndReached={this._loadMore}
+                onEndReachedThreshold={0.5}
+                style={{backgroundColor: Colors.background}}
+                />
+            </View>
+        );
     }
 }
 
@@ -150,7 +233,43 @@ export default class NewsFeed extends React.Component {
 const styles = StyleSheet.create({
     container: {
         flex: 1,
-        backgroundColor: Colors.background,
+        backgroundColor: 'transparent',
         //padding: 10
+    },
+    header: {
+        // flex: 1,
+        flexDirection: 'row',
+        justifyContent: 'flex-start',
+        alignItems: 'center',
+        height: 40,
+        backgroundColor: Colors.surface,
+        marginHorizontal: 20,
+        marginTop: 15,
+        marginBottom: 3,
+        borderRadius: 20,
+        shadowColor: Colors.secondary,
+        shadowOffset: { width: 0, height: 2 },
+        shadowOpacity: 0.8,
+        shadowRadius: 2,
+        zIndex: 100
+    },
+    search:{
+        flex: 1,
+        borderBottomRightRadius: 20,
+        borderTopRightRadius: 20,
+        justifyContent:'flex-start',
+        alignItems: 'flex-start'
+    },
+    textInput:{
+        width: '100%',
+        height: '100%',
+        borderBottomRightRadius: 20,
+        borderTopRightRadius: 20,
+        fontSize: 16
+    },
+    drawerButton: {
+        marginLeft: 10,
+        marginRight: 5,
+        borderRadius: 20
     },
 });

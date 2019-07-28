@@ -1,44 +1,40 @@
 import React from "react";
-import { View, Text, Button, StyleSheet, Image, TouchableWithoutFeedback, Animated, Easing} from "react-native";
+import { View, Text, StyleSheet, Image, TouchableWithoutFeedback, Animated, Easing} from "react-native";
 import {Colors} from '../constants';
 import Icon from 'react-native-vector-icons/FontAwesome5';
+import Button from '../custom/button';
+
 
 export default class Feed extends React.Component {
     constructor(props){
         super(props)
-        this.animatedValue = new Animated.Value(1)
-        this.animatedLikeSize = new Animated.Value(20)
-
-        this.transformation = {
-            transform:[{scale: this.animatedValue}]
-        }
-
-
         this.state = {
             totalLikes: props.data.likes,
-            likeIconActive: false,
-            likeActivefont: Colors.secondaryLight
+            likeIconActive: props.data.is_liked,
+            likeActivefont: Colors.secondaryLight,
+            commentsCount: props.data.comments_count
         }
     }
 
     componentDidLoad(){
     }
 
+    componentWillReceiveProps(nextProps) {
+        console.log('feeds received props')
+        if(this.data !== nextProps.data) {
+            console.log("current feeds state and next props not match")
+            this.setState({
+                totalLikes: nextProps.data.likes,
+                likeIconActive: nextProps.data.is_liked,
+                likeActivefont: Colors.secondaryLight,
+                commentsCount: nextProps.data.comments_count
+            })
+        }
+    }
+
     _onPress = (e) => {
         console.log("in focus")
         if(this.props.touchable) {
-            Animated.sequence([
-                Animated.spring(this.animatedValue, {
-                    toValue: .99,
-                    duration: 10,
-                    easing: Easing.ease,
-                }),
-                Animated.spring(this.animatedValue, {
-                    toValue: 1,
-                    duration: 10,
-                    easing: Easing.ease,
-                })
-            ]).start()
             if(this.props.callback){
                 this.props.callback()
             }
@@ -51,101 +47,110 @@ export default class Feed extends React.Component {
         }
     }
 
+    _share = (e) => {
+
+    }
+
     _liked = () => {
-        this.setState((previousState) => {
-            if (!previousState.likeIconActive) {
-                Animated.sequence([
-                    Animated.timing(this.animatedLikeSize, {
-                        toValue: 25,
-                        duration: 100,
-                        easing: Easing.ease,
-                    }),
-                    Animated.timing(this.animatedLikeSize, {
-                        toValue: 20,
-                        duration: 100,
-                        easing: Easing.ease,
-                    })
-                ]).start()
-                return (
-                    {
-                        totalLikes: previousState.totalLikes + 1,
-                        likeIconActive: !previousState.likeIconActive,
-                        likeActiveFont: Colors.secondaryDark
-                    }
-                )
-            }
-            else {
-                return (
-                    {
-                        totalLikes: previousState.totalLikes - 1,
-                        likeIconActive: !previousState.likeIconActive,
-                        likeActiveFont: Colors.onSurface
-                    }
-                )
-            }
-        })
+        if(this.props.likeCallback) {
+            this.setState((previousState) => {
+                if (!previousState.likeIconActive) {
+                    this.props.data.likes += 1
+                    this.props.data.is_liked = true
+                    return (
+                        {
+                            totalLikes: previousState.totalLikes + 1,
+                            likeIconActive: !previousState.likeIconActive,
+                            likeActiveFont: Colors.secondaryDark
+                        }
+                    )
+                }
+                else {
+                    this.props.data.likes -= 1
+                    this.props.data.is_liked = false
+                    return (
+                        {
+                            totalLikes: previousState.totalLikes - 1,
+                            likeIconActive: !previousState.likeIconActive,
+                            likeActiveFont: Colors.onSurface
+                        }
+                    )
+                }
+            })
+            this.props.likeCallback()
+        }
+    }
+
+    _institute = () => {
+        this.props.instituteCallback()
+    }
+
+    _profile = () => {
+        // this.props.profileCallback()
     }
 
     render() {
       const {data} = this.props
-      const AnimatedIcon = Animated.createAnimatedComponent(Icon)
+
       return (
         <TouchableWithoutFeedback onPress={this._onPress} hitSlop={{top: 5, left: 5, bottom: 5, right: 5}}>
-            <Animated.View style={[styles.container, this.transformation]}>
+            <View style={[styles.container, this.transformation]}>
                 <View style={styles.header}>
-                    <View style={styles.paddingHorizontal}>
-                        <Image style={styles.image}
-                            source={require('../resources/dummy_profile.png')}
-                            resizeMode='cover'
-                            onError={(error) => console.log(eror)}
-                        />
-                    </View>
-                    <View style={styles.paddingHorizontal10}>
-                        <Text style={styles.headerText}>{data.institution.name}</Text>
-                        <Text style={styles.headerSubText}>Location</Text>
-                    </View>
+                    <TouchableWithoutFeedback onPress={this._profile} hitSlop={{top: 5, left: 5, bottom: 5, right: 5}}>
+                        <View style={styles.paddingHorizontal}>
+                            <Image style={styles.image}
+                                source={{uri: data.institution ? data.institution.profile_pic :null}}
+                                defaultSource={require('../resources/in_2.jpg')}
+                                resizeMode='cover'
+                                onError={(error) => console.log(error)}
+                            />
+                        </View>
+                    </TouchableWithoutFeedback>
+                    <TouchableWithoutFeedback onPress={this._institute} hitSlop={{top: 5, left: 5, bottom: 5, right: 5}}>
+                        <View style={styles.paddingHorizontal10}>
+                            <Text style={styles.headerText}>{data.institution ? data.institution.name : 'Institute'}</Text>
+                            <Text style={styles.headerSubText}>{data.created_at}</Text>
+                        </View>
+                    </TouchableWithoutFeedback>
                 </View>
                 <View style={styles.paddingVertical20}>
                     <Text style={styles.bodyText}>{data.body}</Text>
                 </View>
                 <View style={styles.separator}/>
                 <View style={styles.footer}>
-                    <TouchableWithoutFeedback onPress={this._liked} hitSlop={{top: 5, left: 5, bottom: 5, right: 5}}>
-                        <View style={styles.footerElement}>
-                            <AnimatedIcon name="heart" size={this.animatedLikeSize} color={Colors.secondaryDark} solid={this.state.likeIconActive}/>
-                            <Text style={[styles.footerElementText, {color: this.state.likeActiveFont}]}>{this.state.totalLikes} Like</Text>
-                        </View>
-                    </TouchableWithoutFeedback>
-                    <TouchableWithoutFeedback onPress={this._comment} hitSlop={{top: 5, left: 5, bottom: 5, right: 5}}>
-                        <View style={styles.footerElement}>
-                            <Icon name="comment" size={20} color={Colors.secondaryDark}/>
-                            <Text style={styles.footerElementText}>{data.comments_count} Comment</Text>
-                        </View>
-                    </TouchableWithoutFeedback>
-                    <TouchableWithoutFeedback onPress={this._onPress} hitSlop={{top: 5, left: 5, bottom: 5, right: 5}}>
-                        <View style={styles.footerElement}>
-                            <Icon name="share-alt" size={20} color={Colors.secondaryDark}/>
-                            <Text style={styles.footerElementText}>Share</Text>
-                        </View>
-                    </TouchableWithoutFeedback>
+                    <Button onPress={this._liked} style={styles.footerElement}>
+                        <Icon name="heart" size={20} color={Colors.secondaryDark} solid={this.state.likeIconActive}/>
+                        <Text style={[styles.footerElementText, {color: this.state.likeActiveFont}]}>{this.state.totalLikes} Like</Text>
+                    </Button>
+                    <Button onPress={this._comment} style={styles.footerElement}>
+                        <Icon name="comment" size={20} color={Colors.secondaryDark}/>
+                        <Text style={styles.footerElementText}>{this.state.commentsCount} Comment
+                        </Text>
+                    </Button>
+
                 </View>
-            </Animated.View>
+            </View>
         </TouchableWithoutFeedback>
       );
     }
 }
 
+// <Button onPress={this._share} style={styles.footerElement}>
+//     <Icon name="share-alt" size={20} color={Colors.secondaryDark}/>
+//     <Text style={styles.footerElementText}>Share</Text>
+// </Button>
+
 const styles = StyleSheet.create({
     container: {
-        //flex: 1,
-        padding: 20,
+        paddingHorizontal: 20,
+        paddingTop :20,
         backgroundColor: Colors.surface,
     },
     separator: {
         width: '100%',
         height: StyleSheet.hairlineWidth,
         backgroundColor: Colors.background,
-        marginVertical: 5,
+        marginTop: 5,
     },
     paddingHorizontal10: {
         paddingHorizontal: 10
@@ -154,11 +159,12 @@ const styles = StyleSheet.create({
         paddingVertical: 20
     },
     footer: {
-        //paddingVertical: 10,
         flexDirection:'row',
         justifyContent: 'space-between'
     },
     footerElement: {
+        paddingVertical: 10,
+        paddingHorizontal: 10,
         flexDirection: 'row',
         justifyContent: 'space-between',
         alignItems: 'center',
@@ -166,11 +172,10 @@ const styles = StyleSheet.create({
     },
     footerElementText: {
         color: Colors.onSurface,
-        opacity: 0.5,
         fontSize: 14,
         fontWeight: '600',
         opacity: 0.6,
-        paddingHorizontal: 10,
+        paddingLeft: 5,
     },
     header: {
         flexDirection: 'row',

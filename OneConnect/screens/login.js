@@ -1,5 +1,5 @@
 import React, {Component} from 'react';
-import {Platform, StyleSheet, Text, View, TextInput, TouchableWithoutFeedback, Keyboard, SafeAreaView, ActivityIndicator, Animated} from 'react-native';
+import {Platform, StyleSheet, Text, View, TextInput, TouchableWithoutFeedback, Keyboard, SafeAreaView, ActivityIndicator, Animated, Alert} from 'react-native';
 import {Colors} from '../constants';
 import Manager from '../service/dataManager';
 import Button from '../custom/button';
@@ -18,24 +18,27 @@ type Props = {};
 export default class LoginScreen extends Component<Props> {
     constructor(props){
         super(props)
-        this.userName = 'test@example.com'
-        this.password = 'password'
+
+        this.userName = null
+        this.password = null
         this.opacity = new Animated.Value(0)
+
         this.state = {
             loading: false,
             loggedIn: false,
             error: false,
-            errorText: ''
+            errorText: null
         }
     }
 
     componentDidMount() {
+        console.log("component did mount login")
         Manager.addListener('LOGIN_S', this._loginSuccess)
         Manager.addListener('LOGIN_E', this._loginError)
     }
 
     componentWillUnmount() {
-
+        console.log("component will unmount login")
         Manager.removeListener('LOGIN_S', this._loginSuccess)
         Manager.removeListener('LOGIN_E', this._loginError)
     }
@@ -43,12 +46,13 @@ export default class LoginScreen extends Component<Props> {
     _toggleError = (state=null) => {
         console.log('toggling error')
         this.setState(previousState => ({
-            error: state ? state: !previousState.error
+            error: state ? state: !previousState.error,
+            errorText: null
         }))
     }
 
     _loginSuccess = (data) => {
-
+        console.log("login successfull : ", data)
         Manager.setToken(data.data.token)
         Animated.timing(this.opacity, {
             toValue: 0,
@@ -58,7 +62,6 @@ export default class LoginScreen extends Component<Props> {
                 loading: false,
                 loggedIn: true,
             })
-
             this.props.navigation.navigate('Drawer')
         });
     }
@@ -78,10 +81,10 @@ export default class LoginScreen extends Component<Props> {
 
     _passwordChange = (text) => {
         this.password = text
-
     }
 
     _loginButton = () => {
+        console.log("login button clicked")
         if (this.userName  && this.password) {
             this.setState({
                 loading: true,
@@ -110,6 +113,7 @@ export default class LoginScreen extends Component<Props> {
 
 
   render() {
+      console.log("login render")
     return (
         <ErrorHandler error={this.state.error} errorText={this.state.errorText} callback={this._toggleError}>
             <DismissKeyboard>
@@ -138,7 +142,8 @@ export default class LoginScreen extends Component<Props> {
 
                         <View style={{margin: 10, marginTop: 50}}>
                             <Text style={styles.textTerm}>By proceeding you agree to the Terms of Services and Privacy Policy</Text>
-                            <Button onPress={this._loginButton} title="LOGIN" color={Colors.alternative}/>
+                            <Button onPress={this._loginButton} style={styles.button} title="LOGIN" color={Colors.alternative}>
+                            </Button>
                         </View>
                     </View>
                     {
@@ -188,7 +193,8 @@ const styles = StyleSheet.create({
         alignSelf: 'center',
         paddingBottom: 5,
         color: Colors.onSurface,
-        marginTop: 20
+        marginTop: 20,
+        marginBottom: 10,
     },
     header: {
         backgroundColor: Colors.primary,
@@ -201,5 +207,12 @@ const styles = StyleSheet.create({
         fontSize: 40,
         fontWeight: 'bold',
         textAlign: 'center',
+    },
+    button: {
+        backgroundColor: Colors.secondaryDark,
+        justifyContent: 'center',
+        alignItems: 'center',
+        borderRadius: 30,
+        paddingVertical: 15,
     }
 });

@@ -1,46 +1,46 @@
+import React from "react";
+import {View,TouchableWithoutFeedback} from "react-native";
 import { createStackNavigator, createAppContainer } from "react-navigation";
+import Button from '../custom/button';
 
 // Screen Imports
 import Profile from '../screens/profile';
 import Settings from '../screens/settings';
 import ChangePassword from '../screens/changePassword';
-
+import Icon from 'react-native-vector-icons/FontAwesome5';
 import {Colors} from '../constants'
 
 const navigatorConfig = {
     initialRouteName: 'Profile',
+    initialRouteParams: {url: '/api/profile', accessLevel: 1},
     defaultNavigationOptions: {
         headerStyle: {
+            backgroundColor: Colors.primary,
             borderBottomWidth: 0
         },
+        headerTitleStyle: {
+            fontSize: 17
+        },
         headerTintColor: Colors.onPrimary,
+        headerTitleAllowFontScaling: false,
         headerBackTitle: null,
-        headerTransparent: true
-    }
+    },
 };
 
 const ProfileStack = createStackNavigator({
     Profile: {
-        screen: Profile
+        screen: Profile,
     },
     Settings: {
         screen: Settings,
         navigationOptions: () => ({
-            title: `Settings`,
-            headerStyle: {
-                backgroundColor: Colors.primary
-            },
-            headerTransparent: false
+            title: `SETTINGS`,
         }),
     },
     ChangePassword: {
         screen: ChangePassword,
         navigationOptions: () => ({
-            title: `Change Password`,
-            headerStyle: {
-                backgroundColor: Colors.primary
-            },
-            headerTransparent: false
+            title: `CHANGE PASSWORD`,
         }),
     }
 }, navigatorConfig);

@@ -2,12 +2,9 @@ import React from 'react';
 import { Text, View, Button, StyleSheet } from 'react-native';
 import { createDrawerNavigator } from 'react-navigation';
 
-// Navigator Imports
+// Routes
 import Tab from './tabNavigator';
-
-// Screen Import
-import Batch from '../screens/batch';
-import Settings from '../screens/settings';
+import AuthLoading from '../screens/authLoading';
 
 // Custom components import
 import CustomDrawerContentComponent from '../custom/customDrawerContentComponent'
@@ -37,11 +34,11 @@ const Drawer = createDrawerNavigator({
     Tab: {
         screen: Tab
     },
-    // Settings: {
-    //     screen: Settings,
-    // },
-    // Batch: {
-    //     screen: Batch
+    AuthLoading: {
+        screen: AuthLoading,
+    },
+    // ChangePassword: {
+    //     screen: ChangePassword
     // }
 }, navigatorConfig);
 

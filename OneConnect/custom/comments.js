@@ -18,7 +18,8 @@ export default class Comments extends React.Component {
                 <View style={styles.display}>
                     <View style={styles.paddingHorizontal}>
                         <Image style={styles.image}
-                            source={require("../resources/dummy_profile.png")}
+                            source={{uri: this.state.data.poster.profile_pic}}
+                            defaultSource={require("../resources/dummy_profile.png")}
                             resizeMode='cover'
                             onError={(error) => console.log(error)}
                         />

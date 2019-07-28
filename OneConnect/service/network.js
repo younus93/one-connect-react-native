@@ -1,5 +1,5 @@
-const BASE_URL = 'http://users.theyounus.com'
-
+// const BASE_URL = 'http://users.theyounus.com'
+const BASE_URL = 'http://beta.1connect.in'
 const Call = (uri, method, data=null, token=null) => {
     let url = BASE_URL + uri
     let headers = {}

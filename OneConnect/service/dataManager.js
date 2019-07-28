@@ -1,4 +1,6 @@
-// import EventEmitter from 'events';
+import React from 'react';
+import AsyncStorage from '@react-native-community/async-storage';
+
 var EventEmitter = require('EventEmitter');
 import Call from './network';
 
@@ -16,19 +18,37 @@ class dataManager {
         this.eventEmitter.removeListener(event, target)
     }
 
+    emitEvent = (eventName, data=null) => {
+        this.eventEmitter.emit(eventName, data)
+    }
+
     setToken = (token) => {
         this.token = token;
+        AsyncStorage.getItem('@appKey')
+        .then(res => {
+            if(!res){
+                AsyncStorage.setItem('@appKey', token)
+                .then(response => console.log("token saved"))
+                .catch(error => console.log("token not saved"))
+            }
+        })
+        .catch(error => {
+            console.log("storage error : ", error)
+            AsyncStorage.setItem('@appKey', token)
+            .then(response => console.log(" token saved"))
+            .catch(error => console.log("token not saved"))
+        })
     }
 
     login = (uri, method, data=null) => {
-
         Call(uri, method, data)
         .then(response => {
-
+            if(response.data.message == "Invalid credentials") {
+                throw(Error(response.data.message))
+            }
             this.eventEmitter.emit('LOGIN_S', response)
         })
         .catch(error => {
-
             this.eventEmitter.emit('LOGIN_E', error)
         })
     }
@@ -73,16 +93,98 @@ class dataManager {
         })
     }
 
+    like = (uri, method, data=null) => {
+
+        Call(uri, method, data, this.token)
+        .then(response => {
+            this.eventEmitter.emit('LIKE_S', response)
+        })
+        .catch(error => {
+
+            this.eventEmitter.emit('LIKE_E', error)
+        })
+    }
+
     profile = (uri, method, data=null) => {
 
         Call(uri, method, data, this.token)
         .then(response => {
-            
+
             this.eventEmitter.emit('PROFILE_S', response)
         })
         .catch(error => {
 
             this.eventEmitter.emit('PROFILE_E', error)
+        })
+    }
+
+    batch = (uri, method, data=null) => {
+        Call(uri, method, data, this.token)
+        .then(response => {
+            this.eventEmitter.emit('BATCH_S', response)
+        })
+        .catch(error => {
+            this.eventEmitter.emit('BATCH_E', error)
+        })
+    }
+
+    batchItem = (uri, method, data=null) => {
+        Call(uri, method, data, this.token)
+        .then(response => {
+            this.eventEmitter.emit('BATCHITEM_S', response)
+        })
+        .catch(error => {
+            this.eventEmitter.emit('BATCHITEM_E', error)
+        })
+    }
+
+    batchMates = (uri, method, data=null) => {
+        Call(uri, method, data, this.token)
+        .then(response => {
+            this.eventEmitter.emit('MATES_S', response)
+        })
+        .catch(error => {
+            this.eventEmitter.emit('MATES_E', error)
+        })
+    }
+
+    courseItem = (uri, method, data=null) => {
+        Call(uri, method, data, this.token)
+        .then(response => {
+            this.eventEmitter.emit('COURSEITEM_S', response)
+        })
+        .catch(error => {
+            this.eventEmitter.emit('COURSEITEM_E', error)
+        })
+    }
+
+    institution = (uri, method, data=null) => {
+        Call(uri, method, data, this.token)
+        .then(response => {
+            this.eventEmitter.emit('INSTITUTE_S', response)
+        })
+        .catch(error => {
+            this.eventEmitter.emit('INSTITUTE_E', error)
+        })
+    }
+
+    search = (uri, method, data=null) => {
+        Call(uri, method, data, this.token)
+        .then(response => {
+            this.eventEmitter.emit('SEARCH_S', response)
+        })
+        .catch(error => {
+            this.eventEmitter.emit('SEARCH_E', error)
+        })
+    }
+
+    notification = (uri, method, data=null) => {
+        Call(uri, method, data, this.token)
+        .then(response => {
+            this.eventEmitter.emit('NOTIFICATION_S', response)
+        })
+        .catch(error => {
+            this.eventEmitter.emit('NOTIFICATION_E', error)
         })
     }
 }

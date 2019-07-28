@@ -5,6 +5,8 @@ import Icon from 'react-native-vector-icons/FontAwesome';
 
 import FeedStack from './feedStackNavigator';
 import ProfileStack from './profileStackNavigator';
+import SearchStack from './searchStack';
+import NotificationStack from './notificationStack';
 
 import {Colors} from '../constants'
 
@@ -12,6 +14,7 @@ import {Colors} from '../constants'
 //`newspaper${focused ? '' : '-outline'}`
 const navigatorConfig = {
     initialRouteName: 'FeedStack',
+    resetOnBlur: true,
     defaultNavigationOptions: ({ navigation }) => ({
         tabBarIcon: ({ focused, horizontal, tintColor }) => {
             const { routeName } = navigation.state;
@@ -26,9 +29,15 @@ const navigatorConfig = {
             else if (routeName === 'ProfileStack') {
                 iconName = `user`;
             }
+            else if (routeName === 'SearchStack') {
+                iconName = 'search'
+            }
+            else if (routeName === 'NotificationStack') {
+                iconName = 'bell'
+            }
 
             // You can return any component that you like here!
-            return <IconComponent name={iconName} size={25} color={tintColor} />;
+            return <IconComponent name={iconName} size={20} color={tintColor} />;
         }
     }),
     tabBarOptions: {
@@ -42,7 +51,7 @@ const navigatorConfig = {
         },
         allowFontScaling: false
     },
-    backBehavior: 'initialRoute'
+    backBehavior: 'history'
 };
 
 const Tab = createBottomTabNavigator({
@@ -56,6 +65,18 @@ const Tab = createBottomTabNavigator({
         screen: ProfileStack,
         navigationOptions: {
             title: "Profile"
+        }
+    },
+    SearchStack: {
+        screen: SearchStack,
+        navigationOptions: {
+            title: 'Search'
+        }
+    },
+    NotificationStack: {
+        screen: NotificationStack,
+        navigationOptions: {
+            title: 'Notification'
         }
     }
 }, navigatorConfig);

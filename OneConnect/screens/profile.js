@@ -1,39 +1,79 @@
 import React from "react";
-import { View, Text, ScrollView, Image, StyleSheet, FlatList, SectionList, SafeAreaView, TouchableWithoutFeedback, TextInput, Animated, Easing} from "react-native";
-
+import { View, Text, ScrollView, Image, StyleSheet, FlatList, SectionList, SafeAreaView, TouchableWithoutFeedback, TextInput, Animated, Easing, ActivityIndicator} from "react-native";
+import { DrawerActions } from 'react-navigation-drawer';
+import { NavigationActions } from 'react-navigation';
 import {Colors} from '../constants';
 import Manager from '../service/dataManager';
 import Button from '../custom/button';
-
-// test data
-const profileData = require('../testData/profile.json');
+import Icon from 'react-native-vector-icons/FontAwesome5';
 
 
 export default class Profile extends React.Component {
+    static navigationOptions = ({navigation}) => {
+        const accessLevel = navigation.getParam('accessLevel', 0)
+        let options = {title: 'PROFILE'}
+        if(accessLevel) {
+            options['headerLeft'] = <View style={{flexDirection: 'row'}}>
+                <Button style={{borderRadius: 20}} onPress={navigation.getParam('hamPressed')} >
+                    <Icon name="bars" size={22} color={Colors.onPrimary} style={{padding:10}}/>
+                </Button>
+            </View>
+        }
+        return options
+    }
+
+
     constructor(props){
         super(props)
+        this.url = props.navigation.getParam('url', '/api/profile')
+        this.accessLevel = props.navigation.getParam('accessLevel', 0)
+        // console.log("profile url is : ", this.url, this.accessLevel, this.accessLevel==1)
+        this.props.navigation.setParams({accessLevel: this.accessLevel });
+
         this.state = {
-            saveButtonState: true,
+            updateNeeded: false,
             loading: true,
             error: false,
+            errorText: null
         }
     }
 
     componentDidMount() {
+        console.log("profile mounted")
         Manager.addListener('PROFILE_S', this._profileSuccess)
         Manager.addListener('PROFILE_E', this._profileError)
-        Manager.profile('/profile', 'POST')
+
+        Manager.profile(this.url, 'GET')
+
+        this.props.navigation.setParams({backButton: this._backButtonPressed });
+        this.props.navigation.setParams({hamPressed: this._hamPressed });
     }
 
     componentWillUnmount() {
+        console.log("profile unmouted")
         Manager.removeListener('PROFILE_S', this._profileSuccess)
         Manager.removeListener('PROFILE_E', this._profileError)
     }
 
+    _hamPressed = () => {
+        this.props.navigation.dispatch(DrawerActions.toggleDrawer())
+    }
+
+    _backButtonPressed = () => {
+        console.log("back button pressed")
+        const backAction = NavigationActions.back({
+            key: null,
+        });
+        this.props.navigation.dispatch(backAction);
+    }
+
     _profileSuccess = (data) => {
         console.log("profile successful, data received :", data)
+        this.data = data.data
         this.setState({
             loading: false,
+            error: false,
+            errorText: null
         })
     }
 
@@ -41,32 +81,41 @@ export default class Profile extends React.Component {
         console.log("profile, error received :", error)
         this.setState({
             loading: false,
-            error: true
+            error: true,
+            errorText: null
         })
     }
 
-    _navigateToChangePassword = () => {
-        this.props.navigation.navigate('ChangePassword')
+    _needsUpdate = () => {
+        console.log("profile needs update")
+        this.setState({
+            loading: true,
+            error: false,
+            errorText: null
+        })
     }
 
-    _toggleSaveButtonState = () => {
-        this.setState((previousState) => ({
-            saveButtonState: !previousState.saveButtonState
-        }));
+    _navigateToSettings = () => {
+        console.log("navigateing to settings")
+        this.props.navigation.navigate('Settings', {data: this.data, callback: this._needsUpdate})
     }
 
     render() {
-        const {saveButtonState} = this.state
+
+        if(this.state.loading){
+            return(
+                <View style={[styles.container, {justifyContent:'center', alignItems: 'center'}]}>
+                    <ActivityIndicator animating={this.state.loading} size="large" color={Colors.secondaryLight} />
+                </View>
+            )
+        }
+
         return (
             <View style={styles.container}>
                 <ScrollView alwaysBounceVertical={false} bounces={false}>
-                    <ImageView callback={this._toggleSaveButtonState}/>
-                    <View style={{justifyContent: 'space-between'}}>
-                        <ProfileList user={profileData.user} navigate={this.props.navigation.navigate} callback={this._toggleSaveButtonState}/>
-                        <Button style={styles.changePassword} onPress={this._navigateToChangePassword} title="CHANGE PASSWORD" color={Colors.alert}/>
-                    </View>
+                    <ImageView data={this.data}/>
+                    <ProfileList accessLevel={this.accessLevel} data={this.data} navigate={this._navigateToSettings}/>
                 </ScrollView>
-                <Button style={styles.saveButton} title="Save" color={Colors.alternative}/>
             </View>
         );
     }
@@ -79,157 +128,164 @@ export default class Profile extends React.Component {
 class ImageView extends React.Component {
     constructor(props){
         super(props);
+        this.data = props.data
     }
 
     render() {
       return (
-        <View style={styles.profileImage}>
+        <View style={styles.banner}>
             <SafeAreaView forceInset={{ top: 'always'}}>
-                <Image style={styles.image}
-                    source={require('../resources/dummy_profile_2.jpg')}
-                    resizeMode='cover'
-                    defaultSource={require('../resources/dummy_profile.png')}
-                    onError={(error) => console.log(eror)}
-                />
+                <View style={{justifyContent: 'center', alignItems: 'center'}}>
+                    <Image style={styles.image}
+                        source={{uri: this.data.basic.profile_pic}}
+                        resizeMode='cover'
+                        defaultSource={require('../resources/dummy_profile.png')}
+                        onError={(error) => console.log(eror)}
+                    />
+                </View>
+                <View style={styles.bio}>
+                    <Text style={{color: Colors.onPrimary, fontWeight: '600', fontSize: 18}}>{this.data.basic.salutation + ' ' + this.data.basic.f_name + ' ' + this.data.basic.l_name}</Text>
+                    <Text style={{paddingTop: 5,color: Colors.onPrimary, fontWeight: '600', fontSize: 14}}>{this.data.current_company ? this.data.current_company.designation + ' at ' + this.data.current_company.name: null}</Text>
+                </View>
             </SafeAreaView>
         </View>
       );
     }
 }
 
+
+
+
 class ProfileList extends React.Component {
     constructor(props) {
         super(props)
-        let {user} = props
-        let profileDetails = [{
-                    title: 'User details',
-                    data: [
-                        {'Name':user.f_name + " " + user.family_name},
-                        {'Mobile': user.phone_number},
-                        {'Email': user.email},
-                    ]
-                },
-            {
-                title: 'Account',
-                data: [
-                    {'Privacy Settings': user.privacy_setting}
-                ]
-            }]
-
-        this._borderBottomWidth = [new Animated.Value(0), new Animated.Value(0), new Animated.Value(0)]
-        this.animatedValue = [new Animated.Value(0), new Animated.Value(0), new Animated.Value(0)]
-
-        this.state = {
-            user: profileDetails
-        }
+        this.data = props.data
+        this.accessLevel = props.accessLevel
     }
 
-    _onPressItem = (index, section) => {
-        console.log("Pressed ", index, "th row of ", section.title, " section")
-        if (section.title == "Account" && index == 0) {
-            console.log("Pressed Privacy settings")
-            this.props.navigate("Settings")
-        }
-    }
-
-    _onFocus = (e,index, section) => {
-            Animated.timing(this._borderBottomWidth[index], {
-                toValue: 1,
-            }).start();
-
-            Animated.timing(this.animatedValue[index], {
-                toValue: 1,
-                duration: 100,
-                easing: Easing.ease,
-                // useNativeDriver: true,
-            }).start()
-    }
-
-    _onBlur = (e, index) => {
-        Animated.timing(this._borderBottomWidth[index], {
-            toValue: 0,
-        }).start();
-
-        Animated.timing(this.animatedValue[index], {
-            toValue: 0,
-            duration: 100,
-            easing: Easing.ease,
-            // useNativeDriver: true,
-        }).start()
-    }
-
-    _renderItem = ({item, index, section}) => {
-        console.log(item, index, section)
-        let key = Object.keys(item)
-
-        if (section.title == "User details") {
-            const AnimatedTextInput = Animated.createAnimatedComponent(TextInput)
-            return (
-                <TouchableWithoutFeedback onPress={() => this._onPressItem(index, section)}>
-                    <View style={styles.item} key={`prle-${Math.random(1)}`}>
-                        <Text style={styles.itemsTextLabel}>{key}</Text>
-                        <AnimatedTextInput style={[styles.itemText, {transform: [
-                                {
-                                    scaleX: this.animatedValue[index].interpolate({
-                                        inputRange: [0, 1],
-                                        outputRange: [1, 2]
-                                    })
-                                },
-                                {
-                                    scaleY: this.animatedValue[index].interpolate({
-                                        inputRange: [0, 1],
-                                        outputRange: [1, 2]
-                                    })
-                                }
-                            ], borderBottomWidth: this._borderBottomWidth[index]}]} onChangeText={(text) => this.props.callback()} defaultValue={item[key[0]]} onFocus={(e) => this._onFocus(e, index, section)} onBlur={(e) => this._onBlur(e, index)}/>
-                    </View>
-                </TouchableWithoutFeedback>
-            )
-        }
-        else if (section.title == "Account") {
-            return (
-                <TouchableWithoutFeedback onPress={() => this._onPressItem(index, section)}>
-                    <View style={styles.item} key={`prle-${Math.random(1)}`}>
-                        <Text style={styles.itemsTextLabel}>{key}</Text>
-                        <Text style={styles.itemText}>{item[key[0]]}</Text>
-                    </View>
-                </TouchableWithoutFeedback>
-            )
-        }
-    }
-
-    _renderSection = ({section: {title}}) => {
+    _renderBasicSection = (section) => {
         return (
-            <View style={styles.section}>
-                <Text style={styles.sectionText}>{title}</Text>
+            <View>
+                <View key={`pelt-${Math.random(1)}`} style={styles.item}>
+                    <Icon name="user" size={18} color={Colors.primaryDark} />
+                    <Text style={styles.itemText}>{section.f_name + ' ' + section.l_name}</Text>
+                </View>
+                <View key={`pelt-${Math.random(1)}`} style={styles.item}>
+                    <Icon name="phone" size={18} color={Colors.primaryDark} />
+                    <Text style={styles.itemText}>{section.phone_number}</Text>
+                </View>
+                <View key={`pelt-${Math.random(1)}`} style={styles.item}>
+                    <Icon name="envelope" size={18} color={Colors.primaryDark} />
+                    <Text style={styles.itemText}>{section.email}</Text>
+                </View>
+                <View key={`pelt-${Math.random(1)}`} style={styles.item}>
+                    <Icon name="calendar-day" size={18} color={Colors.primaryDark} />
+                    <Text style={styles.itemText}>{section.dob.split('T')[0]}</Text>
+                </View><View key={`pelt-${Math.random(1)}`} style={styles.item}>
+                    <Icon name="venus-mars" size={18} color={Colors.primaryDark} />
+                    <Text style={styles.itemText}>{section.gender}</Text>
+                </View>
             </View>
         )
     }
 
-    _keyExtractor = (item, index) => `prle-${index}`;
+    _renderExperienceSection = (section) => {
+        console.log("section data : ", section)
+        if(section.length > 0) {
+            return(
+                <View>
+                    <View style={{flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center'}}>
+                        <Text style={styles.header}>Experience</Text>
+                        {
+                            this.accessLevel ?
+                            <Button style={{padding: 10}} onPress={this.props.navigate}>
+                                <Icon name="pen" size={16} color={Colors.secondaryLight}/>
+                            </Button>
+                            :
+                            null
+                        }
+                    </View>
+
+                    <View style={styles.sectionBody}>
+                    {
+                        section.map(item => {
+                            return(
+                                <View key={`pelt-${Math.random(1)}`} style={[styles.item, {alignItems: 'flex-start'}]}>
+                                    <Icon name="building" size={35} color={Colors.primaryDark} style={{backgroundColor: Colors.background, padding: 10}}/>
+                                    <View>
+                                        <Text style={[styles.itemText, {fontWeight: '600', fontSize: 16}]}>{item.designation}</Text>
+                                        <Text style={[styles.itemText, {paddingTop: 5}]}>{item.name}</Text>
+                                        <Text style={[styles.itemText, {paddingTop: 5}]}>Since {item.started_working_at.split(' ')[0]}</Text>
+                                    </View>
+                                </View>
+                            )
+                        })
+                    }
+                    </View>
+                </View>
+            )
+        }
+        return null
+    }
+
+    _renderTagsSection = (section) => {
+        console.log("section data : ", section)
+        if(section.length > 0) {
+            return(
+                <View>
+                    <View style={{flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center'}}>
+                        <Text style={styles.header}>Tags</Text>
+                        {
+                            this.accessLevel ?
+                            <Button style={{padding: 10}} onPress={this.props.navigate}>
+                                <Icon name="pen" size={16} color={Colors.secondaryLight}/>
+                            </Button>
+                            :
+                            null
+                        }
+                    </View>
+
+                    <View style={styles.sectionBody}>
+                    {
+                        section.map(item => {
+                            return(
+                                <View key={`pelt-${Math.random(1)}`} style={[styles.item, {alignItems: 'flex-start'}]}>
+                                    <View>
+                                        <Text style={[styles.itemText, {fontWeight: '600', fontSize: 16}]}>{item.name}</Text>
+                                    </View>
+                                </View>
+                            )
+                        })
+                    }
+                    </View>
+                </View>
+            )
+        }
+        return null
+    }
 
     render() {
-        let {user} = this.state
         return(
-            <SectionList
-                renderItem={this._renderItem}
-                renderSectionHeader={this._renderSection}
-                sections={user}
-                keyExtractor={this._keyExtractor}
-                bounces={false}
-            />
-        )
-    }
-}
-
-class Tags extends React.Component {
-    constructor(props) {
-        super(props)
-    }
-
-    render() {
-        return(
-            <Text>Hell</Text>
+            <View>
+                <View>
+                    <View style={{flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center'}}>
+                        <Text style={styles.header}>Profile Information</Text>
+                        {
+                            this.accessLevel ?
+                            <Button style={{padding: 10}} onPress={this.props.navigate}>
+                                <Icon name="pen" size={16} color={Colors.secondaryLight}/>
+                            </Button>
+                            :
+                            null
+                        }
+                    </View>
+                    <View style={styles.sectionBody}>
+                        {this._renderBasicSection(this.data.basic)}
+                    </View>
+                </View>
+                {this._renderExperienceSection(this.data.companies)}
+                {this._renderTagsSection(this.data.tags)}
+            </View>
         )
     }
 }
@@ -239,11 +295,12 @@ const styles = StyleSheet.create({
         flex: 1,
         backgroundColor: Colors.background,
     },
-    profileImage: {
+    banner: {
         alignItems: 'center',
-        justifyContent: 'center',
+        // justifyContent: 'center',
         backgroundColor: Colors.primary,
-        padding: 30,
+        paddingTop: 10,
+        paddingBottom: 5,
     },
     image: {
         borderRadius: 92,
@@ -251,11 +308,22 @@ const styles = StyleSheet.create({
         height: 180,
         backfaceVisibility: 'visible',
     },
-    section: {
-        padding: 10,
-        paddingTop: 20,
-        backgroundColor: Colors.background,
-        // opacity: 0.5,
+    bio: {
+        justifyContent: 'center',
+        alignItems: 'center',
+        paddingVertical: 5,
+    },
+    sectionBody: {
+        backgroundColor: Colors.surface,
+    },
+    header: {
+        paddingLeft: 10,
+        paddingTop: 18,
+        paddingBottom: 8,
+        fontSize: 16,
+        fontWeight: '600',
+        color: Colors.onSurface,
+        opacity: 0.4
     },
     sectionText: {
         fontWeight: 'bold',
@@ -265,17 +333,14 @@ const styles = StyleSheet.create({
     },
     item: {
         flexDirection: 'row',
-        justifyContent: 'space-between',
+        alignItems: 'center',
         padding: 10,
         paddingVertical: 20,
-        backgroundColor: Colors.surface
     },
     itemText: {
-        flex:1,
-        fontSize: 12,
-        fontWeight: 'normal',
-        color: Colors.onSurface,
-        borderColor: Colors.alternative,
+        paddingLeft: 10,
+        fontSize: 14,
+        fontWeight: '400',
     },
     itemsTextLabel: {
         flex:1,
@@ -284,18 +349,10 @@ const styles = StyleSheet.create({
         opacity: 0.7,
         color: Colors.onSurface
     },
-    changePassword: {
-        backgroundColor: 'transparent',
-        borderRadius: 5,
-        borderWidth: 1,
-        borderColor: Colors.alert,
-        marginHorizontal: 15,
-        paddingVertical: 10
-    },
-    saveButton: {
-        marginHorizontal: 15,
-        marginVertical: 0,
-        marginBottom: 5
+    edit: {
+        position: 'absolute',
+        right: 20,
+        top: 100,
     }
 });
 

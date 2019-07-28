@@ -59,7 +59,11 @@ const styles = StyleSheet.create({
         shadowRadius: 2,
     },
     button:{
+        justifyContent: 'center',
+        alignItems: 'center',
+        backgroundColor: Colors.secondaryDark,
         marginVertical: 10,
         borderRadius: 30,
+        paddingVertical: 15,
     }
 })

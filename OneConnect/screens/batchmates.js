@@ -1,41 +1,41 @@
 import React from "react";
-import { View, Text, TextInput, StyleSheet, FlatList, TouchableWithoutFeedback, ActivityIndicator, Animated, Easing} from "react-native";
+import { View, Text, TextInput, StyleSheet, FlatList, TouchableWithoutFeedback, ActivityIndicator, Animated, Easing, Image} from "react-native";
 import {Colors} from '../constants';
 import Manager from '../service/dataManager';
 import Button from '../custom/button';
 
 
-export default class Batch extends React.Component {
+export default class BatchMates extends React.Component {
     static navigationOptions = ({navigation}) => ({
-        title: 'BATCHES',
+        title: 'BATCHMATES',
     })
-
     constructor(props) {
         super(props)
-        this.url = props.navigation.getParam('url', '/api/batches/')
+        // this.url = props.navigation.getParam('url')
+        this.data = props.navigation.getParam('item')
         this.state = {
-            data: [],
-            loading: true,
+            data: this.data,
+            loading: false,
             error: false,
             errorText: null
         }
     }
 
     componentDidMount() {
-        Manager.addListener('BATCH_S', this._batchSuccess)
-        Manager.addListener('BATCH_E', this._batchError)
-
-        Manager.batch(this.url, 'GET');
+        // Manager.addListener('MATES_S', this._matesSuccess)
+        // Manager.addListener('MATES_E', this._matesError)
+        //
+        // Manager.batchMates(this.url, 'GET');
     }
 
     componentWillUnmount() {
-        Manager.removeListener('BATCH_S', this._batchSuccess)
-        Manager.removeListener('BATCH_E', this._batchError)
+        // Manager.removeListener('MATES_S', this._matesSuccess)
+        // Manager.removeListener('MATES_E', this._matesError)
     }
 
-    _batchSuccess = (data) => {
-        console.log("batch data is : ", data)
-        this.data = data.data
+    _matesSuccess = (data) => {
+        console.log("batch data is : ", data.data.batchmates)
+        this.data = data.data.batchmates
         this.setState({
             data: this.data,
             loading: false,
@@ -44,7 +44,7 @@ export default class Batch extends React.Component {
         })
     }
 
-    _batchError = (error) => {
+    _matesError = (error) => {
         console.log("batch, error received :", error)
         this.setState({
             loading: false,
@@ -59,57 +59,30 @@ export default class Batch extends React.Component {
         }))
     }
 
-    _navigateBatch = (item, animatedValue) => {
-        // console.log("pressed item :", item)
-        // Animated.sequence([
-        //     Animated.timing(animatedValue, {
-        //         toValue: .95,
-        //         duration: 100,
-        //         easing: Easing.ease,
-        //     }),
-        //     Animated.timing(animatedValue, {
-        //         toValue: 1,
-        //         duration: 100,
-        //         easing: Easing.ease,
-        //     })
-        // ]).start(() => {
-        //     this.props.navigation.navigate("BatchItem", {item: item})
-        // })
-        this.props.navigation.navigate("BatchItem", {url: item.resource_url})
+    _navigateMate = (item) => {
+        console.log("pressed item :", item)
+        this.props.navigation.navigate("Profile", {url: item[0].resource_url})
     }
 
-    _renderBatchList = ({item}) => {
-        let state = null
-        const animatedValue = new Animated.Value(1)
-        const transformation = {
-            transform:[{scale: animatedValue}]
-        }
-        let stateColor = {}
-        if(item.is_active) {
-            state = 'Active'
-            stateColor = {
-                color: Colors.safe,
-                borderColor: Colors.safe,
-                textAlign: 'center'
-            }
-        }
-        else {
-            state = 'Suspended'
-            stateColor = {
-                color: Colors.alert,
-                borderColor: Colors.alert,
-                textAlign: 'center'
-            }
-        }
+    _renderMateList = ({item}) => {
+        console.log("item : ", item[0])
+        // const animatedValue = new Animated.Value(1)
+        // const transformation = {
+        //     transform:[{scale: animatedValue}]
+        // }
+
         return(
-            <Button style={styles.container} onPress={() => this._navigateBatch(item, animatedValue)}>
-                    <View style={styles.batch}>
-                        <View stle={{flex:1, paddingRight: 5}}>
-                            <Text style={styles.batchDate}>2014-2015</Text>
-                            <Text style={styles.batchCourse}>{item.name}</Text>
+            <Button onPress={() => this._navigateMate(item)} style={styles.container}>
+                    <View style={styles.mate}>
+                        <View>
+                            <Image style={styles.image}
+                                source={{uri: item[0].profile_pic}}
+                                resizeMode='cover'
+                                onError={(error) => console.log(error)}
+                            />
                         </View>
-                        <View style={[{borderRadius: 16, borderWidth: StyleSheet.hairlineWidth, borderColor: stateColor.borderColor, paddingVertical: 3, flex: 0.4}]}>
-                            <Text style={[styles.batchState, stateColor]}>{state}</Text>
+                        <View>
+                            <Text style={styles.name}>{item[0].f_name + ' ' + item[0].l_name}</Text>
                         </View>
                     </View>
             </Button>
@@ -165,7 +138,7 @@ export default class Batch extends React.Component {
         )
     }
 
-    _keyExtractor = (item, index) => `nsfd-${Math.random(1)}`;
+    _keyExtractor = (item, index) => `bhms-${Math.random(1)}`;
 
     _searchFilter = (text) => {
         if(!text){
@@ -174,10 +147,10 @@ export default class Batch extends React.Component {
         }
         else {
             console.log("search text is :", text)
-            // const {data} = this.state;
+            // const {data} = this.data;
             let regex = new RegExp('^'+text, "i");
             const searchedData = this.data.filter(item => {
-                const match = regex.test(item.name)
+                const match = regex.test(item[0].f_name) || regex.test(item[0].l_name)
                 return match
             })
             console.log("searched list : ", searchedData)
@@ -191,7 +164,7 @@ export default class Batch extends React.Component {
           <FlatList
             data={this.state.data}
             keyExtractor={this._keyExtractor}
-            renderItem={this._renderBatchList}
+            renderItem={this._renderMateList}
             ItemSeparatorComponent={this._itemSeparator}
             ListEmptyComponent={this._renderEmptyList}
             ListFooterComponent={this._listFooter}
@@ -206,8 +179,11 @@ const styles = StyleSheet.create({
     container: {
         flex: 1,
         backgroundColor: Colors.surface,
-        paddingHorizontal: 10,
-        paddingVertical: 5
+        // borderRadius: 10,
+        // shadowColor: Colors.secondary,
+        // shadowOffset: { width: 0, height: 2 },
+        // shadowOpacity: 0.5,
+        // shadowRadius: 2,
     },
     search: {
         height: 44,
@@ -227,21 +203,27 @@ const styles = StyleSheet.create({
         alignItems: 'center',
         justifyContent: 'center',
     },
+    paddingHorizontal10: {
+        paddingHorizontal: 10
+    },
+    paddingVertical20: {
+        paddingVertical: 20
+    },
     listStyle: {
         backgroundColor: Colors.background,
         // padding: 10,
     },
-    batch: {
+    mate: {
         flexDirection: 'row',
-        justifyContent: 'space-between',
+        //justifyContent: 'space-between',
         alignItems: 'center',
         padding:10,
     },
-    batchDate: {
-        fontSize: 14,
-        fontWeight: '500',
-        paddingBottom: 5,
-        opacity: 0.5
+    name: {
+        fontSize: 17,
+        fontWeight: '700',
+        paddingLeft: 10,
+        //opacity: 0.7
     },
     batchCourse: {
         fontSize: 14,
@@ -250,5 +232,10 @@ const styles = StyleSheet.create({
     batchState:{
         fontSize: 12,
         fontWeight:'600',
-    }
+    },
+    image: {
+        borderRadius: 20,
+        width: 40,
+        height: 40,
+    },
 });

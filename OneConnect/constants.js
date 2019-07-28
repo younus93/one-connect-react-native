@@ -15,4 +15,6 @@ export const Colors = {
     onError: '#FFFFFF',
     alternative: '#aab6fe',
     alert: '#F44336',
+    safe: '#05f100',
+    safeDark: 'green'
 }

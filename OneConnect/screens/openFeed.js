@@ -13,7 +13,7 @@ const textFontSize = 14
 
 export default class OpenFeed extends React.Component {
     static navigationOptions = {
-        title: 'Feed'
+        title: 'VIEWING A POST'
     }
 
     constructor(props){
@@ -50,10 +50,13 @@ export default class OpenFeed extends React.Component {
 
     _commentsLoadingSuccess = (data) => {
         this.comments = data.data
+        this.data.comments_count = this.comments.length
         console.log("feed comment data : ", this.comments)
         this.setState({
             commentLoading: false,
         })
+
+        Manager.emitEvent('UPDATENEWS')
     }
 
     _commentsLoadingError = (error) => {
@@ -143,11 +146,26 @@ export default class OpenFeed extends React.Component {
         )
     }
 
+    _institute = () => {
+        // console.log("reached institute callback with ", item)
+        this.props.navigation.navigate("Institution", {item: this.props.navigation.getParam('item').institution})
+    }
+
+    _like = (item) => {
+        console.log("item after like: ", item)
+        Manager.like(item.resource_url+'/likes', 'POST', {'body':item.likes})
+
+    }
+
     render() {
       return (
         <View style={styles.container}>
             <ScrollView alwaysBounceVertical={false} bounces={false}>
-                <Feed data={this.props.navigation.getParam('item', 'Data not available')} commentCallback={this._focusCommentBox}/>
+                <Feed data={this.data}
+                      commentCallback={this._focusCommentBox}
+                      instituteCallback={() => this._institute()}
+                      likeCallback = {() => this._like(this.data)}
+                />
                 <View style={{height:1, backgroundColor: Colors.background}}/>
                 {this._renderComments()}
             </ScrollView>
