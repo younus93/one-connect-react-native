@@ -1,5 +1,5 @@
 import React from "react";
-import { View, Text, StyleSheet, ScrollView, ActivityIndicator,SafeAreaView, TextInput} from "react-native";
+import { View, Text, StyleSheet, ScrollView, ActivityIndicator,SafeAreaView, TextInput, Image} from "react-native";
 import {Colors} from '../constants';
 import Manager from '../service/dataManager';
 import Button from '../custom/button';
@@ -26,7 +26,12 @@ export default class Notification extends React.Component {
         Manager.addListener('NOTIFICATION_S', this._notificationSuccess)
         Manager.addListener('NOTIFICATION_E', this._notificationError)
 
-        Manager.notification(`/api/notifications?date=2019-07-18`, 'GET')
+        Manager.notification(`/api/notifications`, 'GET')
+    }
+
+    componentWillUnmount() {
+        Manager.removeListener('NOTIFICATION_S', this._notificationSuccess)
+        Manager.removeListener('NOTIFICATION_E', this._notificationError)
     }
 
     _notificationSuccess = (data) => {
@@ -49,25 +54,40 @@ export default class Notification extends React.Component {
         this.props.navigation.dispatch(backAction);
     }
 
+    _navigateUser = (item) => {
+        this.props.navigation.navigate("Profile", {url: item.url})
+    }
     _renderBirthdays = (section) => {
         console.log("birthday section : ", section)
         if(section  && section.length > 0){
             console.log("data availabe")
             return(
-                section.map(item => {
-                    console.log("item is ", item.type)
-                    if(item.type == 'batches'){
-                        console.log("its a batch")
-                        return(
-                            <View key={`pelt-${Math.random(1)}`} style={[styles.item, {alignItems: 'flex-start'}]}>
-                                <View>
-                                    <Text style={[styles.itemText, {fontWeight: '600', fontSize: 16}]}>Birthday 1</Text>
-                                </View>
-                            </View>
-                        )
+                <View>
+                    <View style={{paddingLeft: 10, paddingTop: 18, paddingBottom: 8}}>
+                        <Text style={styles.bodyHeader}>Birthdays</Text>
+                    </View>
+                    <View style={styles.sectionBody}>
+                    {
+                        section.map(item => {
+                            return(
+                                <Button onPress={() => this._navigateUser(item)} key={`pelt-${Math.random(1)}`} style={[styles.item]}>
+                                    <View>
+                                        <Image style={styles.image}
+                                            source={{uri: item.searchable.basic.profile_pic}}
+                                            defaultSource={require('../resources/in_2.jpg')}
+                                            resizeMode='cover'
+                                            onError={(error) => console.log(error)}
+                                        />
+                                    </View>
+                                    <View>
+                                        <Text style={[styles.itemText, {fontWeight: '600', fontSize: 16}]}>{item.title}</Text>
+                                    </View>
+                                </Button>
+                            )
+                        })
                     }
-                    return null
-                })
+                    </View>
+                </View>
             )
         }
         return(
@@ -83,25 +103,33 @@ export default class Notification extends React.Component {
         )
     }
 
+    _navigatePost = (item) => {
+        this.props.navigation.navigate("OpenFeed", {item: item.searchable})
+    }
+
     _renderBatchMessages = (section) => {
         console.log("batch messages : ", section)
         if(section && section.length > 0){
             console.log("data availabe")
             return(
-                section.map(item => {
-                    console.log("item is ", item.type)
-                    if(item.type == 'posts'){
-                        console.log("its a post")
-                        return(
-                            <View key={`pelt-${Math.random(1)}`} style={[styles.item, {borderBottomWidth: StyleSheet.hairlineWidth, alignItems: 'flex-start'}]}>
-                                <View>
-                                    <Text style={[styles.itemText, {fontWeight: '600', fontSize: 16}]}>Message 1</Text>
-                                </View>
-                            </View>
-                        )
+                <View>
+                    <View style={{paddingLeft: 10, paddingTop: 18, paddingBottom: 8}}>
+                        <Text style={styles.bodyHeader}>Posts</Text>
+                    </View>
+                    <View style={styles.sectionBody}>
+                    {
+                        section.map(item => {
+                            return(
+                                <Button onPress={() => this._navigatePost(item)} key={`pelt-${Math.random(1)}`} style={[styles.item]}>
+                                    <View>
+                                        <Text style={[styles.itemText, {fontWeight: '600', fontSize: 16}]}>{item.title}</Text>
+                                    </View>
+                                </Button>
+                            )
+                        })
                     }
-                    return null
-                })
+                    </View>
+                </View>
             )
         }
         return(
@@ -131,26 +159,10 @@ export default class Notification extends React.Component {
                 {
                     this.data ?
                     <View>
-                    <View>
-                        <View style={{paddingLeft: 10, paddingTop: 18, paddingBottom: 8}}>
-                            <Text style={styles.bodyHeader}>Birthdays</Text>
-                        </View>
-                        <View style={styles.sectionBody}>
-                            {this._renderBirthdays(this.data.birthdays)}
-                        </View>
+                        {this._renderBirthdays(this.data.birthdays)}
+                        {this._renderBatchMessages(this.data.batch_messages)}
                     </View>
-
-                    <View>
-                        <View style={{paddingLeft: 10, paddingTop: 18, paddingBottom: 8}}>
-                            <Text style={styles.bodyHeader}>Messages</Text>
-                        </View>
-                        <View style={styles.sectionBody}>
-                            {this._renderBatchMessages(this.data.batch_messages)}
-                        </View>
-                    </View>
-                    </View>
-                    :null
-
+                    : null
                 }
                 </ScrollView>
             </View>
@@ -207,5 +219,10 @@ const styles = StyleSheet.create({
         marginLeft: 5,
         marginRight: 10,
         borderRadius: 20
+    },
+    image: {
+        borderRadius: 20,
+        width: 40,
+        height: 40,
     },
 })

@@ -1,5 +1,5 @@
 import React from "react";
-import { View, Text, ScrollView, Image, StyleSheet, FlatList, SectionList, SafeAreaView, TouchableWithoutFeedback, TextInput, Animated, Easing, ActivityIndicator, KeyboardAvoidingView} from "react-native";
+import { View, Text, ScrollView, Image, StyleSheet, FlatList, SectionList, SafeAreaView, TouchableWithoutFeedback, TextInput, Animated, Easing, ActivityIndicator, KeyboardAvoidingView,ImageBackground} from "react-native";
 
 import {Colors} from '../constants';
 import Manager from '../service/dataManager';
@@ -150,22 +150,22 @@ class ImageView extends React.Component {
 
     render() {
       return (
-          <View style={styles.banner}>
+          <ImageBackground style={styles.banner} source={{uri: this.data.basic.banner_pic}} blurRadius={3} imageStyle={{resizeMode: 'cover'}}>
               <SafeAreaView forceInset={{ top: 'always'}}>
                   <View style={{justifyContent: 'center', alignItems: 'center'}}>
                       <Image style={styles.image}
-                          source={require('../resources/dummy_profile.png')}
+                          source={{uri: this.data.basic.profile_pic}}
                           resizeMode='cover'
                           defaultSource={require('../resources/dummy_profile.png')}
-                          onError={(error) => console.log(eror)}
+                          onError={(error) => console.log(error)}
                       />
                   </View>
                   <View style={styles.bio}>
                       <Text style={{color: Colors.onPrimary, fontWeight: '600', fontSize: 18}}>{this.data.basic.salutation + ' ' + this.data.basic.f_name + ' ' + this.data.basic.l_name}</Text>
-                      <Text style={{paddingTop: 5,color: Colors.onPrimary, fontWeight: '600', fontSize: 14}}>{this.data.current_company.designation + ' at ' + this.data.current_company.name}</Text>
+                      <Text style={{paddingTop: 5,color: Colors.onPrimary, fontWeight: '600', fontSize: 14}}>{this.data.current_company ? this.data.current_company.designation + ' at ' + this.data.current_company.name: null}</Text>
                   </View>
               </SafeAreaView>
-          </View>
+          </ImageBackground>
       );
     }
 }
@@ -175,8 +175,7 @@ class ProfileList extends React.Component {
         super(props)
         let data = props.data
 
-        this._borderBottomWidth = [new Animated.Value(0), new Animated.Value(0), new Animated.Value(0), new Animated.Value(0)]
-        this.animatedValue = [new Animated.Value(0), new Animated.Value(0), new Animated.Value(0)]
+        this._borderBottomWidth = [new Animated.Value(0), new Animated.Value(0), new Animated.Value(0), new Animated.Value(0), new Animated.Value(0), new Animated.Value(0)]
         this.editable = {}
         this.state = {
             user: data
@@ -185,10 +184,6 @@ class ProfileList extends React.Component {
 
     _onPressItem = (index, section) => {
         console.log("Pressed ", index, "th row of ", section.title, " section")
-        if (section.title == "Account" && index == 0) {
-            console.log("Pressed Privacy settings")
-            this.props.navigate("Settings")
-        }
     }
 
     _onFocus = (e,index, section) => {
@@ -231,6 +226,12 @@ class ProfileList extends React.Component {
             case 'email':
                 this.editable.email = text
                 break;
+            case 'dob':
+                this.editable.dob = text
+                break;
+            case 'gender':
+                this.editable.gender = text
+                break;
         }
         console.log("editable is : ", this.editable)
         this.props.callback(this.editable)
@@ -267,6 +268,20 @@ class ProfileList extends React.Component {
                         <AnimatedTextInput style={[styles.itemText, {borderBottomWidth: this._borderBottomWidth[3]}]} onChangeText={(text) => this._editField('email', text)} defaultValue={section.email} value={this.editable.email} onFocus={(e) => this._onFocus(e, 3, section)} onBlur={(e) => this._onBlur(e, 3)}/>
                     </View>
                 </TouchableWithoutFeedback>
+
+                <TouchableWithoutFeedback>
+                    <View style={styles.item}>
+                        <Icon name="calendar-day" size={18} color={Colors.primaryDark} />
+                        <AnimatedTextInput style={[styles.itemText, {borderBottomWidth: this._borderBottomWidth[4]}]} onChangeText={(text) => this._editField('dob', text)} defaultValue={section.dob.split('T')[0]} value={this.editable.dob} onFocus={(e) => this._onFocus(e, 4, section)} onBlur={(e) => this._onBlur(e, 4)}/>
+                    </View>
+                </TouchableWithoutFeedback>
+
+                <TouchableWithoutFeedback>
+                    <View style={styles.item}>
+                        <Icon name="venus-mars" size={18} color={Colors.primaryDark} />
+                        <AnimatedTextInput style={[styles.itemText, {borderBottomWidth: this._borderBottomWidth[5]}]} onChangeText={(text) => this._editField('gender', text)} defaultValue={section.gender} value={this.editable.gender} onFocus={(e) => this._onFocus(e, 5, section)} onBlur={(e) => this._onBlur(e, 5)}/>
+                    </View>
+                </TouchableWithoutFeedback>
             </View>
         )
     }
@@ -288,28 +303,18 @@ class ProfileList extends React.Component {
     }
 }
 
-class Tags extends React.Component {
-    constructor(props) {
-        super(props)
-    }
-
-    render() {
-        return(
-            <Text>Hell</Text>
-        )
-    }
-}
-
 const styles = StyleSheet.create({
     container: {
         flex: 1,
         backgroundColor: Colors.background,
     },
     banner: {
+        // width: '100%',
+        // aspectRatio: 2,
+        justifyContent: "center",
         alignItems: 'center',
-        justifyContent: 'center',
-        backgroundColor: Colors.primary,
-        // padding: 30,
+        paddingVertical: 20,
+        // paddingBottom: 5,
     },
     image: {
         borderRadius: 92,

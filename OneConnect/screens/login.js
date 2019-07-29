@@ -53,7 +53,7 @@ export default class LoginScreen extends Component<Props> {
 
     _loginSuccess = (data) => {
         console.log("login successfull : ", data)
-        Manager.setToken(data.data.token)
+        Manager.setToken(data.data.token, data.data.user.basic.profile_pic)
         Animated.timing(this.opacity, {
             toValue: 0,
             duration: 10
@@ -181,7 +181,7 @@ const styles = StyleSheet.create({
         backgroundColor: Colors.surface,
     },
     textInput:{
-        backgroundColor: Colors.background,
+        // backgroundColor: Colors.background,
         padding: 10,
         margin: 10,
         borderWidth: StyleSheet.hairlineWidth,

@@ -1,7 +1,9 @@
 import React from "react";
-import { View, Text, Button, StyleSheet, Image, TouchableWithoutFeedback, Animated, Easing} from "react-native";
+import { View, Text, StyleSheet, Image, TouchableWithoutFeedback, Animated, Easing} from "react-native";
 import {Colors} from '../constants';
+import Button from '../custom/button';
 import Icon from 'react-native-vector-icons/FontAwesome5';
+
 import ProfileImage from './profileImage'
 
 export default class Comments extends React.Component {
@@ -9,6 +11,12 @@ export default class Comments extends React.Component {
         super(props)
         this.state = {
             data: props.data
+        }
+    }
+
+    _navigateUser = () => {
+        if(this.props.callback){
+            this.props.callback()
         }
     }
 
@@ -26,9 +34,9 @@ export default class Comments extends React.Component {
                     </View>
                 </View>
                 <View style={[styles.body]}>
-                    <View style={[styles.paddingHorizontal10]}>
+                    <Button onPress={this._navigateUser} style={[styles.paddingHorizontal10]}>
                         <Text style={styles.headerText}>{this.state.data.poster.f_name + ' ' + this.state.data.poster.l_name}</Text>
-                    </View>
+                    </Button>
                     <View style={[styles.paddingHorizontal10, {paddingTop: 20, paddingBottom: 5}]}>
                         <Text style={styles.bodyText}>{this.state.data.body}</Text>
                     </View>

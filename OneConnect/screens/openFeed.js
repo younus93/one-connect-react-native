@@ -124,6 +124,10 @@ export default class OpenFeed extends React.Component {
         }
     }
 
+    _profile = (item) => {
+        this.props.navigation.navigate("Profile", {url: item.poster.resource_url})
+    }
+
     _renderComments = () => {
         if(this.state.commentLoading){
             return(
@@ -140,7 +144,7 @@ export default class OpenFeed extends React.Component {
         return(
             this.comments.map(item => {
                 return(
-                    <Comments key={`cs-${Math.random(1)}`} data={item} />
+                    <Comments key={`cs-${Math.random(1)}`} data={item} callback={() => this._profile(item)}/>
                 )
             })
         )

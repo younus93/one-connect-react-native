@@ -1,5 +1,5 @@
 import React from "react";
-import { View, Text, ScrollView, Image, StyleSheet, FlatList, SectionList, SafeAreaView, TouchableWithoutFeedback, TextInput, Animated, Easing, ActivityIndicator} from "react-native";
+import { View, Text, ScrollView, Image, StyleSheet, FlatList, SectionList, SafeAreaView, TouchableWithoutFeedback, TextInput, Animated, Easing, ActivityIndicator,ImageBackground} from "react-native";
 import { DrawerActions } from 'react-navigation-drawer';
 import { NavigationActions } from 'react-navigation';
 import {Colors} from '../constants';
@@ -133,22 +133,23 @@ class ImageView extends React.Component {
 
     render() {
       return (
-        <View style={styles.banner}>
-            <SafeAreaView forceInset={{ top: 'always'}}>
-                <View style={{justifyContent: 'center', alignItems: 'center'}}>
-                    <Image style={styles.image}
-                        source={{uri: this.data.basic.profile_pic}}
-                        resizeMode='cover'
-                        defaultSource={require('../resources/dummy_profile.png')}
-                        onError={(error) => console.log(eror)}
-                    />
-                </View>
-                <View style={styles.bio}>
-                    <Text style={{color: Colors.onPrimary, fontWeight: '600', fontSize: 18}}>{this.data.basic.salutation + ' ' + this.data.basic.f_name + ' ' + this.data.basic.l_name}</Text>
-                    <Text style={{paddingTop: 5,color: Colors.onPrimary, fontWeight: '600', fontSize: 14}}>{this.data.current_company ? this.data.current_company.designation + ' at ' + this.data.current_company.name: null}</Text>
-                </View>
-            </SafeAreaView>
-        </View>
+          <ImageBackground style={styles.banner} source={{uri: this.data.basic.banner_pic}} blurRadius={3} imageStyle={{resizeMode: 'cover'}}>
+              <SafeAreaView forceInset={{ top: 'always'}}>
+                  <View style={{justifyContent: 'center', alignItems: 'center'}}>
+                      <Image style={styles.image}
+                          source={{uri: this.data.basic.profile_pic}}
+                          resizeMode='cover'
+                          defaultSource={require('../resources/dummy_profile.png')}
+                          onError={(error) => console.log(error)}
+                      />
+                  </View>
+                  <View style={styles.bio}>
+                      <Text style={{color: Colors.onPrimary, fontWeight: '600', fontSize: 18}}>{this.data.basic.salutation + ' ' + this.data.basic.f_name + ' ' + this.data.basic.l_name}</Text>
+                      <Text style={{paddingTop: 5,color: Colors.onPrimary, fontWeight: '600', fontSize: 14}}>{this.data.current_company ? this.data.current_company.designation + ' at ' + this.data.current_company.name: null}</Text>
+                  </View>
+              </SafeAreaView>
+          </ImageBackground>
+
       );
     }
 }
@@ -296,17 +297,18 @@ const styles = StyleSheet.create({
         backgroundColor: Colors.background,
     },
     banner: {
+        // width: '100%',
+        // aspectRatio: 2,
+        justifyContent: "center",
         alignItems: 'center',
-        // justifyContent: 'center',
-        backgroundColor: Colors.primary,
-        paddingTop: 10,
-        paddingBottom: 5,
+        paddingVertical: 20,
+        // paddingBottom: 5,
     },
     image: {
         borderRadius: 92,
         width: 180,
         height: 180,
-        backfaceVisibility: 'visible',
+        // backfaceVisibility: 'visible',
     },
     bio: {
         justifyContent: 'center',

@@ -1,5 +1,7 @@
 import { createStackNavigator, createAppContainer } from "react-navigation";
 import Notification from '../screens/notification';
+import Profile from '../screens/profile';
+import OpenFeed from '../screens/openFeed';
 import {Colors} from '../constants'
 
 const navigatorConfig = {
@@ -21,6 +23,12 @@ const navigatorConfig = {
 const NotificationStack = createStackNavigator({
     Notification: {
         screen: Notification,
+    },
+    OpenFeed: {
+        screen: OpenFeed
+    },
+    Profile: {
+        screen: Profile,
     },
 }, navigatorConfig);
 

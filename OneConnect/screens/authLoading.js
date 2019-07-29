@@ -33,10 +33,10 @@ export default class AuthLoading extends Component {
     }
 
     _login = () => {
-        AsyncStorage.getItem('@appKey')
-        .then(token => {
-            if(token){
-                Manager.setToken(token)
+        AsyncStorage.multiGet(['@appKey','@profilePic'])
+        .then(res => {
+            if(res[0][1]){
+                Manager.setToken(res[0][1], res[1][1])
                 // this.setState({
                 //     animatedState: false
                 // })
@@ -58,7 +58,8 @@ export default class AuthLoading extends Component {
     }
 
     _logout = () => {
-        AsyncStorage.removeItem('@appKey')
+        let keys = ['@appKey', '@profilePic'];
+        AsyncStorage.multiRemove(keys)
         .then(response => {
             this.setState({
                 animatedState: false

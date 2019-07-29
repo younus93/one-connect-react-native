@@ -18,8 +18,27 @@ export default class Search extends React.Component {
         super(props)
         this.type = ['users', "batches", "posts"]
         this.data = null
+
+        this.showUser= true,
+        this.showPost= true,
+        this.showInstitution= true,
+        this.showCourses= true,
+        this.showBatches= true
+
         this.state = {
-            loading: false
+            loading: false,
+            updateToggle: false,
+            showAll: true,
+            showUser: true,
+            userBackground: Colors.alternative,
+            institutionBackground: Colors.alternative,
+            coursesBackground: Colors.alternative,
+            postsBackground: Colors.alternative,
+            batchesBackground: Colors.alternative,
+            showPost: true,
+            showInstitution: true,
+            showCourses: true,
+            showBatches: true
         }
     }
 
@@ -59,7 +78,7 @@ export default class Search extends React.Component {
 
     _searchSuccess = (data) => {
         console.log('search data : ', data)
-        this.data = data
+        this.data = data.data
         this.setState({
             loading: false
         })
@@ -179,7 +198,7 @@ export default class Search extends React.Component {
                                     <Button onPress={() => this._navigateUser(item)} key={`pelt-${Math.random(1)}`} style={[styles.item]}>
                                         <View>
                                             <Image style={styles.image}
-                                                source={{uri: item.searchable.profile_pic}}
+                                                source={{uri: item.searchable.basic.profile_pic}}
                                                 defaultSource={require('../resources/in_2.jpg')}
                                                 resizeMode='cover'
                                                 onError={(error) => console.log(error)}
@@ -302,11 +321,78 @@ export default class Search extends React.Component {
         )
     }
 
+    _updateFilter = () => {
+        console.log("new filter state: ")
+        this.setState(previousState => ({
+            updateToggle: !previousState.updateToggle
+        })
+    )
+    }
+
+    _renderFilters = () => {
+        console.log("render filter : ", this.state)
+
+        return(
+            <View>
+                <ScrollView horizontal={true}>
+                    <Button onPress={() => {this.setState(previousState => ({
+                        showUser: !previousState.showUser,
+                        userBackground: !previousState.showUser? Colors.alternative : Colors.background
+                    }))}}>
+                        <View style={[{borderRadius:20, margin: 10, padding:8, borderWidth: 1, backgroundColor: this.state.userBackground}]}>
+                            <Text>Users</Text>
+                        </View>
+                    </Button>
+                    <Button onPress={() => {this.setState(previousState => ({
+                        showInstitution: !previousState.showInstitution,
+                        institutionBackground: !previousState.showInstitution? Colors.alternative : Colors.background
+                    }))}}>
+                        <View style={[{borderRadius:20, margin: 10, padding:8, borderWidth: 1, backgroundColor: this.state.institutionBackground}]}>
+                            <Text>Institutions</Text>
+                        </View>
+                    </Button>
+                    <Button onPress={() => {this.setState(previousState => ({
+                        showBatches: !previousState.showBatches,
+                        batchesBackground: !previousState.showBatches? Colors.alternative : Colors.background
+                    }))}}>
+                        <View style={[{borderRadius:20, margin: 10, padding:8, borderWidth: 1, backgroundColor: this.state.batchesBackground}]}>
+                            <Text>Batches</Text>
+                        </View>
+                    </Button>
+                    <Button onPress={() => {this.setState(previousState => ({
+                        showCourses: !previousState.showCourses,
+                        coursesBackground: !previousState.showCourses? Colors.alternative : Colors.background
+                    }))}}>
+                        <View style={[{borderRadius:20, margin: 10, padding:8, borderWidth: 1, backgroundColor: this.state.coursesBackground}]}>
+                            <Text>Courses</Text>
+                        </View>
+                    </Button>
+                    <Button onPress={() => {this.setState(previousState => ({
+                        showPost: !previousState.showPost,
+                        postsBackground: !previousState.showPost ? Colors.alternative : Colors.background
+                    }))}}>
+                        <View style={[{borderRadius:20, margin: 10, padding:8, borderWidth: 1, backgroundColor: this.state.postsBackground}]}>
+                            <Text>Posts</Text>
+                        </View>
+                    </Button>
+                    </ScrollView>
+            </View>
+        )
+    }
+
 
     render() {
+        console.log("search render")
         return(
             <View style={styles.container}>
                 {this._renderSearchBar()}
+                {
+                    this.data ?
+                    this.data.length > 0 ?
+                    this._renderFilters()
+                    : null
+                    : null
+                }
                 {
                     this.state.loading ?
                     <View style={{justifyContent: "center", alignItems: "center", padding: 10}}>
@@ -319,11 +405,11 @@ export default class Search extends React.Component {
                     this.data ?
                     this.data.length > 0 ?
                     <View>
-                        {this._renderUsers()}
-                        {this._renderInstitutions()}
-                        {this._renderBatches()}
-                        {this._renderCourses()}
-                        {this._renderPosts()}
+                        {this.state.showUser ? this._renderUsers() : null}
+                        {this.state.showInstitution ?  this._renderInstitutions() : null}
+                        {this.state.showBatches ? this._renderBatches(): null}
+                        {this.state.showCourses ? this._renderCourses(): null}
+                        {this.state.showPost ? this._renderPosts(): null}
                     </View>
                     :
                     <View style={{

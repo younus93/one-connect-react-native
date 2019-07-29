@@ -1,6 +1,7 @@
 import React from "react";
 import { View, Image, StyleSheet, SafeAreaView} from "react-native";
 import {Colors} from '../constants';
+import Manager from '../service/dataManager';
 
 export default class ProfileImage extends React.Component {
     constructor(props){
@@ -19,7 +20,7 @@ export default class ProfileImage extends React.Component {
       return (
         <View style={styles.container}>
             <Image style={this.state.imageStyle}
-                source={require('../resources/dummy_profile_2.jpg')}
+                source={{uri: Manager.profilePicUrl}}
                 resizeMode='cover'
                 defaultSource={require('../resources/dummy_profile.png')}
                 onError={(error) => console.log(eror)}

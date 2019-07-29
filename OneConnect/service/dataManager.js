@@ -8,6 +8,7 @@ class dataManager {
     constructor() {
         this.eventEmitter = new EventEmitter()
         this.token = null;
+        this.profile_pic_url = null;
     }
 
     addListener = (event, target) => {
@@ -22,19 +23,20 @@ class dataManager {
         this.eventEmitter.emit(eventName, data)
     }
 
-    setToken = (token) => {
+    setToken = (token, profilePic) => {
         this.token = token;
+        this.profilePicUrl = profilePic
         AsyncStorage.getItem('@appKey')
         .then(res => {
             if(!res){
-                AsyncStorage.setItem('@appKey', token)
+                AsyncStorage.multiSet([['@appKey', token], ['@profilePic', profilePic]])
                 .then(response => console.log("token saved"))
                 .catch(error => console.log("token not saved"))
             }
         })
         .catch(error => {
             console.log("storage error : ", error)
-            AsyncStorage.setItem('@appKey', token)
+            AsyncStorage.setItem([['@appKey', token], ['@profilePic', profilePic]])
             .then(response => console.log(" token saved"))
             .catch(error => console.log("token not saved"))
         })
