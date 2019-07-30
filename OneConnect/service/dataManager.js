@@ -45,7 +45,7 @@ class dataManager {
     login = (uri, method, data=null) => {
         Call(uri, method, data)
         .then(response => {
-            if(response.data.message == "Invalid credentials") {
+            if(!response.data.login) {
                 throw(Error(response.data.message))
             }
             this.eventEmitter.emit('LOGIN_S', response)
@@ -187,6 +187,26 @@ class dataManager {
         })
         .catch(error => {
             this.eventEmitter.emit('NOTIFICATION_E', error)
+        })
+    }
+
+    friends = (uri, method, data=null) => {
+        Call(uri, method, data, this.token)
+        .then(response => {
+            this.eventEmitter.emit('FRIENDS_S', response)
+        })
+        .catch(error => {
+            this.eventEmitter.emit('FRIENDS_E', error)
+        })
+    }
+
+    submitTag = (uri, method, data=null) => {
+        Call(uri, method, data, this.token)
+        .then(response => {
+            this.eventEmitter.emit('S_TAG_S', response)
+        })
+        .catch(error => {
+            this.eventEmitter.emit('S_TAG_E', error)
         })
     }
 }

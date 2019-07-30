@@ -26,6 +26,7 @@ export default class NewsFeed extends React.Component {
         this.state = {
             data: [],
             loading: true,
+            refreshing: false,
             error: false,
             totalPage: 0,
             currentPage: 0,
@@ -76,6 +77,7 @@ export default class NewsFeed extends React.Component {
         this.data = [...this.data, ...data.data]
         this.setState(state => ({
             loading: false,
+            refreshing: false,
             data: this.data,
             totalPage: data.meta.total,
             currentPage: data.meta.current_page
@@ -86,6 +88,7 @@ export default class NewsFeed extends React.Component {
         console.log("newsFeed, error received :", error)
         this.setState({
             loading: false,
+            refreshing: false,
             error: true,
             totalPage: 0,
             currentPage: 0
@@ -168,7 +171,7 @@ export default class NewsFeed extends React.Component {
         }
         else {
             return(
-                <View style={{backgroundColor:Colors.background, padding: 10, justifyContent:"center", alignItems: "center"}}>
+                <View style={{backgroundColor:Colors.background, padding: 10,paddingTop: 20, justifyContent:"center", alignItems: "center"}}>
                     <ActivityIndicator animating={this.state.loading} size="large" color={Colors.secondaryLight} />
                 </View>
             )
@@ -186,6 +189,19 @@ export default class NewsFeed extends React.Component {
                 loading: true
             }))
         }
+    }
+
+    _refresh = () => {
+        this.setState({
+            data: [],
+            loading: true,
+            refreshing: true,
+            error: false,
+            totalPage: 0,
+            currentPage: 0,
+            updateToggle: false
+        })
+        Manager.newsFeeds('/api/newsfeeds?page=1', 'GET')
     }
 
     _keyExtractor = (item, index) => `nsfd-${Math.random(1)}`;
@@ -221,7 +237,9 @@ export default class NewsFeed extends React.Component {
                 ListEmptyComponent={this._renderEmptyList}
                 ListFooterComponent={this._listFooter}
                 onEndReached={this._loadMore}
-                onEndReachedThreshold={0.5}
+                onEndReachedThreshold={0.7}
+                onRefresh={this._refresh}
+                refreshing={this.state.refreshing}
                 style={{backgroundColor: Colors.background}}
                 />
             </View>

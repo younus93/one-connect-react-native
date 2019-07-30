@@ -1,12 +1,13 @@
 import React from 'react';
 import { createBottomTabNavigator } from 'react-navigation';
 import Ionicons from 'react-native-vector-icons/Ionicons';
-import Icon from 'react-native-vector-icons/FontAwesome';
+import Icon from 'react-native-vector-icons/FontAwesome5';
 
 import FeedStack from './feedStackNavigator';
 import ProfileStack from './profileStackNavigator';
 import SearchStack from './searchStack';
 import NotificationStack from './notificationStack';
+import FriendsStack from './friendsStack';
 
 import {Colors} from '../constants'
 
@@ -35,9 +36,12 @@ const navigatorConfig = {
             else if (routeName === 'NotificationStack') {
                 iconName = 'bell'
             }
+            else if (routeName === 'FriendsStack') {
+                iconName = 'user-friends'
+            }
 
             // You can return any component that you like here!
-            return <IconComponent name={iconName} size={20} color={tintColor} />;
+            return <IconComponent name={iconName} size={20} color={tintColor} solid={true}/>;
         }
     }),
     tabBarOptions: {
@@ -77,6 +81,12 @@ const Tab = createBottomTabNavigator({
         screen: NotificationStack,
         navigationOptions: {
             title: 'Notification'
+        }
+    },
+    FriendsStack: {
+        screen: FriendsStack,
+        navigationOptions: {
+            title: 'Friends'
         }
     }
 }, navigatorConfig);

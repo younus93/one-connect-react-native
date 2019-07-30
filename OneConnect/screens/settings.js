@@ -1,10 +1,11 @@
 import React from "react";
-import { View, Text, ScrollView, Image, StyleSheet, FlatList, SectionList, SafeAreaView, TouchableWithoutFeedback, TextInput, Animated, Easing, ActivityIndicator, KeyboardAvoidingView,ImageBackground} from "react-native";
+import { View, Text, ScrollView, Image, StyleSheet, FlatList, SectionList, SafeAreaView, TouchableWithoutFeedback, TextInput, Animated, Easing, ActivityIndicator, KeyboardAvoidingView,ImageBackground, Modal} from "react-native";
 
 import {Colors} from '../constants';
 import Manager from '../service/dataManager';
 import Button from '../custom/button';
 import Icon from 'react-native-vector-icons/FontAwesome5';
+import DateTimePicker from "react-native-modal-datetime-picker";
 import ErrorHandler from '../custom/errorHandler';
 
 
@@ -178,7 +179,11 @@ class ProfileList extends React.Component {
         this._borderBottomWidth = [new Animated.Value(0), new Animated.Value(0), new Animated.Value(0), new Animated.Value(0), new Animated.Value(0), new Animated.Value(0)]
         this.editable = {}
         this.state = {
-            user: data
+            user: data,
+            isDateTimePickerVisible: false,
+            dob: data.basic.dob.split('T')[0],
+            gender: data.basic.gender,
+            isGenderPickerVisible: false
         }
     }
 
@@ -237,6 +242,14 @@ class ProfileList extends React.Component {
         this.props.callback(this.editable)
     }
 
+    _showDateTimePicker = () => {
+        this.setState({ isDateTimePickerVisible: true });
+    }
+
+    _showGenderPicker = () => {
+        this.setState({ isGenderPickerVisible: true });
+    }
+
     _renderBasicSection = (section) => {
         const AnimatedTextInput = Animated.createAnimatedComponent(TextInput)
         return (
@@ -269,22 +282,52 @@ class ProfileList extends React.Component {
                     </View>
                 </TouchableWithoutFeedback>
 
-                <TouchableWithoutFeedback>
+                <TouchableWithoutFeedback onPress={this._showDateTimePicker} >
                     <View style={styles.item}>
                         <Icon name="calendar-day" size={18} color={Colors.primaryDark} />
-                        <AnimatedTextInput style={[styles.itemText, {borderBottomWidth: this._borderBottomWidth[4]}]} onChangeText={(text) => this._editField('dob', text)} defaultValue={section.dob.split('T')[0]} value={this.editable.dob} onFocus={(e) => this._onFocus(e, 4, section)} onBlur={(e) => this._onBlur(e, 4)}/>
+                        <Text style={styles.itemText}>{this.state.dob}</Text>
                     </View>
                 </TouchableWithoutFeedback>
 
-                <TouchableWithoutFeedback>
+                <TouchableWithoutFeedback onPress={this._showGenderPicker} >
                     <View style={styles.item}>
                         <Icon name="venus-mars" size={18} color={Colors.primaryDark} />
-                        <AnimatedTextInput style={[styles.itemText, {borderBottomWidth: this._borderBottomWidth[5]}]} onChangeText={(text) => this._editField('gender', text)} defaultValue={section.gender} value={this.editable.gender} onFocus={(e) => this._onFocus(e, 5, section)} onBlur={(e) => this._onBlur(e, 5)}/>
+                        <Text style={styles.itemText}>{this.state.gender}</Text>
                     </View>
                 </TouchableWithoutFeedback>
             </View>
         )
     }
+
+    _hideDateTimePicker = () => {
+        this.setState({ isDateTimePickerVisible: false });
+    };
+
+    _handleDatePicked = date => {
+        console.log("A date has been picked: ", date);
+        dob = date.getFullYear() + '-' + date.getMonth() + '-' + date.getDate()
+        this.setState({
+            isDateTimePickerVisible: false,
+            dob: dob
+        })
+        this._editField('dob', dob)
+    };
+
+    _handleGenderPicked = gender => {
+        console.log("A date has been picked: ", gender);
+        this.setState({
+            isGenderPickerVisible: false,
+            gender: gender
+        })
+        this._editField('gender', gender)
+
+    };
+
+    _toggleModal = () => {
+        this.setState({
+            isGenderPickerVisible: false
+        });
+    };
 
     render() {
         let {user} = this.state
@@ -297,6 +340,30 @@ class ProfileList extends React.Component {
                     <View style={styles.sectionBody}>
                         {this._renderBasicSection(user.basic)}
                     </View>
+                </View>
+                <DateTimePicker
+                    isVisible={this.state.isDateTimePickerVisible}
+                    onConfirm={this._handleDatePicked}
+                    onCancel={this._hideDateTimePicker}
+                />
+                <View>
+                    <Modal animationType="fade" transparent={true} visible={this.state.isGenderPickerVisible} onRequestClose={this._toggleModal}>
+                        <TouchableWithoutFeedback onPress={this._toggleModal} >
+                            <View style={{flex: 1, backgroundColor: '#00000070', justifyContent: 'center', alignItems:'center', color: '#FFFFFF', paddingHorizontal: 20}}>
+                                <View style={{backgroundColor: Colors.surface, width: '100%', paddingHorizontal: 20, borderRadius: 20}}>
+                                    <Button style={{padding: 20}} title="Male" color={Colors.onSurface} rippleColor={Colors.primaryLight} onPress={() => this._handleGenderPicked("Male")}>
+                                        <Text style={{fontSize: 18, fontWeight: '600'}}>Male</Text>
+                                    </Button>
+                                    <Button style={{padding: 20}} title="Female" color={Colors.onSurface} rippleColor={Colors.primaryLight} onPress={() => this._handleGenderPicked("Female")}>
+                                        <Text style={{fontSize: 18, fontWeight: '600'}}>Female</Text>
+                                    </Button>
+                                    <Button style={{padding: 20}} title="Others" color={Colors.onSurface} rippleColor={Colors.primaryLight} onPress={() => this._handleGenderPicked("Others")}>
+                                        <Text style={{fontSize: 18, fontWeight: '600'}}>Others</Text>
+                                    </Button>
+                                </View>
+                            </View>
+                        </TouchableWithoutFeedback>
+                    </Modal>
                 </View>
             </View>
         )

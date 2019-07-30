@@ -181,7 +181,7 @@ const styles = StyleSheet.create({
         backgroundColor: Colors.surface,
     },
     textInput:{
-        // backgroundColor: Colors.background,
+        backgroundColor: Colors.background,
         padding: 10,
         margin: 10,
         borderWidth: StyleSheet.hairlineWidth,

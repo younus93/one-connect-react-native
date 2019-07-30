@@ -1,5 +1,5 @@
 import React from 'react';
-import { Text, View, StyleSheet, Image, ImageBackground} from 'react-native';
+import { Text, View, StyleSheet, Image, ImageBackground, Switch} from 'react-native';
 import AsyncStorage from '@react-native-community/async-storage';
 import {SafeAreaView, NavigationActions} from 'react-navigation';
 import Icon from 'react-native-vector-icons/FontAwesome5';
@@ -7,6 +7,13 @@ import {Colors} from '../constants';
 import Button from '../custom/button';
 
 export default class CustomDrawerContentComponent extends React.Component {
+    constructor(props) {
+        super(props)
+
+        this.state = {
+            switchValue: false
+        }
+    }
     navigateToScreen = (route, props=null) => () => {
         const navigateAction = NavigationActions.navigate({
             routeName: route,
@@ -28,6 +35,12 @@ export default class CustomDrawerContentComponent extends React.Component {
         })
     }
 
+    _toggleSwitch = () => {
+        this.setState(previousState => ({
+            switchValue : !previousState.switchValue
+        }))
+    }
+
     render() {
         const iconSize = 18
         return(
@@ -37,10 +50,10 @@ export default class CustomDrawerContentComponent extends React.Component {
                     </ImageBackground>
                 </View>
                 <View style={styles.body}>
-                    <Button onPress={this.navigateToScreen('Profile')} rippleColor={Colors.primaryLight}>
+                    <Button onPress={this.navigateToScreen('Profile', {accessLevel: 1})} rippleColor={Colors.primaryLight}>
                         <View style={styles.item}>
                             <View style={styles.icon}>
-                                <Icon name="user" size={iconSize} color={Colors.primaryDark} />
+                                <Icon name="user" size={iconSize} color={Colors.primaryDark} solid={true}/>
                             </View>
                             <View style={styles.textBody}>
                                 <Text style={styles.bodyTextstyle}>Profile</Text>
@@ -69,6 +82,18 @@ export default class CustomDrawerContentComponent extends React.Component {
                             </View>
                         </View>
                     </Button>
+
+                    <View style={styles.item}>
+                        <View>
+                            <Text style={styles.bodyTextstyle}>En</Text>
+                        </View>
+                        <View>
+                            <Switch value={this.state.switchValue} onValueChange={this._toggleSwitch} trackColor={{false: 'orange'}}/>
+                        </View>
+                        <View>
+                            <Text style={styles.bodyTextstyle}>Th</Text>
+                        </View>
+                    </View>
                 </View>
 
                 <Button style={styles.footer} onPress={this.navigateToScreen('AuthLoading', {action: 'logout'})} rippleColor={Colors.primaryLight}>
@@ -83,29 +108,6 @@ export default class CustomDrawerContentComponent extends React.Component {
         )
     }
 }
-
-
-// <Button onPress={this.navigateToScreen('Settings')} rippleColor={Colors.primaryLight}>
-//     <View style={styles.item}>
-//         <View style={styles.icon}>
-//             <Icon name="cog" size={iconSize} color={Colors.primaryDark} />
-//         </View>
-//         <View style={styles.textBody}>
-//             <Text style={styles.bodyTextstyle}>Settings</Text>
-//         </View>
-//     </View>
-// </Button>
-//
-// <Button onPress={this.navigateToScreen('Courses')} rippleColor={Colors.primaryLight}>
-//     <View style={styles.item}>
-//         <View style={styles.icon}>
-//             <Icon name="book-open" size={iconSize} color={Colors.primaryDark} />
-//         </View>
-//         <View style={styles.textBody}>
-//             <Text style={styles.bodyTextstyle}>Courses</Text>
-//         </View>
-//     </View>
-// </Button>
 
 const styles = StyleSheet.create({
   container: {

@@ -1,6 +1,6 @@
 // const BASE_URL = 'http://users.theyounus.com'
 const BASE_URL = 'http://beta.1connect.in'
-const Call = (uri, method, data=null, token=null) => {
+const Call = (uri, method, data=null, token=null, type='formData') => {
     let url = BASE_URL + uri
     let headers = {}
     let payload = {}
@@ -19,11 +19,18 @@ const Call = (uri, method, data=null, token=null) => {
     payload['cache'] = 'no-cache'
 
     if (data){
-        let formData = new FormData();
-        for (let key in data) {
-            formData.append(key, data[key])
+        if(type=='formData') {
+            let formData = new FormData();
+            for (let key in data) {
+                formData.append(key, data[key])
+            }
+            payload['body'] = formData
         }
-        payload['body'] = formData
+
+        else if(type=='raw'){
+            console.log("type raw")
+            payload['body'] = JSON.stringify(data);
+        }
     }
     console.log("with... ", payload)
     console.log("url ", url)

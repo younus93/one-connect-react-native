@@ -1,5 +1,5 @@
 import React from "react";
-import { View, Text, ScrollView, Image, StyleSheet, FlatList, SectionList, SafeAreaView, TouchableWithoutFeedback, TextInput, Animated, Easing, ActivityIndicator,ImageBackground} from "react-native";
+import { View, Text, ScrollView, Image, StyleSheet, FlatList, SectionList, SafeAreaView, TouchableWithoutFeedback, TextInput, Animated, Easing, ActivityIndicator,ImageBackground, Modal} from "react-native";
 import { DrawerActions } from 'react-navigation-drawer';
 import { NavigationActions } from 'react-navigation';
 import {Colors} from '../constants';
@@ -162,6 +162,39 @@ class ProfileList extends React.Component {
         super(props)
         this.data = props.data
         this.accessLevel = props.accessLevel
+        this.newTag = null
+        this.state = {
+            isTagModal: false,
+            updateToggle: false
+        }
+
+    }
+
+    componentDidMount() {
+        Manager.addListener('S_TAG_S', this._tagsSuccess)
+        Manager.addListener('S_TAG_E', this._tagsError)
+    }
+
+    componentWillUnmount() {
+        Manager.removeListener('S_TAG_S', this._tagsSuccess)
+        Manager.removeListener('S_TAG_E', this._tagsError)
+    }
+
+    _tagsSuccess = data => {
+        console.log("tag success data : ", data)
+        this.data.tags.push(data.data.pop())
+        this.setState(previousState => ({
+            updateToggle: !previousState.updateToggle,
+            isTagModal: false
+        }))
+    }
+
+    _tagsError = error => {
+        console.log("tag error data : ", error)
+        // this.setState(previousState => ({
+        //     updateToggle: !previousState.updateToggle,
+        //     isTagModal: false
+        // }))
     }
 
     _renderBasicSection = (section) => {
@@ -193,18 +226,18 @@ class ProfileList extends React.Component {
     _renderExperienceSection = (section) => {
         console.log("section data : ", section)
         if(section.length > 0) {
+            // {
+            //     this.accessLevel ?
+            //     <Button style={{padding: 10}} onPress={this.props.navigate}>
+            //         <Icon name="pen" size={16} color={Colors.secondaryLight}/>
+            //     </Button>
+            //     :
+            //     null
+            // }
             return(
                 <View>
                     <View style={{flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center'}}>
                         <Text style={styles.header}>Experience</Text>
-                        {
-                            this.accessLevel ?
-                            <Button style={{padding: 10}} onPress={this.props.navigate}>
-                                <Icon name="pen" size={16} color={Colors.secondaryLight}/>
-                            </Button>
-                            :
-                            null
-                        }
                     </View>
 
                     <View style={styles.sectionBody}>
@@ -229,18 +262,25 @@ class ProfileList extends React.Component {
         return null
     }
 
+    _showTagModal = () => {
+        this.setState({ isTagModal: true });
+    }
+
     _renderTagsSection = (section) => {
         console.log("section data : ", section)
         if(section.length > 0) {
+            //<Icon name="pen" size={16} color={Colors.secondaryLight}/>
             return(
                 <View>
-                    <View style={{flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center'}}>
+                    <View style={{flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center', paddingRight: 10}}>
                         <Text style={styles.header}>Tags</Text>
                         {
                             this.accessLevel ?
-                            <Button style={{padding: 10}} onPress={this.props.navigate}>
-                                <Icon name="pen" size={16} color={Colors.secondaryLight}/>
+                            <View style={styles.header}>
+                            <Button style={{borderWidth: StyleSheet.hairlineWidth, borderRadius: 5, justifyContent: 'center', alignItems: 'center'}} onPress={this._showTagModal}>
+                                <Text style={{fontSize: 16,fontWeight: '600'}}> Add Tag </Text>
                             </Button>
+                            </View>
                             :
                             null
                         }
@@ -265,6 +305,31 @@ class ProfileList extends React.Component {
         return null
     }
 
+    _toggleModal = () => {
+        console.log('toggling modal')
+        this.newTag = null
+        this.setState({
+            isTagModal: false
+        });
+    };
+
+    _addTag = (text) => {
+        console.log(text)
+        this.newTag = text
+    }
+
+    _submitNewTag = () => {
+        console.log("submiting tag : ", this.newTag)
+        let tags = this.data.tags.map(item => {
+            return item.name
+        })
+        tags.push(this.newTag)
+        Manager.submitTag('/api/tags', 'POST', {
+            "tags": tags.toString()
+        });
+        this.newTag = null
+    }
+
     render() {
         return(
             <View>
@@ -286,6 +351,24 @@ class ProfileList extends React.Component {
                 </View>
                 {this._renderExperienceSection(this.data.companies)}
                 {this._renderTagsSection(this.data.tags)}
+                <View>
+                    <Modal animationType="fade" transparent={true} visible={this.state.isTagModal} onRequestClose={this._toggleModal}>
+                        <TouchableWithoutFeedback onPress={this._toggleModal} >
+                            <View style={{flex: 1, backgroundColor: '#00000070', justifyContent: 'center', alignItems:'center', color: '#FFFFFF', paddingHorizontal: 20}}>
+                                <View style={{backgroundColor: Colors.surface, width: '100%', padding: 20, borderRadius: 20}}>
+                                    <TextInput style={styles.textInput}
+                                        placeholder="Add new tag"
+                                        onChangeText={this._addTag}
+                                        allowFontScaling={false}
+
+                                    />
+                                    <Button style={styles.button} title="SUBMIT" color={Colors.alternative} onPress={this._submitNewTag}>
+                                    </Button>
+                                </View>
+                            </View>
+                        </TouchableWithoutFeedback>
+                    </Modal>
+                </View>
             </View>
         )
     }
@@ -355,7 +438,23 @@ const styles = StyleSheet.create({
         position: 'absolute',
         right: 20,
         top: 100,
-    }
+    },
+    textInput:{
+        backgroundColor: Colors.background,
+        padding: 10,
+        margin: 10,
+        borderWidth: StyleSheet.hairlineWidth,
+        borderColor: Colors.alternative,
+        borderRadius: 5,
+    },
+    button: {
+        backgroundColor: Colors.secondaryDark,
+        justifyContent: 'center',
+        alignItems: 'center',
+        borderRadius: 30,
+        paddingVertical: 15,
+        marginVertical: 10,
+    },
 });
 
 
