@@ -172,7 +172,7 @@ export default class NewsFeed extends React.Component {
         else {
             return(
                 <View style={{backgroundColor:Colors.background, padding: 10,paddingTop: 20, justifyContent:"center", alignItems: "center"}}>
-                    <ActivityIndicator animating={this.state.loading} size="large" color={Colors.secondaryLight} />
+                    <ActivityIndicator animating={this.state.loading} size="large" color={Colors.secondaryDark} />
                 </View>
             )
         }

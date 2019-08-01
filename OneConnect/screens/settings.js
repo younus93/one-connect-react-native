@@ -106,7 +106,7 @@ export default class Settings extends React.Component {
     render() {
         return (
             <ErrorHandler backgroundColor={this.state.modalBackground} error={this.state.error} errorText={this.state.errorText} callback={this._toggleError}>
-                <KeyboardAvoidingView style={{flex: 1, paddingBottom: 50}} behavior="padding">
+            <ScrollView>
                 <View style={styles.container}>
                     <ScrollView alwaysBounceVertical={false} bounces={false}>
                         <ImageView data={this.data} callback={this._toggleSaveButtonState}/>
@@ -116,7 +116,6 @@ export default class Settings extends React.Component {
                     </ScrollView>
                     <Button onPress={this._save} style={styles.saveButton} title="Save" color={Colors.alternative}/>
                 </View>
-                </KeyboardAvoidingView>
                 {
                     this.state.loading ?
                         <Animated.View style={{position:'absolute',
@@ -130,10 +129,11 @@ export default class Settings extends React.Component {
                             opacity: this.opacity
                         }}
                         >
-                            <ActivityIndicator animating={this.state.loading} size="large" color={Colors.secondaryLight} />
+                            <ActivityIndicator animating={this.state.loading} size="large" color={Colors.secondaryDark} />
                         </Animated.View>
                     : null
                 }
+                </ScrollView>
             </ErrorHandler>
         );
     }
@@ -237,6 +237,9 @@ class ProfileList extends React.Component {
             case 'gender':
                 this.editable.gender = text
                 break;
+            case 'bio':
+                this.editable.bio = text
+                break;
         }
         console.log("editable is : ", this.editable)
         this.props.callback(this.editable)
@@ -271,7 +274,7 @@ class ProfileList extends React.Component {
                 <TouchableWithoutFeedback onPress={() => this._onPressItem(2, section)}>
                     <View style={styles.item}>
                         <Icon name="phone" size={18} color={Colors.primaryDark} />
-                        <AnimatedTextInput style={[styles.itemText, {borderBottomWidth: this._borderBottomWidth[2]}]} onChangeText={(text) => this._editField('phone', text)} defaultValue={section.phone_number} value={this.editable.phone_number} onFocus={(e) => this._onFocus(e, 2, section)} onBlur={(e) => this._onBlur(e, 2)}/>
+                        <AnimatedTextInput style={[styles.itemText, {borderBottomWidth: this._borderBottomWidth[2]}]} onChangeText={(text) => this._editField('phone', text)} defaultValue={section.phone_number} value={this.editable.phone_number} onFocus={(e) => this._onFocus(e, 2, section)} onBlur={(e) => this._onBlur(e, 2)} textContentType='telephoneNumber' keyboardType='number-pad'/>
                     </View>
                 </TouchableWithoutFeedback>
 
@@ -281,6 +284,14 @@ class ProfileList extends React.Component {
                         <AnimatedTextInput style={[styles.itemText, {borderBottomWidth: this._borderBottomWidth[3]}]} onChangeText={(text) => this._editField('email', text)} defaultValue={section.email} value={this.editable.email} onFocus={(e) => this._onFocus(e, 3, section)} onBlur={(e) => this._onBlur(e, 3)}/>
                     </View>
                 </TouchableWithoutFeedback>
+
+                <TouchableWithoutFeedback onPress={() => this._onPressItem(4, section)}>
+                    <View style={styles.item}>
+                        <Icon name="id-badge" size={18} color={Colors.primaryDark} />
+                        <AnimatedTextInput style={[styles.itemText, {borderBottomWidth: this._borderBottomWidth[4]}]} onChangeText={(text) => this._editField('bio', text)} defaultValue={section.bio} value={this.editable.bio} onFocus={(e) => this._onFocus(e, 4, section)} onBlur={(e) => this._onBlur(e, 4)} multiline={true}/>
+                    </View>
+                </TouchableWithoutFeedback>
+
 
                 <TouchableWithoutFeedback onPress={this._showDateTimePicker} >
                     <View style={styles.item}>

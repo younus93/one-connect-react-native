@@ -396,7 +396,7 @@ export default class Search extends React.Component {
                 {
                     this.state.loading ?
                     <View style={{justifyContent: "center", alignItems: "center", padding: 10}}>
-                        <ActivityIndicator animating={this.state.loading} size="large" color={Colors.secondaryLight} />
+                        <ActivityIndicator animating={this.state.loading} size="large" color={Colors.secondaryDark} />
                     </View>
                     :null
                 }

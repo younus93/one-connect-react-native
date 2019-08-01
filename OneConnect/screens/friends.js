@@ -1,14 +1,25 @@
 import React from "react";
 import { View, Text, TextInput, StyleSheet, FlatList, TouchableWithoutFeedback, ActivityIndicator, Animated, Easing, Image} from "react-native";
+import { DrawerActions } from 'react-navigation-drawer';
 import {Colors} from '../constants';
 import Manager from '../service/dataManager';
 import Button from '../custom/button';
+import Icon from 'react-native-vector-icons/FontAwesome5';
 
 
 export default class Friends extends React.Component {
     static navigationOptions = ({navigation}) => ({
         title: 'FRIENDS',
+        headerLeft: (
+            <Button style={{borderRadius: 20}} onPress={navigation.getParam('hamPressed')} >
+                <Icon name="bars" size={22} color={Colors.onPrimary} style={{padding:10}}/>
+            </Button>
+        ),
+        headerLeftContainerStyle: {
+            paddingLeft: 15
+        }
     })
+
     constructor(props) {
         super(props)
         this.url = props.navigation.getParam('url', '/api/friends')
@@ -23,13 +34,31 @@ export default class Friends extends React.Component {
     componentDidMount() {
         Manager.addListener('FRIENDS_S', this._friendSuccess)
         Manager.addListener('FRIENDS_E', this._friendError)
+        Manager.addListener('NOTIFICATION_U', this._refresh)
 
         Manager.friends(this.url, 'GET');
+        this.props.navigation.setParams({ hamPressed: this._hamPressed });
     }
 
     componentWillUnmount() {
         Manager.removeListener('FRIENDS_S', this._friendSuccess)
         Manager.removeListener('FRIENDS_E', this._friendError)
+        Manager.removeListener('NOTIFICATION_U', this._refresh)
+    }
+
+    _hamPressed = () => {
+        this.props.navigation.dispatch(DrawerActions.toggleDrawer())
+    }
+
+    _refresh = () => {
+        console.log('refreshing notification')
+        this.data = null
+        this.state = {
+            loading: true,
+            error: false,
+            errorText: null
+        }
+        Manager.friends(this.url, 'GET');
     }
 
     _friendSuccess = (data) => {
@@ -110,7 +139,7 @@ export default class Friends extends React.Component {
         else {
             return(
                 <View style={{backgroundColor:Colors.background, marginVertical: 5, padding: 10, justifyContent:"center", alignItems: "center"}}>
-                    <ActivityIndicator animating={this.state.loading} size="large" color={Colors.secondaryLight} />
+                    <ActivityIndicator animating={this.state.loading} size="large" color={Colors.secondaryDark} />
                 </View>
             )
         }

@@ -200,6 +200,16 @@ class dataManager {
         })
     }
 
+    friendRequest = (uri, method, data=null) => {
+        Call(uri, method, data, this.token)
+        .then(response => {
+            this.eventEmitter.emit('F_REQUEST_S', response)
+        })
+        .catch(error => {
+            this.eventEmitter.emit('F_REQUEST_E', error)
+        })
+    }
+
     submitTag = (uri, method, data=null) => {
         Call(uri, method, data, this.token)
         .then(response => {
@@ -207,6 +217,36 @@ class dataManager {
         })
         .catch(error => {
             this.eventEmitter.emit('S_TAG_E', error)
+        })
+    }
+
+    uploadPic = (uri, method, data=null) => {
+        Call(uri, method, data, this.token)
+        .then(response => {
+            this.eventEmitter.emit('PIC_S', response)
+        })
+        .catch(error => {
+            this.eventEmitter.emit('PIC_E', error)
+        })
+    }
+
+    addCompany = (uri, method, data=null) => {
+        Call(uri, method, data, this.token)
+        .then(response => {
+            this.eventEmitter.emit('A_COMPANY_S', response)
+        })
+        .catch(error => {
+            this.eventEmitter.emit('A_COMPANY_E', error)
+        })
+    }
+
+    industryType = (uri, method, data=null) => {
+        Call(uri, method, data, this.token)
+        .then(response => {
+            this.eventEmitter.emit('INDUSTRY_S', response)
+        })
+        .catch(error => {
+            this.eventEmitter.emit('INDUSTRY_E', error)
         })
     }
 }

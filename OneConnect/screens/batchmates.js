@@ -118,7 +118,7 @@ export default class BatchMates extends React.Component {
         else {
             return(
                 <View style={{backgroundColor:Colors.background, marginVertical: 5, padding: 10, justifyContent:"center", alignItems: "center"}}>
-                    <ActivityIndicator animating={this.state.loading} size="large" color={Colors.secondaryLight} />
+                    <ActivityIndicator animating={this.state.loading} size="large" color={Colors.secondaryDark} />
                 </View>
             )
         }

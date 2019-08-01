@@ -1,5 +1,5 @@
 import React, {Component} from 'react';
-import {StyleSheet, Text, View, Animated, Easing, ActivityIndicator} from 'react-native';
+import {StyleSheet, Text, View, Animated, Easing, ActivityIndicator, ImageBackground, Image} from 'react-native';
 import AsyncStorage from '@react-native-community/async-storage';
 import {Colors} from '../constants';
 import Manager from '../service/dataManager';
@@ -107,12 +107,12 @@ export default class AuthLoading extends Component {
         return(
             <View style={[styles.container]}>
                 <View style={styles.header}>
-                    <Text style={[styles.headerText, {fontSize: 20}]}>Welcome to</Text>
-                    <Text style={styles.headerText}>OneConnect</Text>
+                    <Image style={styles.image} source={require('../resources/Beebuck_Logo.png')} imageStyle={{resizeMode: 'contain'}}>
+                    </Image>
                 </View>
                 <View style={styles.indicator}>
                     <Text style={{fontSize: 10, fontWeight: '500', paddingBottom: 10}}>{this.state.indicatorText}</Text>
-                    <ActivityIndicator animating={this.state.animatedState} size="small" color={Colors.secondaryLight} />
+                    <ActivityIndicator animating={this.state.animatedState} size="small" color={Colors.secondaryDark} />
                 </View>
             </View>
         )
@@ -151,5 +151,10 @@ const styles = StyleSheet.create({
         backgroundColor: Colors.primaryLight,
         // opacity: 0.3,
         justifyContent: 'center',
+    },
+    image: {
+        //width: '100%',
+        //height: '100%',
+        justifyContent: "center",
     },
 })

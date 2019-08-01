@@ -183,7 +183,7 @@ export default class OpenFeed extends React.Component {
                         allowFontScaling={false}
                         multiline={true}
                         placeholder="Leave your thoughts here..."
-                        placeholderTextColor={Colors.primaryLight}
+                        placeholderTextColor={Colors.primaryDark}
                         onChangeText={this._writeComment}
                         style={styles.commentInput}
                         autoFocus={this.state.commentBoxFocus}

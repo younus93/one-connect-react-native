@@ -125,7 +125,7 @@ export default class BatchItem extends React.Component {
         else {
             return(
                 <View style={{backgroundColor:Colors.background, padding: 10, justifyContent:"center", alignItems: "center"}}>
-                    <ActivityIndicator animating={this.state.loading} size="large" color={Colors.secondaryLight} />
+                    <ActivityIndicator animating={this.state.loading} size="large" color={Colors.secondaryDark} />
                 </View>
             )
         }
@@ -208,6 +208,8 @@ const styles = StyleSheet.create({
         alignItems: 'center',
         justifyContent: 'center',
         backgroundColor: Colors.primary,
+        paddingVertical: 20,
+        paddingBottom: 5,
     },
     image: {
         borderRadius: 50,

@@ -108,7 +108,7 @@ export default class Institution extends React.Component {
         if(this.state.loading){
             return(
                 <View style={[styles.container, {justifyContent:'center', alignItems: 'center'}]}>
-                    <ActivityIndicator animating={this.state.loading} size="large" color={Colors.secondaryLight} />
+                    <ActivityIndicator animating={this.state.loading} size="large" color={Colors.secondaryDark} />
                 </View>
             )
         }

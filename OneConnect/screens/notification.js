@@ -1,5 +1,6 @@
 import React from "react";
 import { View, Text, StyleSheet, ScrollView, ActivityIndicator,SafeAreaView, TextInput, Image} from "react-native";
+import { DrawerActions } from 'react-navigation-drawer';
 import {Colors} from '../constants';
 import Manager from '../service/dataManager';
 import Button from '../custom/button';
@@ -9,6 +10,14 @@ import Icon from 'react-native-vector-icons/FontAwesome5';
 export default class Notification extends React.Component {
     static navigationOptions = ({navigation}) => ({
         title: 'NOTIFICATION',
+        headerLeft: (
+            <Button style={{borderRadius: 20}} onPress={navigation.getParam('hamPressed')} >
+                <Icon name="bars" size={22} color={Colors.onPrimary} style={{padding:10}}/>
+            </Button>
+        ),
+        headerLeftContainerStyle: {
+            paddingLeft: 15
+        }
     })
 
     constructor(props){
@@ -25,13 +34,29 @@ export default class Notification extends React.Component {
         this.props.navigation.setParams({ backButton: this._backButtonPressed});
         Manager.addListener('NOTIFICATION_S', this._notificationSuccess)
         Manager.addListener('NOTIFICATION_E', this._notificationError)
+        Manager.addListener('NOTIFICATION_U', this._refresh)
 
         Manager.notification(`/api/notifications`, 'GET')
+        this.props.navigation.setParams({ hamPressed: this._hamPressed });
     }
 
     componentWillUnmount() {
         Manager.removeListener('NOTIFICATION_S', this._notificationSuccess)
         Manager.removeListener('NOTIFICATION_E', this._notificationError)
+        Manager.removeListener('NOTIFICATION_U', this._refresh)
+    }
+
+    _hamPressed = () => {
+        this.props.navigation.dispatch(DrawerActions.toggleDrawer())
+    }
+
+    _refresh = () => {
+        console.log('refreshing notification')
+        this.data = null
+        this.state = {
+            loading: true
+        }
+        Manager.notification(`/api/notifications`, 'GET')
     }
 
     _notificationSuccess = (data) => {
@@ -90,18 +115,19 @@ export default class Notification extends React.Component {
                 </View>
             )
         }
-        return(
-            <View style={{
-                backgroundColor: Colors.background,
-                justifyContent: 'center',
-                alignItems: 'center',
-                opacity: 1,
-                width: '100%',
-            }}>
-                <Text style={{color: Colors.secondaryDark, fontSize: 16,fontWeight: '700', opacity: 0.4}}>You don't have any friend's birthday today.</Text>
-            </View>
-        )
+        return null
     }
+    // return(
+    //     <View style={{
+    //         backgroundColor: Colors.background,
+    //         justifyContent: 'center',
+    //         alignItems: 'center',
+    //         opacity: 1,
+    //         width: '100%',
+    //     }}>
+    //         <Text style={{color: Colors.secondaryDark, fontSize: 16,fontWeight: '700', opacity: 0.4}}>You don't have any friend's birthday today.</Text>
+    //     </View>
+    // )
 
     _navigatePost = (item) => {
         this.props.navigation.navigate("OpenFeed", {item: item.searchable})
@@ -132,17 +158,47 @@ export default class Notification extends React.Component {
                 </View>
             )
         }
-        return(
-            <View style={{
-                backgroundColor: Colors.background,
-                justifyContent: 'center',
-                alignItems: 'center',
-                opacity: 1,
-                width: '100%',
-            }}>
-                <Text style={{color: Colors.secondaryDark, fontSize: 16,fontWeight: '700', opacity: 0.4}}>NO new message.</Text>
-            </View>
-        )
+        return null
+    }
+
+    _navigateMate = (item) => {
+        console.log("pressed item :", item)
+        this.props.navigation.navigate("Profile", {url: item.sender.resource_url})
+    }
+
+    _renderFriendRequest = (section) => {
+        console.log("friend messages : ", section)
+        if(section && section.length > 0){
+            console.log("data availabe")
+            return(
+                <View>
+                    <View style={{paddingLeft: 10, paddingTop: 18, paddingBottom: 8}}>
+                        <Text style={styles.bodyHeader}>Friend Request</Text>
+                    </View>
+                    <View style={styles.sectionBody}>
+                    {
+                        section.map(item => {
+                            return(
+                                <Button key={`pelt-${Math.random(1)}`} onPress={() => this._navigateMate(item)} style={styles.item}>
+                                            <View>
+                                                <Image style={styles.image}
+                                                    source={{uri: item.sender.profile_pic}}
+                                                    resizeMode='cover'
+                                                    onError={(error) => console.log(error)}
+                                                />
+                                            </View>
+                                            <View>
+                                                <Text style={styles.name}>{item.sender.f_name + ' ' + item.sender.l_name}</Text>
+                                            </View>
+                                </Button>
+                            )
+                        })
+                    }
+                    </View>
+                </View>
+            )
+        }
+        return null
     }
 
     render() {
@@ -151,16 +207,28 @@ export default class Notification extends React.Component {
                 {
                     this.state.loading ?
                     <View style={{justifyContent: "center", alignItems: "center", padding: 10}}>
-                        <ActivityIndicator animating={this.state.loading} size="large" color={Colors.secondaryLight} />
+                        <ActivityIndicator animating={this.state.loading} size="large" color={Colors.secondaryDark} />
                     </View>
                     :null
                 }
                 <ScrollView>
                 {
                     this.data ?
+                        this.data.birthdays.length > 0 || this.data.batch_messages.length > 0 || this.data.incomingFriendships.length > 0 ?
                     <View>
                         {this._renderBirthdays(this.data.birthdays)}
                         {this._renderBatchMessages(this.data.batch_messages)}
+                        {this._renderFriendRequest(this.data.incomingFriendships)}
+                    </View>
+                    :<View style={{
+                        backgroundColor: Colors.background,
+                        justifyContent: 'center',
+                        alignItems: 'center',
+                        opacity: 1,
+                        width: '100%',
+                        paddingTop: 20
+                    }}>
+                        <Text style={{color: Colors.secondaryDark, fontSize: 22,fontWeight: '700', opacity: 0.4}}>No notification</Text>
                     </View>
                     : null
                 }
@@ -224,5 +292,15 @@ const styles = StyleSheet.create({
         borderRadius: 20,
         width: 40,
         height: 40,
+    },
+    mate: {
+        flexDirection: 'row',
+        alignItems: 'center',
+        padding:10,
+    },
+    name: {
+        fontSize: 17,
+        fontWeight: '700',
+        paddingLeft: 10,
     },
 })

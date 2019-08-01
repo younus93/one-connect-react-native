@@ -6,6 +6,7 @@ import Button from '../custom/button';
 // Screen Imports
 import Profile from '../screens/profile';
 import Settings from '../screens/settings';
+import AddCompany from '../screens/addCompany';
 import ChangePassword from '../screens/changePassword';
 import Icon from 'react-native-vector-icons/FontAwesome5';
 import {Colors} from '../constants'
@@ -41,6 +42,12 @@ const ProfileStack = createStackNavigator({
         screen: ChangePassword,
         navigationOptions: () => ({
             title: `CHANGE PASSWORD`,
+        }),
+    },
+    AddCompany: {
+        screen: AddCompany,
+        navigationOptions: () => ({
+            title: `ADD COMPANY`,
         }),
     }
 }, navigatorConfig);

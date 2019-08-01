@@ -1,5 +1,5 @@
 import React, {Component} from 'react';
-import {Platform, StyleSheet, Text, View, TextInput, TouchableWithoutFeedback, Keyboard, SafeAreaView, ActivityIndicator, Animated, Alert} from 'react-native';
+import {Platform, StyleSheet, Text, View, TextInput, TouchableWithoutFeedback, Keyboard, SafeAreaView, ActivityIndicator, Animated, Alert, ImageBackground} from 'react-native';
 import {Colors} from '../constants';
 import Manager from '../service/dataManager';
 import Button from '../custom/button';
@@ -119,10 +119,10 @@ export default class LoginScreen extends Component<Props> {
             <DismissKeyboard>
                 <View style={[styles.container]}>
                     <View style={styles.header}>
-                        <SafeAreaView forceInset={{ top: 'always'}}>
-                            <Text style={[styles.headerText, {fontSize: 14}]}>Welcome to</Text>
-                            <Text style={styles.headerText}>OneConnect</Text>
-                        </SafeAreaView>
+
+                            <ImageBackground style={styles.image} source={require('../resources/Beebuck_Logo.png')} imageStyle={{resizeMode: 'contain'}}>
+                            </ImageBackground>
+
                     </View>
                     <View style={[styles.containerBox, styles.shadow]}>
                         <View>
@@ -159,7 +159,7 @@ export default class LoginScreen extends Component<Props> {
                                 opacity: this.opacity
                             }}
                             >
-                                <ActivityIndicator animating={this.state.loading} size="large" color={Colors.secondaryLight} />
+                                <ActivityIndicator animating={this.state.loading} size="large" color={Colors.secondaryDark} />
                             </Animated.View>
                         : null
                     }
@@ -176,6 +176,7 @@ const styles = StyleSheet.create({
         backgroundColor: Colors.background,
     },
     containerBox: {
+        flex: 1,
         padding: 10,
         paddingTop: 50,
         backgroundColor: Colors.surface,
@@ -199,7 +200,7 @@ const styles = StyleSheet.create({
     header: {
         backgroundColor: Colors.primary,
         opacity: 0.8,
-        height: '30%',
+        height: '40%',
         alignItems: 'center',
         justifyContent: 'center'
     },
@@ -214,5 +215,10 @@ const styles = StyleSheet.create({
         alignItems: 'center',
         borderRadius: 30,
         paddingVertical: 15,
-    }
+    },
+    image: {
+        width: '100%',
+        height: '100%',
+        justifyContent: "center",
+    },
 });
