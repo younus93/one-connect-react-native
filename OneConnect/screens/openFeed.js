@@ -7,17 +7,20 @@ import ProfileImage from '../custom/profileImage'
 import {Colors} from '../constants';
 import Manager from '../service/dataManager';
 import Button from '../custom/button';
+import I18n from '../service/i18n';
+
 
 const { State: TextInputState } = TextInput;
 const textFontSize = 14
 
 export default class OpenFeed extends React.Component {
-    static navigationOptions = {
-        title: 'VIEWING A POST'
-    }
+    static navigationOptions = ({navigation}) => ({
+        title: navigation.getParam('title'),
+    })
 
     constructor(props){
         super(props)
+        this.props.navigation.setParams({ title: I18n.t('POST')});
         this.shift = new Animated.Value(0)
         this.data = this.props.navigation.getParam('item', null)
         this.comments = null
@@ -26,7 +29,8 @@ export default class OpenFeed extends React.Component {
         this.state = {
             commentBoxFocus: props.navigation.getParam('comment', false),
             commentLoading: true,
-            error: false
+            error: false,
+            updateToggle: false
         }
     }
 
@@ -36,6 +40,7 @@ export default class OpenFeed extends React.Component {
 
         Manager.addListener('COMMENTS_S', this._commentsLoadingSuccess)
         Manager.addListener('COMMENTS_E', this._commentsLoadingError)
+        Manager.addListener('LANG_U', this._updateLanguage)
 
         Manager.getFeedComments(this.data['resource_url']+'/comments', 'GET')
     }
@@ -46,6 +51,14 @@ export default class OpenFeed extends React.Component {
 
         Manager.removeListener('COMMENTS_S', this._commentsLoadingSuccess)
         Manager.removeListener('COMMENTS_E', this._commentsLoadingError)
+        Manager.removeListener('LANG_U', this._updateLanguage)
+    }
+
+    _updateLanguage = () => {
+        this.props.navigation.setParams({ title: I18n.t('POST')});
+        this.setState(previousState => {
+            updateToggle: !previousState.updateToggle
+        })
     }
 
     _commentsLoadingSuccess = (data) => {
@@ -182,7 +195,7 @@ export default class OpenFeed extends React.Component {
                         ref={(e) => this.commentBox=e}
                         allowFontScaling={false}
                         multiline={true}
-                        placeholder="Leave your thoughts here..."
+                        placeholder={I18n.t('Leave_your_thoughts_here')}
                         placeholderTextColor={Colors.primaryDark}
                         onChangeText={this._writeComment}
                         style={styles.commentInput}

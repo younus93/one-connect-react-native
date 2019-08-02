@@ -4,6 +4,7 @@ import {Colors} from '../constants';
 import Manager from '../service/dataManager';
 import Button from '../custom/button';
 import ErrorHandler from '../custom/errorHandler';
+import I18n from '../service/i18n';
 
 
 
@@ -142,7 +143,7 @@ export default class LoginScreen extends Component<Props> {
 
                         <View style={{margin: 10, marginTop: 50}}>
                             <Text style={styles.textTerm}>By proceeding you agree to the Terms of Services and Privacy Policy</Text>
-                            <Button onPress={this._loginButton} style={styles.button} title="LOGIN" color={Colors.alternative}>
+                            <Button onPress={this._loginButton} style={styles.button} title={I18n.t('Sign_In')} color={Colors.alternative}>
                             </Button>
                         </View>
                     </View>

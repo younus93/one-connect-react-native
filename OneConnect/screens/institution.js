@@ -7,15 +7,17 @@ import {Colors} from '../constants';
 import Manager from '../service/dataManager';
 import Button from '../custom/button';
 import Feed from '../custom/feed';
+import I18n from '../service/i18n';
 
 
 export default class Institution extends React.Component {
     static navigationOptions = ({navigation}) => ({
-        title: 'INSTITUION',
+        title: navigation.getParam('title'),
     })
 
     constructor(props) {
         super(props)
+        this.props.navigation.setParams({ title: I18n.t('Institutions')});
         this.item = this.props.navigation.getParam('item')
         this.state = {
             loading: true,
@@ -27,12 +29,15 @@ export default class Institution extends React.Component {
     componentDidMount() {
         Manager.addListener('INSTITUTE_S', this._instituteSuccess)
         Manager.addListener('INSTITUTE_E', this._instituteError)
+        Manager.addListener('LANG_U', this._updateLanguage)
+
         Manager.institution('/api/institutions/'+ this.item.id + '/', 'GET');
     }
 
     componentWillUnmount() {
         Manager.removeListener('INSTITUTE_S', this._instituteSuccess)
         Manager.removeListener('INSTITUTE_E', this._instituteError)
+        Manager.removeListener('LANG_U', this._updateLanguage)
     }
 
     _instituteSuccess = (data) => {
@@ -44,6 +49,10 @@ export default class Institution extends React.Component {
             error: false,
             error: null
         })
+    }
+
+    _updateLanguage = () => {
+        this.props.navigation.setParams({ title: I18n.t('Institutions')});
     }
 
     _instituteError = (error) => {
@@ -231,7 +240,7 @@ const styles = StyleSheet.create({
     overViewTextSecondary: {
         fontSize: 14,
         fontWeight: '300',
-        color: Colors.primaryLight,
+        color: Colors.primaryDark,
         opacity: 0.7
     }
 });

@@ -6,6 +6,7 @@ import Button from '../custom/button';
 import { DrawerActions } from 'react-navigation-drawer';
 import { NavigationActions } from 'react-navigation';
 import Icon from 'react-native-vector-icons/FontAwesome5';
+import I18n from '../service/i18n';
 
 
 export default class Search extends React.Component {
@@ -111,7 +112,7 @@ export default class Search extends React.Component {
                 return(
                     <View>
                         <View style={{paddingLeft: 10, paddingTop: 18, paddingBottom: 8}}>
-                            <Text style={styles.bodyHeader}>Batches</Text>
+                            <Text style={styles.bodyHeader}>{I18n.t('Batches')}</Text>
                         </View>
                         <View style={styles.sectionBody}>
                         {
@@ -151,7 +152,7 @@ export default class Search extends React.Component {
                 return(
                     <View>
                         <View style={{paddingLeft: 10, paddingTop: 18, paddingBottom: 8}}>
-                            <Text style={styles.bodyHeader}>Posts</Text>
+                            <Text style={styles.bodyHeader}>{I18n.t('POST')}</Text>
                         </View>
                         <View style={styles.sectionBody}>
                         {
@@ -189,7 +190,7 @@ export default class Search extends React.Component {
                 return(
                     <View>
                         <View style={{paddingLeft: 10, paddingTop: 18, paddingBottom: 8}}>
-                            <Text style={styles.bodyHeader}>Users</Text>
+                            <Text style={styles.bodyHeader}>{I18n.t('Users')}</Text>
                         </View>
                         <View style={styles.sectionBody}>
                         {
@@ -236,7 +237,7 @@ export default class Search extends React.Component {
                 return(
                     <View>
                         <View style={{paddingLeft: 10, paddingTop: 18, paddingBottom: 8}}>
-                            <Text style={styles.bodyHeader}>Courses</Text>
+                            <Text style={styles.bodyHeader}>{I18n.t('Courses')}</Text>
                         </View>
                         <View style={styles.sectionBody}>
                         {
@@ -274,7 +275,7 @@ export default class Search extends React.Component {
                 return(
                     <View>
                         <View style={{paddingLeft: 10, paddingTop: 18, paddingBottom: 8}}>
-                            <Text style={styles.bodyHeader}>Institutions</Text>
+                            <Text style={styles.bodyHeader}>{I18n.t('Institutions')}</Text>
                         </View>
                         <View style={styles.sectionBody}>
                         {
@@ -340,7 +341,7 @@ export default class Search extends React.Component {
                         userBackground: !previousState.showUser? Colors.alternative : Colors.background
                     }))}}>
                         <View style={[{borderRadius:20, margin: 10, padding:8, borderWidth: 1, backgroundColor: this.state.userBackground}]}>
-                            <Text>Users</Text>
+                            <Text>{I18n.t('Users')}</Text>
                         </View>
                     </Button>
                     <Button onPress={() => {this.setState(previousState => ({
@@ -348,7 +349,7 @@ export default class Search extends React.Component {
                         institutionBackground: !previousState.showInstitution? Colors.alternative : Colors.background
                     }))}}>
                         <View style={[{borderRadius:20, margin: 10, padding:8, borderWidth: 1, backgroundColor: this.state.institutionBackground}]}>
-                            <Text>Institutions</Text>
+                            <Text>{I18n.t('Institutions')}</Text>
                         </View>
                     </Button>
                     <Button onPress={() => {this.setState(previousState => ({
@@ -356,7 +357,7 @@ export default class Search extends React.Component {
                         batchesBackground: !previousState.showBatches? Colors.alternative : Colors.background
                     }))}}>
                         <View style={[{borderRadius:20, margin: 10, padding:8, borderWidth: 1, backgroundColor: this.state.batchesBackground}]}>
-                            <Text>Batches</Text>
+                            <Text>{I18n.t('Batches')}</Text>
                         </View>
                     </Button>
                     <Button onPress={() => {this.setState(previousState => ({
@@ -364,7 +365,7 @@ export default class Search extends React.Component {
                         coursesBackground: !previousState.showCourses? Colors.alternative : Colors.background
                     }))}}>
                         <View style={[{borderRadius:20, margin: 10, padding:8, borderWidth: 1, backgroundColor: this.state.coursesBackground}]}>
-                            <Text>Courses</Text>
+                            <Text>{I18n.t('Courses')}</Text>
                         </View>
                     </Button>
                     <Button onPress={() => {this.setState(previousState => ({
@@ -372,7 +373,7 @@ export default class Search extends React.Component {
                         postsBackground: !previousState.showPost ? Colors.alternative : Colors.background
                     }))}}>
                         <View style={[{borderRadius:20, margin: 10, padding:8, borderWidth: 1, backgroundColor: this.state.postsBackground}]}>
-                            <Text>Posts</Text>
+                            <Text>{I18n.t('POST')}</Text>
                         </View>
                     </Button>
                     </ScrollView>

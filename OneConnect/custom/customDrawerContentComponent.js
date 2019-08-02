@@ -5,13 +5,15 @@ import {SafeAreaView, NavigationActions} from 'react-navigation';
 import Icon from 'react-native-vector-icons/FontAwesome5';
 import {Colors} from '../constants';
 import Button from '../custom/button';
+import Manager from '../service/dataManager';
+import I18n, {SaveLocale} from '../service/i18n';
 
 export default class CustomDrawerContentComponent extends React.Component {
     constructor(props) {
         super(props)
 
         this.state = {
-            switchValue: false
+            switchValue: I18n.locale == 'en' ? false : true
         }
     }
     navigateToScreen = (route, props=null) => () => {
@@ -35,10 +37,12 @@ export default class CustomDrawerContentComponent extends React.Component {
         })
     }
 
-    _toggleSwitch = () => {
+    _toggleSwitch = (newValue) => {
         this.setState(previousState => ({
-            switchValue : !previousState.switchValue
+            switchValue : newValue
         }))
+
+        newValue ? SaveLocale('th') : SaveLocale('en')
     }
 
     render() {
@@ -50,35 +54,35 @@ export default class CustomDrawerContentComponent extends React.Component {
                     </ImageBackground>
                 </View>
                 <View style={styles.body}>
-                    <Button onPress={this.navigateToScreen('Profile', {accessLevel: 1})} rippleColor={Colors.primaryLight}>
+                    <Button onPress={this.navigateToScreen('Profile', {accessLevel: 1})}>
                         <View style={styles.item}>
                             <View style={styles.icon}>
                                 <Icon name="user" size={iconSize} color={Colors.primaryDark} solid={true}/>
                             </View>
                             <View style={styles.textBody}>
-                                <Text style={styles.bodyTextstyle}>Profile</Text>
+                                <Text style={styles.bodyTextstyle}>{I18n.t('Profile')}</Text>
                             </View>
                         </View>
                     </Button>
 
-                    <Button onPress={this.navigateToScreen('Batch')}rippleColor={Colors.primaryLight}>
+                    <Button onPress={this.navigateToScreen('Batch')}>
                         <View style={styles.item}>
                             <View style={styles.icon}>
                                 <Icon name="th-list" size={iconSize} color={Colors.primaryDark} />
                             </View>
                             <View style={styles.textBody}>
-                                <Text style={styles.bodyTextstyle}>Batches</Text>
+                                <Text style={styles.bodyTextstyle}>{I18n.t('Batches')}</Text>
                             </View>
                         </View>
                     </Button>
 
-                    <Button onPress={this.navigateToScreen('ChangePassword')} rippleColor={Colors.primaryLight}>
+                    <Button onPress={this.navigateToScreen('ChangePassword')}>
                         <View style={styles.item}>
                             <View style={styles.icon}>
                                 <Icon name="key" size={iconSize} color={Colors.primaryDark} />
                             </View>
                             <View style={styles.textBody}>
-                                <Text style={styles.bodyTextstyle}>Change Password</Text>
+                                <Text style={styles.bodyTextstyle}>{I18n.t('Change_Password')}</Text>
                             </View>
                         </View>
                     </Button>
@@ -96,10 +100,10 @@ export default class CustomDrawerContentComponent extends React.Component {
                     </View>
                 </View>
 
-                <Button style={styles.footer} onPress={this.navigateToScreen('AuthLoading', {action: 'logout'})} rippleColor={Colors.primaryLight}>
+                <Button style={styles.footer} onPress={this.navigateToScreen('AuthLoading', {action: 'logout'})}>
                     <View>
                         <SafeAreaView forceInset={{ bottom: 'always'}}>
-                            <Text style={styles.signOut}>Sign Out</Text>
+                            <Text style={styles.signOut}>{I18n.t('Signout')}</Text>
                         </SafeAreaView>
                     </View>
                 </Button>

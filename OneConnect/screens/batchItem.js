@@ -7,28 +7,32 @@ import {Colors} from '../constants';
 import Manager from '../service/dataManager';
 import Button from '../custom/button';
 import Feed from '../custom/feed';
+import I18n from '../service/i18n';
 
 
 export default class BatchItem extends React.Component {
     static navigationOptions = ({navigation}) => ({
-        title: 'VIEWING BATCH',
+        title: navigation.getParam('title'),
     })
 
     constructor(props) {
         super(props)
+        this.props.navigation.setParams({ title: I18n.t('Batches')});
         this.item = {}
         this.url = this.props.navigation.getParam('url')
         console.log('batch item : ', this.item)
         this.state = {
             loading: true,
             error: false,
-            errorText: null
+            errorText: null,
+            updateToggle: false
         }
     }
 
     componentDidMount() {
         Manager.addListener('BATCHITEM_S', this._batchItemSuccess)
         Manager.addListener('BATCHITEM_E', this._batchItemError)
+        Manager.addListener('LANG_U', this._updateLanguage)
         console.log("url is ", this.url)
         Manager.batchItem(this.url, 'GET');
     }
@@ -36,6 +40,13 @@ export default class BatchItem extends React.Component {
     componentWillUnmount() {
         Manager.removeListener('BATCHITEM_S', this._batchItemSuccess)
         Manager.removeListener('BATCHITEM_E', this._batchItemError)
+        Manager.removeListener('LANG_U', this._updateLanguage)
+    }
+    _updateLanguage = () => {
+        this.props.navigation.setParams({ title: I18n.t('Batches')});
+        this.setState(previousState => ({
+            updateToggle: !previousState.updateToggle
+        }))
     }
 
     _batchItemSuccess = (data) => {
@@ -108,7 +119,7 @@ export default class BatchItem extends React.Component {
                     height: '100%',
                     width: '100%',
                 }}>
-                    <Text style={{color: Colors.secondaryDark, fontSize: 22,fontWeight: '700', opacity: 0.4}}>Data not available.</Text>
+                    <Text style={{color: Colors.secondaryDark, fontSize: 22,fontWeight: '700', opacity: 0.4}}>{I18n.t('Data_Unavailable')}</Text>
                 </View>
             )
         }
@@ -181,7 +192,7 @@ export default class BatchItem extends React.Component {
                     />
                 </ScrollView>
 
-                <Button style={styles.button} onPress={() => this.props.navigation.navigate('BatchMates', {'item': this.item.batchmates})} title="Batchmates" color={Colors.alternative}>
+                <Button style={styles.button} onPress={() => this.props.navigation.navigate('BatchMates', {'item': this.item.batchmates})} title={I18n.t('Batchmates')} color={Colors.alternative}>
                 </Button>
             </View>
         )

@@ -7,6 +7,7 @@ import Button from '../custom/button';
 import Icon from 'react-native-vector-icons/FontAwesome5';
 import DateTimePicker from "react-native-modal-datetime-picker";
 import ErrorHandler from '../custom/errorHandler';
+import I18n from '../service/i18n';
 
 
 export default class Settings extends React.Component {
@@ -114,7 +115,7 @@ export default class Settings extends React.Component {
                             <ProfileList data={this.data} navigate={this.props.navigation.navigate} callback={this._editField}/>
                         </View>
                     </ScrollView>
-                    <Button onPress={this._save} style={styles.saveButton} title="Save" color={Colors.alternative}/>
+                    <Button onPress={this._save} style={styles.saveButton} title={I18n.t('Save')} color={Colors.alternative}/>
                 </View>
                 {
                     this.state.loading ?

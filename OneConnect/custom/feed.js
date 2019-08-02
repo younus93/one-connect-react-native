@@ -3,6 +3,7 @@ import { View, Text, StyleSheet, Image, TouchableWithoutFeedback, Animated, Easi
 import {Colors} from '../constants';
 import Icon from 'react-native-vector-icons/FontAwesome5';
 import Button from '../custom/button';
+import I18n from '../service/i18n';
 
 
 export default class Feed extends React.Component {
@@ -120,11 +121,11 @@ export default class Feed extends React.Component {
                 <View style={styles.footer}>
                     <Button onPress={this._liked} style={styles.footerElement}>
                         <Icon name="heart" size={20} color={Colors.secondaryDark} solid={this.state.likeIconActive}/>
-                        <Text style={[styles.footerElementText, {color: this.state.likeActiveFont}]}>{this.state.totalLikes} Like</Text>
+                        <Text style={[styles.footerElementText, {color: this.state.likeActiveFont}]}>{this.state.totalLikes} {I18n.t('Like')}</Text>
                     </Button>
                     <Button onPress={this._comment} style={styles.footerElement}>
                         <Icon name="comment" size={20} color={Colors.secondaryDark}/>
-                        <Text style={styles.footerElementText}>{this.state.commentsCount} Comment
+                        <Text style={styles.footerElementText}>{this.state.commentsCount} {I18n.t('Comment')}
                         </Text>
                     </Button>
 

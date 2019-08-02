@@ -1,5 +1,5 @@
 import React from "react";
-import { View, Text, ScrollView, Image, StyleSheet, FlatList, SectionList, SafeAreaView, TouchableWithoutFeedback, TextInput, Animated, Easing, ActivityIndicator,ImageBackground, Modal, Platform} from "react-native";
+import { View, Text, ScrollView, Image, StyleSheet, FlatList, SectionList, SafeAreaView, TouchableWithoutFeedback, TextInput, Animated, Easing, ActivityIndicator,ImageBackground, Modal, Platform, Linking} from "react-native";
 import { DrawerActions } from 'react-navigation-drawer';
 import { NavigationActions } from 'react-navigation';
 import {Colors} from '../constants';
@@ -7,13 +7,13 @@ import Manager from '../service/dataManager';
 import Button from '../custom/button';
 import Icon from 'react-native-vector-icons/FontAwesome5';
 import ImagePicker from 'react-native-image-picker';
-
+import I18n from '../service/i18n';
 
 
 export default class Profile extends React.Component {
     static navigationOptions = ({navigation}) => {
         const accessLevel = navigation.getParam('accessLevel', 0)
-        let options = {title: 'PROFILE',
+        let options = {title: navigation.getParam('title'),
         headerLeftContainerStyle: {
             paddingLeft: 15
         }}
@@ -30,6 +30,7 @@ export default class Profile extends React.Component {
 
     constructor(props){
         super(props)
+        this.props.navigation.setParams({ title: I18n.t('Profile')});
         this.url = props.navigation.getParam('url', '/api/profile')
         this.accessLevel = props.navigation.getParam('accessLevel', 0)
         // console.log("profile url is : ", this.url, this.accessLevel, this.accessLevel==1)
@@ -47,6 +48,7 @@ export default class Profile extends React.Component {
         console.log("profile mounted")
         Manager.addListener('PROFILE_S', this._profileSuccess)
         Manager.addListener('PROFILE_E', this._profileError)
+        Manager.addListener('LANG_U', this._updateLanguage)
 
         Manager.profile(this.url, 'GET')
 
@@ -58,6 +60,14 @@ export default class Profile extends React.Component {
         console.log("profile unmouted")
         Manager.removeListener('PROFILE_S', this._profileSuccess)
         Manager.removeListener('PROFILE_E', this._profileError)
+        Manager.removeListener('LANG_U', this._updateLanguage)
+    }
+
+    _updateLanguage = () => {
+        this.props.navigation.setParams({ title: I18n.t('Profile')});
+        this.setState(previousState => {
+            updateNeeded: !previousState.updateNeeded
+        })
     }
 
     _hamPressed = () => {
@@ -217,35 +227,45 @@ class ImageView extends React.Component {
             if(!this.data.friends_meta.is_friends) {
                 if(this.data.friends_meta.has_friend_request_from_this_profile) {
                     return(
-                        <View>
-                            <Button style={{borderWidth: StyleSheet.hairlineWidth, borderRadius: 5, flexDirection: 'row', justifyContent: 'center', alignItems: 'center', borderColor: Colors.alternative, paddingHorizontal:5, marginBottom: 5}} onPress={this._acceptRequest} rippleColor={Colors.alternative}>
-                                <Icon name="user-check" size={12} color={Colors.alternative} />
-                                <Text style={{fontWeight: '600', fontSize: 14, color: Colors.alternative}}> Accept Friend Request </Text>
-                            </Button>
-                            <Button style={{borderWidth: StyleSheet.hairlineWidth, borderRadius: 5, flexDirection: 'row', justifyContent: 'center', alignItems: 'center', borderColor: Colors.alternative, paddingHorizontal:5}} onPress={this._denyRequest} rippleColor={Colors.alternative}>
-                                <Icon name="user-times" size={12} color={Colors.alternative} />
-                                <Text style={{fontWeight: '600', fontSize: 14, color: Colors.alternative}}> Deny Friend Request </Text>
-                            </Button>
+                        <View style={{flex: 1, flexDirection: 'row', backgroundColor: Colors.surface, padding: 10, justifyContent: 'flex-end', alignItems: 'center'}}>
+
+                            <View>
+                                <Button style={{borderWidth: StyleSheet.hairlineWidth, borderRadius: 5, flexDirection: 'row', justifyContent: 'center', alignItems: 'center', borderColor: Colors.safe, paddingHorizontal:5, marginBottom: 5}} onPress={this._acceptRequest} rippleColor={Colors.safe}>
+                                    <Icon name="user-check" size={12} color={Colors.safe} />
+                                    <Text style={{fontWeight: '600', fontSize: 14, color: Colors.safe}}> Accept Friend Request </Text>
+                                </Button>
+                                <Button style={{borderWidth: StyleSheet.hairlineWidth, borderRadius: 5, flexDirection: 'row', justifyContent: 'center', alignItems: 'center', borderColor: Colors.primaryDark, paddingHorizontal:5}} onPress={this._denyRequest} rippleColor={Colors.primaryDark}>
+                                    <Icon name="user-times" size={12} color={Colors.primaryDark} />
+                                    <Text style={{fontWeight: '600', fontSize: 14, color: Colors.primaryDark}}> Deny Friend Request </Text>
+                                </Button>
+                            </View>
                         </View>
                     )
                 }
                 if(!this.data.friends_meta.has_sent_friend_request_to_this_profile){
                     return(
-                        <Button style={{borderWidth: StyleSheet.hairlineWidth, borderRadius: 5, flexDirection: 'row', justifyContent: 'center', alignItems: 'center', borderColor: Colors.alternative, paddingHorizontal:5}} onPress={this._sendFriendRequest} rippleColor={Colors.alternative}>
-                            <Icon name="user-plus" size={12} color={Colors.alternative} />
-                            <Text style={{fontWeight: '600', fontSize: 14, color: Colors.alternative}}> Send Friend Request </Text>
-                        </Button>
+                        <View style={{flex: 1, flexDirection: 'row', backgroundColor: Colors.surface, padding: 10, justifyContent: 'flex-end', alignItems: 'center'}}>
+
+                            <Button style={{borderWidth: StyleSheet.hairlineWidth, borderRadius: 5, flexDirection: 'row', justifyContent: 'center', alignItems: 'center', borderColor: Colors.safe, paddingHorizontal:5}} onPress={this._sendFriendRequest} rippleColor={Colors.safe}>
+                                <Icon name="user-plus" size={12} color={Colors.safe} />
+                                <Text style={{fontWeight: '600', fontSize: 14, color: Colors.safe}}> Send Friend Request </Text>
+                            </Button>
+                        </View>
                     )
                 }
                 return(
-                    <Text style={{fontWeight: '600', fontSize: 14, color: Colors.alternative}}>Friend Request Sent</Text>
+                    <View style={{flex: 1, flexDirection: 'row', backgroundColor: Colors.surface, padding: 10, justifyContent: 'space-between', alignItems: 'center'}}>
+                        <Text style={{fontWeight: '600', fontSize: 14, color: Colors.secondaryDark}}>Friend Request Sent</Text>
+                    </View>
                 )
             }
             return(
-                <Button style={{borderWidth: StyleSheet.hairlineWidth, borderRadius: 5, flexDirection: 'row', justifyContent: 'center', alignItems: 'center', borderColor: Colors.alternative,paddingHorizontal:5}} onPress={this._unFriend} rippleColor={Colors.alternative}>
-                    <Icon name="user-minus" size={12} color={Colors.alternative} />
-                    <Text style={{fontWeight: '600', fontSize: 14, color: Colors.alternative}}> Un-Friend </Text>
-                </Button>
+                <View style={{flex: 1, flexDirection: 'row', backgroundColor: Colors.surface, padding: 10, justifyContent: 'flex-end', alignItems: 'center'}}>
+                    <Button style={{borderWidth: StyleSheet.hairlineWidth, borderRadius: 5, flexDirection: 'row', justifyContent: 'center', alignItems: 'center', borderColor: Colors.secondaryDark,paddingHorizontal:5}} onPress={this._unFriend} rippleColor={Colors.secondaryDark}>
+                        <Icon name="user-minus" size={12} color={Colors.secondaryDark} />
+                        <Text style={{fontWeight: '600', fontSize: 14, color: Colors.secondaryDark}}> Un-Friend </Text>
+                    </Button>
+                </View>
             )
         }
         return null
@@ -308,6 +328,7 @@ class ImageView extends React.Component {
 
     render() {
       return (
+          <View>
           <ImageBackground style={styles.banner} source={this.state.bannerPhoto} blurRadius={3} imageStyle={{resizeMode: 'cover'}}>
               <SafeAreaView forceInset={{ top: 'always'}}>
                   <View style={{flexDirection: 'row', justifyContent: 'center', alignItems: 'center'}}>
@@ -330,9 +351,7 @@ class ImageView extends React.Component {
                       <Text style={{color: Colors.alternative, fontWeight: '600', fontSize: 18}}>{this.data.basic.salutation + ' ' + this.data.basic.f_name + ' ' + this.data.basic.l_name}</Text>
                       <Text style={{paddingTop: 5,color: Colors.alternative, fontWeight: '600', fontSize: 14}}>{this.data.current_company ? this.data.current_company.designation + ' at ' + this.data.current_company.name: null}</Text>
                   </View>
-                  <View style={styles.bio}>
-                    {this._renderFriendRequestControll()}
-                  </View>
+
               </SafeAreaView>
               {
                   this.accessLevel ?
@@ -343,6 +362,10 @@ class ImageView extends React.Component {
                   null
               }
           </ImageBackground>
+          <View>
+            {this._renderFriendRequestControll()}
+          </View>
+          </View>
 
       );
     }
@@ -402,6 +425,18 @@ class ProfileList extends React.Component {
         // }))
     }
 
+    _makeCall = (number) =>  {
+        let phoneNumber = '';
+        if (Platform.OS === 'android') {
+            phoneNumber = `tel:${number}`
+        }
+        else {
+            phoneNumber = `telprompt:${number}`
+        }
+
+        Linking.openURL(phoneNumber);
+    }
+
     _renderBasicSection = (section) => {
         const monthNames = ["January", "February", "March", "April", "May", "June",
             "July", "August", "September", "October", "November", "December"
@@ -414,10 +449,10 @@ class ProfileList extends React.Component {
                     <Icon name="user" size={18} color={Colors.primaryDark} />
                     <Text style={styles.itemText}>{section.f_name + ' ' + section.l_name}</Text>
                 </View>
-                <View key={`pelt-${Math.random(1)}`} style={styles.item}>
+                <Button key={`pelt-${Math.random(1)}`} style={styles.item} onPress={() => this._makeCall(section.phone_number)}>
                     <Icon name="phone" size={18} color={Colors.primaryDark} />
                     <Text style={styles.itemText}>{section.phone_number}</Text>
-                </View>
+                </Button>
                 <View key={`pelt-${Math.random(1)}`} style={styles.item}>
                     <Icon name="envelope" size={18} color={Colors.primaryDark} />
                     <Text style={styles.itemText}>{section.email}</Text>
@@ -444,7 +479,7 @@ class ProfileList extends React.Component {
 
     _renderExperienceSection = (section) => {
         console.log("section data : ", section)
-        if(section.length > 0) {
+        if(section.length >= 0) {
             // {
             //     this.accessLevel ?
             //     <Button style={{padding: 10}} onPress={this.props.navigate}>
@@ -460,9 +495,7 @@ class ProfileList extends React.Component {
                         {
                             this.accessLevel ?
                             <View style={styles.header}>
-                            <Button style={{borderWidth: StyleSheet.hairlineWidth, borderRadius: 5, justifyContent: 'center', alignItems: 'center'}} onPress={this._navigateToAddCompany} >
-                                <Text style={{fontSize: 16,fontWeight: '600'}}> Add company </Text>
-                            </Button>
+                            <Button style={styles.headerButton} onPress={this._navigateToAddCompany} color={Colors.alternative} title="Add Company"/>
                             </View>
                             :
                             null
@@ -502,13 +535,11 @@ class ProfileList extends React.Component {
             return(
                 <View>
                     <View style={{flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center', paddingRight: 10}}>
-                        <Text style={styles.header}>Tags</Text>
+                        <Text style={styles.header}>{I18n.t('Tags')}</Text>
                         {
                             this.accessLevel ?
                             <View style={styles.header}>
-                            <Button style={{borderWidth: StyleSheet.hairlineWidth, borderRadius: 5, justifyContent: 'center', alignItems: 'center'}} onPress={this._showTagModal}>
-                                <Text style={{fontSize: 16,fontWeight: '600'}}> Add Tag </Text>
-                            </Button>
+                            <Button style={styles.headerButton} onPress={this._showTagModal} color={Colors.alternative} title="Add Tag" />
                             </View>
                             :
                             null
@@ -557,8 +588,27 @@ class ProfileList extends React.Component {
         this.newTag = null
     }
 
-    _navigateToPrivacy = () => {
-        this.props.navigation.navigate('Privacy')
+    _navigateToPrivacy = (item) => {
+        this.props.navigation.navigate('Privacy', {data: item})
+    }
+
+    _renderPrivacySetting = (section) => {
+        console.log("section data : ", section)
+        if(this.accessLevel) {
+            return(
+                <View>
+                    <View style={{width: '100%', padding: 10}} />
+
+                    <View style={[styles.sectionBody, {flexDirection: 'row', flexWrap: 'wrap'}]}>
+                        <Button onPress={() => this._navigateToPrivacy(section)} style={{backgroundColor: Colors.surface, flexDirection: 'row', justifyContent: 'space-between', flex: 1, alignItems: 'center', padding: 15}}>
+                            <Text style={[{opacity: 1, fontSize: 18, fontWeight: '600', color: Colors.onSurface,}]}>Privacy setting</Text>
+                            <Icon name="chevron-right" size={22} color={Colors.secondaryDark}/>
+                        </Button>
+                    </View>
+                </View>
+            )
+        }
+        return null
     }
 
     render() {
@@ -566,7 +616,7 @@ class ProfileList extends React.Component {
             <View>
                 <View>
                     <View style={{flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center'}}>
-                        <Text style={styles.header}>Profile Information</Text>
+                        <Text style={styles.header}>{I18n.t('Profile_Information')}</Text>
                         {
                             this.accessLevel ?
                             <Button style={{padding: 10}} onPress={this.props.navigate}>
@@ -582,7 +632,8 @@ class ProfileList extends React.Component {
                 </View>
                 {this._renderExperienceSection(this.data.companies)}
                 {this._renderTagsSection(this.data.tags)}
-
+                {this._renderPrivacySetting(this.data.privacy)}
+                <View style={{width: '100%', padding: 10}} />
                 <View>
                     <Modal animationType="fade" transparent={true} visible={this.state.isTagModal} onRequestClose={this._toggleModal}>
                         <TouchableWithoutFeedback onPress={this._toggleModal} >
@@ -605,11 +656,6 @@ class ProfileList extends React.Component {
         )
     }
 }
-
-// <View style={{width: '100%', paddingRight: 10}}/>
-// <Button onPress={this._navigateToPrivacy} style={styles.sectionBody}>
-//     <Text style={[styles.header, {opacity: 1, fontSize: 18}]}>Privay setting</Text>
-// </Button>
 
 const styles = StyleSheet.create({
     container: {
@@ -645,7 +691,7 @@ const styles = StyleSheet.create({
         fontSize: 16,
         fontWeight: '600',
         color: Colors.onSurface,
-        opacity: 0.4
+        // opacity: 0.4
     },
     sectionText: {
         fontWeight: 'bold',
@@ -692,4 +738,13 @@ const styles = StyleSheet.create({
         paddingVertical: 15,
         marginVertical: 10,
     },
+    headerButton: {
+        justifyContent: 'center',
+        alignItems: 'center',
+        backgroundColor: Colors.secondaryDark,
+        borderRadius: 5,
+        padding: 5,
+        // marginHorizontal: 15,
+        // marginBottom: 5
+    }
 });

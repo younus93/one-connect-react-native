@@ -8,6 +8,7 @@ import Profile from '../screens/profile';
 import Settings from '../screens/settings';
 import AddCompany from '../screens/addCompany';
 import ChangePassword from '../screens/changePassword';
+import Privacy from '../screens/privacySetting';
 import Icon from 'react-native-vector-icons/FontAwesome5';
 import {Colors} from '../constants'
 
@@ -48,6 +49,12 @@ const ProfileStack = createStackNavigator({
         screen: AddCompany,
         navigationOptions: () => ({
             title: `ADD COMPANY`,
+        }),
+    },
+    Privacy: {
+        screen: Privacy,
+        navigationOptions: () => ({
+            title: `PRIVACY`,
         }),
     }
 }, navigatorConfig);

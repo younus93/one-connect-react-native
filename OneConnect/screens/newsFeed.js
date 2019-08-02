@@ -6,10 +6,11 @@ import {Colors} from '../constants';
 import Manager from '../service/dataManager';
 import Icon from 'react-native-vector-icons/FontAwesome5';
 import Button from '../custom/button';
+import I18n from '../service/i18n';
 
 export default class NewsFeed extends React.Component {
     static navigationOptions = ({navigation}) => ({
-        title: 'NEWS FEEDS',
+        title:  navigation.getParam('title'),
         headerLeft: (
             <Button style={{borderRadius: 20}} onPress={navigation.getParam('hamPressed')} >
                 <Icon name="bars" size={22} color={Colors.onPrimary} style={{padding:10}}/>
@@ -23,6 +24,7 @@ export default class NewsFeed extends React.Component {
     constructor(props){
         super(props)
         this.data = []
+        this.props.navigation.setParams({ title: I18n.t('Newsfeed')});
         this.state = {
             data: [],
             loading: true,
@@ -43,6 +45,7 @@ export default class NewsFeed extends React.Component {
         Manager.addListener('LIKE_E', this._likeError)
 
         Manager.addListener('UPDATENEWS', this._updateNews)
+        Manager.addListener('LANG_U', this._updateNews)
 
         Manager.newsFeeds('/api/newsfeeds?page=1', 'GET')
 
@@ -58,6 +61,7 @@ export default class NewsFeed extends React.Component {
         Manager.removeListener('LIKE_E', this._likeError)
 
         Manager.removeListener('UPDATENEWS', this._updateNews)
+        Manager.removeListener('LANG_U', this._updateNews)
     }
 
     _hamPressed = () => {
@@ -66,6 +70,7 @@ export default class NewsFeed extends React.Component {
 
     _updateNews = () => {
         console.log("updating news")
+        this.props.navigation.setParams({ title: I18n.t('Newsfeed')});
         this.setState(previousState => ({
             updateToggle: !previousState.updateToggle
         }))
@@ -155,7 +160,7 @@ export default class NewsFeed extends React.Component {
                     height: '100%',
                     width: '100%',
                 }}>
-                    <Text style={{color: Colors.secondaryDark, fontSize: 22,fontWeight: '700', opacity: 0.4}}>Data not available.</Text>
+                    <Text style={{color: Colors.secondaryDark, fontSize: 22,fontWeight: '700', opacity: 0.4}}>{I18n.t('Data_Unavailable')}</Text>
                 </View>
             )
         }

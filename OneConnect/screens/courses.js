@@ -4,28 +4,33 @@ import {Colors} from '../constants';
 import Manager from '../service/dataManager';
 import Button from '../custom/button';
 import Feed from '../custom/feed';
+import I18n from '../service/i18n';
 
 
 export default class BatchItem extends React.Component {
     static navigationOptions = ({navigation}) => ({
-        title: 'VIEWING COURSE',
+        title: navigation.getParam('title'),
     })
 
     constructor(props) {
         super(props)
+        this.props.navigation.setParams({ title: I18n.t('Courses')});
+
         this.item = {}
         this.url = this.props.navigation.getParam('url')
         console.log('course item : ', this.item)
         this.state = {
             loading: true,
             error: false,
-            errorText: null
+            errorText: null,
+            updateToggle: false
         }
     }
 
     componentDidMount() {
         Manager.addListener('COURSEITEM_S', this._courseItemSuccess)
         Manager.addListener('COURSEITEM_E', this._courseItemError)
+        Manager.addListener('LANG_U', this._updateLanguage)
         console.log("url is ", this.url)
         Manager.courseItem(this.url, 'GET');
     }
@@ -33,6 +38,14 @@ export default class BatchItem extends React.Component {
     componentWillUnmount() {
         Manager.removeListener('COURSEITEM_S', this._courseItemSuccess)
         Manager.removeListener('COURSEITEM_E', this._courseItemError)
+        Manager.removeListener('LANG_U', this._updateLanguage)
+    }
+
+    _updateLanguage = () => {
+        this.props.navigation.setParams({ title: I18n.t('Courses')});
+        this.setState(previousState => ({
+            updateToggle: !previousState.updateToggle
+        }))
     }
 
     _courseItemSuccess = (data) => {
@@ -105,7 +118,7 @@ export default class BatchItem extends React.Component {
                     height: '100%',
                     width: '100%',
                 }}>
-                    <Text style={{color: Colors.secondaryDark, fontSize: 22,fontWeight: '700', opacity: 0.4}}>Data not available.</Text>
+                    <Text style={{color: Colors.secondaryDark, fontSize: 22,fontWeight: '700', opacity: 0.4}}>{I18n.t('Data_Unavailable')}</Text>
                 </View>
             )
         }

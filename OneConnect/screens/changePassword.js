@@ -2,8 +2,38 @@ import React from "react";
 import { View, Text, StyleSheet, TextInput} from "react-native";
 import Button from '../custom/button';
 import {Colors} from '../constants';
+import I18n from '../service/i18n';
+import Manager from '../service/dataManager';
 
 export default class ChangePassword extends React.Component {
+    static navigationOptions = ({navigation}) => ({
+        title: navigation.getParam('title'),
+    })
+
+    constructor(props) {
+        super(props)
+        this.props.navigation.setParams({ title: I18n.t('Change_Password')});
+        this.state = {
+            loading: true,
+            error: false,
+            errorText: null,
+            updateToggle: false
+        }
+    }
+
+    componentDidMount() {
+        Manager.addListener('LANG_U', this._updateLanguage)
+    }
+
+    componentWillUnmount() {
+        Manager.removeListener('LANG_U', this._updateLanguage)
+    }
+    _updateLanguage = () => {
+        this.props.navigation.setParams({ title: I18n.t('Change_Password')});
+        // this.setState(previousState => {
+        //     updateToggle: !previousState.updateToggle
+        // })
+    }
 
     render() {
       return (
@@ -21,7 +51,7 @@ export default class ChangePassword extends React.Component {
                     <Text style={styles.textLabel}>Confirm New Password*</Text>
                     <TextInput style={styles.textInput} placeholder="Retype new Password" onChangeText={(text) => console.log(text)} secureTextEntry />
                 </View>
-                <Button style={styles.button} onPress={() => console.log("change password here")} title="CHANGE PASSWORD" color={Colors.alternative}/>
+                <Button style={styles.button} onPress={() => console.log("change password here")} title={I18n.t('Change_Password')} color={Colors.alternative}/>
             </View>
 
         </View>

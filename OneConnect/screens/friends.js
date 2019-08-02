@@ -5,11 +5,12 @@ import {Colors} from '../constants';
 import Manager from '../service/dataManager';
 import Button from '../custom/button';
 import Icon from 'react-native-vector-icons/FontAwesome5';
+import I18n from '../service/i18n';
 
 
 export default class Friends extends React.Component {
     static navigationOptions = ({navigation}) => ({
-        title: 'FRIENDS',
+        title: navigation.getParam('title'),
         headerLeft: (
             <Button style={{borderRadius: 20}} onPress={navigation.getParam('hamPressed')} >
                 <Icon name="bars" size={22} color={Colors.onPrimary} style={{padding:10}}/>
@@ -22,12 +23,14 @@ export default class Friends extends React.Component {
 
     constructor(props) {
         super(props)
+        this.props.navigation.setParams({ title: I18n.t('Friends')});
         this.url = props.navigation.getParam('url', '/api/friends')
         this.data = null
         this.state = {
             loading: true,
             error: false,
-            errorText: null
+            errorText: null,
+            updateToggle: false
         }
     }
 
@@ -35,6 +38,7 @@ export default class Friends extends React.Component {
         Manager.addListener('FRIENDS_S', this._friendSuccess)
         Manager.addListener('FRIENDS_E', this._friendError)
         Manager.addListener('NOTIFICATION_U', this._refresh)
+        Manager.addListener('LANG_U', this._updateLanguage)
 
         Manager.friends(this.url, 'GET');
         this.props.navigation.setParams({ hamPressed: this._hamPressed });
@@ -44,6 +48,15 @@ export default class Friends extends React.Component {
         Manager.removeListener('FRIENDS_S', this._friendSuccess)
         Manager.removeListener('FRIENDS_E', this._friendError)
         Manager.removeListener('NOTIFICATION_U', this._refresh)
+        Manager.removeListener('LANG_U', this._updateLanguage)
+
+    }
+
+    _updateLanguage = () => {
+        this.props.navigation.setParams({ title: I18n.t('Friends')});
+        this.setState(previousState => ({
+            updateToggle: !previousState.updateToggle
+        }))
     }
 
     _hamPressed = () => {
@@ -122,7 +135,7 @@ export default class Friends extends React.Component {
                     height: '100%',
                     width: '100%',
                 }}>
-                    <Text style={{color: Colors.secondaryDark, fontSize: 22,fontWeight: '700', opacity: 0.4}}>Data not available.</Text>
+                    <Text style={{color: Colors.secondaryDark, fontSize: 22,fontWeight: '700', opacity: 0.4}}>{I18n.t('Data_Unavailable')}</Text>
                 </View>
             )
         }

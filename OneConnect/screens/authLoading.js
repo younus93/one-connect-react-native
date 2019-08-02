@@ -3,6 +3,7 @@ import {StyleSheet, Text, View, Animated, Easing, ActivityIndicator, ImageBackgr
 import AsyncStorage from '@react-native-community/async-storage';
 import {Colors} from '../constants';
 import Manager from '../service/dataManager';
+import {UpdateLocale} from '../service/i18n';
 
 
 
@@ -33,10 +34,11 @@ export default class AuthLoading extends Component {
     }
 
     _login = () => {
-        AsyncStorage.multiGet(['@appKey','@profilePic'])
+        AsyncStorage.multiGet(['@appKey','@profilePic', '@locale'])
         .then(res => {
             if(res[0][1]){
                 Manager.setToken(res[0][1], res[1][1])
+                UpdateLocale(res[2][1])
                 // this.setState({
                 //     animatedState: false
                 // })
@@ -46,6 +48,7 @@ export default class AuthLoading extends Component {
                 // this.setState({
                 //     animatedState: false
                 // })
+                UpdateLocale(res[2][1])
                 this.props.navigation.navigate('Login')
             }
         })

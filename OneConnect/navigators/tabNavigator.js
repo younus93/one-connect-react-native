@@ -1,4 +1,5 @@
 import React from 'react';
+import { View, Text } from "react-native";
 import { createBottomTabNavigator } from 'react-navigation';
 import Ionicons from 'react-native-vector-icons/Ionicons';
 import Icon from 'react-native-vector-icons/FontAwesome5';
@@ -8,11 +9,42 @@ import ProfileStack from './profileStackNavigator';
 import SearchStack from './searchStack';
 import NotificationStack from './notificationStack';
 import FriendsStack from './friendsStack';
+import I18n from '../service/i18n';
+import Manager from '../service/dataManager';
 
 import {Colors} from '../constants'
 
+class Lable extends React.Component {
+    constructor(props){
+        super(props)
+        Manager.addListener('LANG_U', this._updateLanguage)
+        this.title = props.title
+        this.state = {
+            lable: props.lable,
+        }
+    }
+    componentWillUnmount() {
+        Manager.removeListener('LANG_U', this._updateLanguage)
+    }
 
-//`newspaper${focused ? '' : '-outline'}`
+    _updateLanguage = () => {
+        console.log("updating tab lable", this.title, I18n.t(this.title))
+        this.setState({
+            lable: I18n.t(this.title)
+        })
+    }
+
+    render() {
+        console.log('lable is : ', this.state.lable)
+        return(
+            <View style={{flex: 1, justifyContent: 'center', alignItems: 'center'}}>
+                <Text>{this.state.lable}</Text>
+            </View>
+        )
+    }
+}
+
+
 const navigatorConfig = {
     initialRouteName: 'FeedStack',
     resetOnBlur: true,
@@ -42,6 +74,34 @@ const navigatorConfig = {
 
             // You can return any component that you like here!
             return <IconComponent name={iconName} size={20} color={tintColor} solid={true}/>;
+        },
+        tabBarLabel: ({ focused, horizontal, tintColor }) => {
+            const { routeName } = navigation.state;
+            let lableName;
+            let titleName;
+
+            if (routeName === 'FeedStack') {
+                titleName = 'Newsfeed'
+                lableName = I18n.t('Newsfeed');
+            }
+            else if (routeName === 'ProfileStack') {
+                titleName = 'Profile'
+                lableName = I18n.t('Profile');
+            }
+            else if (routeName === 'SearchStack') {
+                titleName = 'Search'
+                lableName = I18n.t('Search');
+            }
+            else if (routeName === 'NotificationStack') {
+                titleName = 'Notifications'
+                lableName = I18n.t('Notifications');
+            }
+            else if (routeName === 'FriendsStack') {
+                titleName = 'Friends'
+                lableName = I18n.t('Friends');
+            }
+
+            return <Lable lable={lableName} title={titleName}/>
         }
     }),
     tabBarOptions: {
@@ -61,33 +121,18 @@ const navigatorConfig = {
 const Tab = createBottomTabNavigator({
     FeedStack: {
         screen: FeedStack,
-        navigationOptions: {
-            title: "NewsFeed"
-        }
     },
     ProfileStack: {
         screen: ProfileStack,
-        navigationOptions: {
-            title: "Profile"
-        }
     },
     SearchStack: {
         screen: SearchStack,
-        navigationOptions: {
-            title: 'Search'
-        }
     },
     NotificationStack: {
         screen: NotificationStack,
-        navigationOptions: {
-            title: 'Notification'
-        }
     },
     FriendsStack: {
         screen: FriendsStack,
-        navigationOptions: {
-            title: 'Friends'
-        }
     }
 }, navigatorConfig);
 

@@ -3,27 +3,31 @@ import { View, Text, TextInput, StyleSheet, FlatList, TouchableWithoutFeedback, 
 import {Colors} from '../constants';
 import Manager from '../service/dataManager';
 import Button from '../custom/button';
+import I18n from '../service/i18n';
 
 
 export default class Batch extends React.Component {
     static navigationOptions = ({navigation}) => ({
-        title: 'BATCHES',
+        title: navigation.getParam('title'),
     })
 
     constructor(props) {
         super(props)
+        this.props.navigation.setParams({ title: I18n.t('Batches')});
         this.url = props.navigation.getParam('url', '/api/batches/')
         this.state = {
             data: [],
             loading: true,
             error: false,
-            errorText: null
+            errorText: null,
+            updateToggle: false
         }
     }
 
     componentDidMount() {
         Manager.addListener('BATCH_S', this._batchSuccess)
         Manager.addListener('BATCH_E', this._batchError)
+        Manager.addListener('LANG_U', this._updateLanguage)
 
         Manager.batch(this.url, 'GET');
     }
@@ -31,6 +35,14 @@ export default class Batch extends React.Component {
     componentWillUnmount() {
         Manager.removeListener('BATCH_S', this._batchSuccess)
         Manager.removeListener('BATCH_E', this._batchError)
+        Manager.removeListener('LANG_U', this._updateLanguage)
+    }
+
+    _updateLanguage = () => {
+        this.props.navigation.setParams({ title: I18n.t('Batches')});
+        this.setState(previousState => ({
+            updateToggle: !previousState.updateToggle
+        }))
     }
 
     _batchSuccess = (data) => {
@@ -128,7 +140,7 @@ export default class Batch extends React.Component {
                     height: '100%',
                     width: '100%',
                 }}>
-                    <Text style={{color: Colors.secondaryDark, fontSize: 22,fontWeight: '700', opacity: 0.4}}>Data not available.</Text>
+                    <Text style={{color: Colors.secondaryDark, fontSize: 22,fontWeight: '700', opacity: 0.4}}>{I18n.t('Data_Unavailable')}</Text>
                 </View>
             )
         }

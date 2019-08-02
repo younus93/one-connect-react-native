@@ -5,7 +5,7 @@ import {Colors} from '../constants';
 
 const defaultProps = {
   children: null,
-  rippleColor: Colors.secondaryLight,
+  rippleColor: Colors.secondary,
   textColor: 'black',
   disabled: false,
   maxOpacity: 0.16,

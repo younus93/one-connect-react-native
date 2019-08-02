@@ -3,6 +3,7 @@ import { View, Text, TextInput, StyleSheet, FlatList, TouchableWithoutFeedback, 
 import {Colors} from '../constants';
 import Manager from '../service/dataManager';
 import Button from '../custom/button';
+import I18n from '../service/i18n';
 
 
 export default class BatchMates extends React.Component {
@@ -101,7 +102,7 @@ export default class BatchMates extends React.Component {
                     height: '100%',
                     width: '100%',
                 }}>
-                    <Text style={{color: Colors.secondaryDark, fontSize: 22,fontWeight: '700', opacity: 0.4}}>Data not available.</Text>
+                    <Text style={{color: Colors.secondaryDark, fontSize: 22,fontWeight: '700', opacity: 0.4}}>{I18n.t('Data_Unavailable')}</Text>
                 </View>
             )
         }

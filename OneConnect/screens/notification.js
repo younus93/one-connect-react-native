@@ -5,11 +5,12 @@ import {Colors} from '../constants';
 import Manager from '../service/dataManager';
 import Button from '../custom/button';
 import Icon from 'react-native-vector-icons/FontAwesome5';
+import I18n from '../service/i18n';
 
 
 export default class Notification extends React.Component {
     static navigationOptions = ({navigation}) => ({
-        title: 'NOTIFICATION',
+        title: navigation.getParam('title'),
         headerLeft: (
             <Button style={{borderRadius: 20}} onPress={navigation.getParam('hamPressed')} >
                 <Icon name="bars" size={22} color={Colors.onPrimary} style={{padding:10}}/>
@@ -22,10 +23,12 @@ export default class Notification extends React.Component {
 
     constructor(props){
         super(props)
+        this.props.navigation.setParams({ title: I18n.t('Notifications')});
         this.type = ['Birthdays', "Friend requests"]
         this.data = null
         this.state = {
-            loading: true
+            loading: true,
+            updateToggle: false
         }
     }
 
@@ -35,6 +38,7 @@ export default class Notification extends React.Component {
         Manager.addListener('NOTIFICATION_S', this._notificationSuccess)
         Manager.addListener('NOTIFICATION_E', this._notificationError)
         Manager.addListener('NOTIFICATION_U', this._refresh)
+        Manager.addListener('LANG_U', this._updateLanguage)
 
         Manager.notification(`/api/notifications`, 'GET')
         this.props.navigation.setParams({ hamPressed: this._hamPressed });
@@ -44,6 +48,15 @@ export default class Notification extends React.Component {
         Manager.removeListener('NOTIFICATION_S', this._notificationSuccess)
         Manager.removeListener('NOTIFICATION_E', this._notificationError)
         Manager.removeListener('NOTIFICATION_U', this._refresh)
+        Manager.removeListener('LANG_U', this._updateLanguage)
+
+    }
+
+    _updateLanguage = () => {
+        this.props.navigation.setParams({ title: I18n.t('Notifications')});
+        this.setState(previousState => {
+            updateToggle: !previousState.updateToggle
+        })
     }
 
     _hamPressed = () => {
@@ -228,7 +241,7 @@ export default class Notification extends React.Component {
                         width: '100%',
                         paddingTop: 20
                     }}>
-                        <Text style={{color: Colors.secondaryDark, fontSize: 22,fontWeight: '700', opacity: 0.4}}>No notification</Text>
+                        <Text style={{color: Colors.secondaryDark, fontSize: 22,fontWeight: '700', opacity: 0.4}}>{I18n.t('No_Notifications_yet')}</Text>
                     </View>
                     : null
                 }

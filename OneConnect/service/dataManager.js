@@ -1,5 +1,6 @@
 import React from 'react';
 import AsyncStorage from '@react-native-community/async-storage';
+import {UpdateLocale, SaveLocale} from '../service/i18n';
 
 var EventEmitter = require('EventEmitter');
 import Call from './network';
@@ -9,6 +10,11 @@ class dataManager {
         this.eventEmitter = new EventEmitter()
         this.token = null;
         this.profile_pic_url = null;
+        this.locale = 'th';
+    }
+
+    updateLocale = (locale) => {
+        this.locale = locale
     }
 
     addListener = (event, target) => {
@@ -26,17 +32,21 @@ class dataManager {
     setToken = (token, profilePic) => {
         this.token = token;
         this.profilePicUrl = profilePic
-        AsyncStorage.getItem('@appKey')
+        AsyncStorage.multiGet(['@appKey', '@locale'])
         .then(res => {
-            if(!res){
+            if(!res[0][1]){
                 AsyncStorage.multiSet([['@appKey', token], ['@profilePic', profilePic]])
                 .then(response => console.log("token saved"))
                 .catch(error => console.log("token not saved"))
             }
+
+            if(res[1][1]) {
+                UpdateLocale(res[1][1])
+            }
         })
         .catch(error => {
             console.log("storage error : ", error)
-            AsyncStorage.setItem([['@appKey', token], ['@profilePic', profilePic]])
+            AsyncStorage.multiSet([['@appKey', token], ['@profilePic', profilePic]])
             .then(response => console.log(" token saved"))
             .catch(error => console.log("token not saved"))
         })
@@ -247,6 +257,16 @@ class dataManager {
         })
         .catch(error => {
             this.eventEmitter.emit('INDUSTRY_E', error)
+        })
+    }
+
+    privacy = (uri, method, data=null) => {
+        Call(uri, method, data, this.token)
+        .then(response => {
+            this.eventEmitter.emit('PRIVACY_S', response)
+        })
+        .catch(error => {
+            this.eventEmitter.emit('PRIVACY_E', error)
         })
     }
 }
