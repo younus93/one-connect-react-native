@@ -80,9 +80,10 @@ export default class OpenFeed extends React.Component {
     Manager.removeListener("COMMENTS_E", this._commentsLoadingError);
     Manager.removeListener("LANG_U", this._updateLanguage);
   }
-  _deleteCommentSuccess = (response) => {
-     Manager.getFeedComments(this.data["resource_url"] + "/comments", "GET");
-  }
+  _deleteCommentSuccess = response => {
+    console.log("delete comment success");
+    Manager.getFeedComments(this.data["resource_url"] + "/comments", "GET");
+  };
   _updateLanguage = () => {
     this.props.navigation.setParams({ title: I18n.t("POST") });
     this.setState(previousState => {
@@ -173,7 +174,8 @@ export default class OpenFeed extends React.Component {
 
   _profile = item => {
     this.props.navigation.navigate("Profile", {
-      url: item.poster.resource_url
+      url: item.poster.resource_url,
+      accessLevel: 1
     });
   };
 
@@ -207,19 +209,21 @@ export default class OpenFeed extends React.Component {
           key={`cs-${Math.random(1)}`}
           data={item}
           callback={() => this._profile(item)}
-          userId = {this.state.id}
-          _deleteComment = {this._deleteComment}
+          userId={this.state.id}
+          _deleteComment={this._deleteComment}
         />
       );
     });
   };
   _deleteComment = id => {
-      console.log('delete comment',id)
-      this.setState({
-          commentLoading:true
-      })
-      Manager.deleteComments(this.data["resource_url"] + "/comments/"+id,'DELETE');
-
+    console.log("delete comment", id);
+    this.setState({
+      commentLoading: true
+    });
+    Manager.deleteComments(
+      this.data["resource_url"] + "/comments/" + id,
+      "DELETE"
+    );
   };
   _institute = () => {
     // console.log("reached institute callback with ", item)

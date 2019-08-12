@@ -111,7 +111,7 @@ class dataManager {
         Call(uri, method, data, this.token)
         .then(response => {
             console.log('deleteComment',response)
-            if(response.action === "true"){
+            if(response.action){
                 this.eventEmitter.emit('DELETE_COMMENT_S',response)
             }
             // this.eventEmitter.emit('NEW_COMMENTS_S', response)
@@ -286,10 +286,11 @@ class dataManager {
         })
     }
     forgotPassword = (uri, method, data=null) => {
+        console.log('forgotPassword',data)
         Call(uri, method, data, this.token)
         .then(response => {
             console.log("forgotPassword",response.data.action)
-            if(response.data.action === "true")
+            if(response.data.action===true)
             this.eventEmitter.emit('FORGOT_S', response)
             else {
             console.log("forgotPassword error",response)

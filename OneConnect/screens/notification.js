@@ -268,6 +268,13 @@ export default class Notification extends React.Component {
                         {item.sender.friends_meta.mutual_friends_count}{" "}
                         {I18n.t("Mutual_friends")}
                       </Text>
+                      <View style={styles.tags}>
+                        {item.searchable.tags.map(tag => (
+                          <Text style={styles.tag} key={UUID.v4()}>
+                            {tag.name}
+                          </Text>
+                        ))}
+                      </View>
                       <View style={styles.buttons}>
                         <Button
                           onPress={() => this._accept(item.sender.id)}
@@ -325,7 +332,7 @@ export default class Notification extends React.Component {
   };
 
   render() {
-    console.log('incomingFriendships',this.state)
+    console.log("incomingFriendships", this.state);
     return (
       <View style={styles.container}>
         {this.state.loading ? (
@@ -350,7 +357,14 @@ export default class Notification extends React.Component {
             <View>
               {this._renderBirthdays(this.data.birthdays)}
               {this._renderBatchMessages(this.data.batch_messages)}
-              {<UserList _accept={this._accept} _deny={this._deny} section={this.state.incomingFriendships} _navigateMate={this._navigateMate}/>}
+              {
+                <UserList
+                  _accept={this._accept}
+                  _deny={this._deny}
+                  section={this.state.incomingFriendships}
+                  _navigateMate={this._navigateMate}
+                />
+              }
             </View>
           ) : (
             <View
@@ -418,7 +432,8 @@ const styles = StyleSheet.create({
     flexDirection: "row",
     alignItems: "center",
     padding: 20,
-    paddingVertical: 20
+    paddingVertical: 20,
+    backgroundColor:Colors.surface
   },
   itemText: {
     paddingLeft: 10,
@@ -488,5 +503,12 @@ const styles = StyleSheet.create({
     marginLeft: 10,
     marginTop: 10,
     borderRadius: 22
+  },
+  tags: {
+    fontSize: 12,
+    fontWeight: "300"
+  },
+  tag: {
+    paddingLeft: 10
   }
 });

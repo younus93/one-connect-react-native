@@ -16,7 +16,7 @@ import Button from "../custom/button";
 import Icon from "react-native-vector-icons/FontAwesome5";
 import I18n from "../service/i18n";
 import Toast, { DURATION } from "react-native-easy-toast";
-
+const UUID = require("uuid");
 export default class UserList extends React.Component {
   static navigationOptions = ({ navigation }) => ({
     title: navigation.getParam("title"),
@@ -49,13 +49,12 @@ export default class UserList extends React.Component {
       section: this.props.section
     };
   }
-  shouldComponentUpdate = (nextProps) => {
-      console.log("shouldComponentUpdate",nextProps)
-      return true;
-  }
+  shouldComponentUpdate = nextProps => {
+    console.log("shouldComponentUpdate", nextProps);
+    return true;
+  };
   componentDidMount() {
     console.log("user list mounted");
-  
   }
 
   componentWillUnmount() {
@@ -65,22 +64,13 @@ export default class UserList extends React.Component {
     // Manager.removeListener("LANG_U", this._updateLanguage);
   }
 
-  
-
- 
-
- 
-
-  
-
   _navigateUser = item => {
     this.props.navigation.navigate("Profile", { url: item.url });
   };
-  
 
   _navigateMate = item => {
     console.log("pressed item :", item);
-    this.props._navigateMate(item)
+    this.props._navigateMate(item);
   };
 
   _accept = id => {
@@ -89,7 +79,7 @@ export default class UserList extends React.Component {
     // });
     // this._refresh();
     // this.refs.toast.show("Friend request accepted", 500, () => {});
-    this.props._accept(id)
+    this.props._accept(id);
   };
   _deny = id => {
     console.log("Deny");
@@ -136,33 +126,71 @@ export default class UserList extends React.Component {
                         {item.sender.friends_meta.mutual_friends_count}{" "}
                         {I18n.t("Mutual_friends")}
                       </Text>
+                      <View style={styles.tags}>
+                        {item.sender.tags.map(tag => (
+                          <Text style={styles.tag} key={UUID.v4()}>
+                            {tag.name}
+                          </Text>
+                        ))}
+                      </View>
                       <View style={styles.buttons}>
-                        <Button
-                          onPress={() => this._accept(item.sender.id)}
-                          key={`pelt-accept-${Math.random(1)}`}
-                          style={[styles.acceptButton,{backgroundColor:"#3b5998"}]}
+                        <View
+                          style={{ flexDirection: "row", alignItems: "center" }}
                         >
-                          <Icon
-                            name="check-circle"
-                            size={20}
-                            color={Colors.primary}
-                            style={[styles.acceptButton]}
-                          />
-                          <Text style={{padding:10,color:Colors.primary}}>Confirm</Text>
-                        </Button>
-                        <Button
-                          onPress={() => this._deny(item.sender.id)}
-                          key={`pelt-deny-de${Math.random(1)}`}
-                          style={[styles.acceptButton,{backgroundColor:"#dfe3ee"}]}
-                        >
-                          <Icon
-                            name="times-circle"
-                            size={20}
-                            color={Colors.onPrimary}
-                            style={[styles.acceptButton]}
-                          />
-                          <Text style={{padding:10,paddingRight:15,color:Colors.onPrimary}}>Delete</Text>
-                        </Button>
+                          <Button
+                            style={{
+                              borderWidth: StyleSheet.hairlineWidth,
+                              borderRadius: 5,
+                              flexDirection: "row",
+                              justifyContent: "center",
+                              alignItems: "center",
+                              backgroundColor: Colors.primaryDark,
+                              padding: 12,
+                              marginRight: 15
+                            }}
+                            onPress={() => this._accept(item.sender.id)}
+                            rippleColor={Colors.safe}
+                          >
+                            <Icon name="user-check" size={12} color={"#fff"} />
+                            <Text
+                              style={{
+                                fontWeight: "600",
+                                fontSize: 14,
+                                color: "#fff",
+                                paddingLeft: 5
+                              }}
+                            >
+                              {" "}
+                              Confirm{" "}
+                            </Text>
+                          </Button>
+                          <Button
+                            style={{
+                              borderWidth: StyleSheet.hairlineWidth,
+                              borderRadius: 5,
+                              flexDirection: "row",
+                              justifyContent: "center",
+                              alignItems: "center",
+                              backgroundColor: Colors.secondaryDark,
+                              padding: 12
+                            }}
+                            onPress={() => this._deny(item.sender.id)}
+                            rippleColor={Colors.primaryDark}
+                          >
+                            <Icon name="user-times" size={12} color={"#fff"} />
+                            <Text
+                              style={{
+                                fontWeight: "600",
+                                fontSize: 14,
+                                color: "#fff",
+                                paddingLeft: 5
+                              }}
+                            >
+                              {" "}
+                              Delete{" "}
+                            </Text>
+                          </Button>
+                        </View>
                       </View>
                     </View>
                   </Button>
@@ -171,15 +199,15 @@ export default class UserList extends React.Component {
             })}
           </View>
           <Toast
-          ref="toast"
-          style={{ backgroundColor: Colors.onPrimary }}
-          position="bottom"
-          positionValue={200}
-          fadeInDuration={200}
-          fadeOutDuration={200}
-          opacity={0.8}
-          textStyle={{ color: Colors.primary }}
-        />
+            ref="toast"
+            style={{ backgroundColor: Colors.onPrimary }}
+            position="bottom"
+            positionValue={200}
+            fadeInDuration={200}
+            fadeOutDuration={200}
+            opacity={0.8}
+            textStyle={{ color: Colors.primary }}
+          />
         </View>
       );
     }
@@ -187,7 +215,7 @@ export default class UserList extends React.Component {
   };
 
   render() {
-      console.log('render',this.state.section)
+    console.log("render", this.state.section);
     return (
       <View style={styles.container}>
         {this._renderUsers(this.props.section)}
@@ -279,7 +307,7 @@ const styles = StyleSheet.create({
     justifyContent: "space-between",
     flexDirection: "row",
     marginTop: 5,
-    width: "70%"
+    paddingLeft: 10
   },
   separator: {
     width: "100%",
@@ -292,7 +320,20 @@ const styles = StyleSheet.create({
     flexDirection: "row",
     marginLeft: 10,
     marginTop: 10,
-    borderRadius: 22,
-    
+    borderRadius: 22
+  },
+  tags: {
+    fontSize: 12,
+    fontWeight: "300",
+    flexDirection: "row",
+    flexWrap:"wrap",
+    paddingRight:10,
+    flexShrink: 1
+  },
+  tag: {
+    paddingLeft: 10
+  },
+  profileContainer:{
+    flexShrink:1
   }
 });

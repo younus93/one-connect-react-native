@@ -26,8 +26,7 @@ export default class Feed extends React.Component {
       likeIconActive: props.data.is_liked,
       likeActivefont: Colors.secondaryLight,
       commentsCount: props.data.comments_count,
-      faceData: [],
-      remainingFaces: 0
+      pic: props.data.pic
     };
   }
 
@@ -41,7 +40,8 @@ export default class Feed extends React.Component {
         totalLikes: nextProps.data.likes,
         likeIconActive: nextProps.data.is_liked,
         likeActivefont: Colors.secondaryLight,
-        commentsCount: nextProps.data.comments_count
+        commentsCount: nextProps.data.comments_count,
+        pic: nextProps.data.pic
       });
     }
   }
@@ -96,10 +96,9 @@ export default class Feed extends React.Component {
   };
 
   render() {
+    console.log("pic", this.state.pic);
     const { data } = this.props;
-    console.log("faceData");
     let faces = this.props.data.likers;
-    console.log("addFaces", this.props);
     faceData = [];
     remainingFaces = this.props.data.likes - 5;
     faces.map((like, index) => {
@@ -108,6 +107,7 @@ export default class Feed extends React.Component {
       likeData.imageUrl = like.profile_pic;
       faceData.push(likeData);
     });
+    console.log('faceData',faceData)
     return (
       <TouchableWithoutFeedback
         onPress={this._onPress}
@@ -145,6 +145,13 @@ export default class Feed extends React.Component {
           </View>
           <View style={styles.paddingVertical20}>
             <Text style={styles.bodyText}>{data.body}</Text>
+            {this.state.pic != null && (
+              <Image
+                style={styles.feedImage}
+                resizeMode="contain"
+                source={{ uri: this.state.pic }}
+              />
+            )}
           </View>
           <View style={styles.separator} />
           <View style={styles.footer}>
@@ -285,8 +292,10 @@ const styles = StyleSheet.create({
   facePile: {
     alignItems: "flex-start",
     justifyContent: "flex-start",
-    flexDirection: "row"
-  }
+    flexDirection: "row",
+    paddingBottom: 10
+  },
+  feedImage: { height:200,width: "100%" }
 });
 const containerStyles = StyleSheet.create({
   container: {

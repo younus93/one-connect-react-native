@@ -117,7 +117,6 @@ export default class Batch extends React.Component {
             <Button style={styles.container} onPress={() => this._navigateBatch(item, animatedValue)}>
                     <View style={styles.batch}>
                         <View stle={{flex:1, paddingRight: 5}}>
-                            <Text style={styles.batchDate}>2014-2015</Text>
                             <Text style={styles.batchCourse}>{item.name}</Text>
                         </View>
                         <View style={[{borderRadius: 16, borderWidth: StyleSheet.hairlineWidth, borderColor: stateColor.borderColor, paddingVertical: 3, flex: 0.4}]}>

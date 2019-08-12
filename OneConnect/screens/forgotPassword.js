@@ -33,7 +33,7 @@ export default class ForgotPassword extends Component {
   });
   constructor(props) {
     super(props);
-
+    this.userEmail=null;
     this.state = {
       loading: false,
       userEmail: "",
@@ -41,6 +41,7 @@ export default class ForgotPassword extends Component {
       error: false,
       errorText: null
     };
+
   }
 
   componentDidMount() {
@@ -82,6 +83,8 @@ export default class ForgotPassword extends Component {
   };
 
   _userEmailChange = text => {
+    console.log('userEmail',text)
+        this.userEmail=text;
     this.setState({
       userEmail: text
     });
@@ -117,11 +120,7 @@ export default class ForgotPassword extends Component {
     // this.setState({
     //   resetPassword: true
     // });
-    Manager.forgotPassword(
-      "/api/forgot-password",
-      "POST",
-      this.state.userEmail
-    );
+     Manager.forgotPassword("/api/forgot-password", 'POST',  {email:this.state.userEmail})
   };
 
   render() {
@@ -171,7 +170,7 @@ export default class ForgotPassword extends Component {
                     <TextInput
                       style={styles.textInput}
                       placeholder="Email"
-                      onChangeText={this._userEmailChange}
+                      onChangeText={(userEmail)=>{this.setState({userEmail:userEmail})}}
                       allowFontScaling={false}
                     />
                   </View>
