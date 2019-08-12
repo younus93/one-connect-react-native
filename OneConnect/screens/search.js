@@ -1,490 +1,918 @@
 import React from "react";
-import { View, Text, StyleSheet, ScrollView, ActivityIndicator,SafeAreaView, TextInput, Keyboard, Image} from "react-native";
-import {Colors} from '../constants';
-import Manager from '../service/dataManager';
-import Button from '../custom/button';
-import { DrawerActions } from 'react-navigation-drawer';
-import { NavigationActions } from 'react-navigation';
-import Icon from 'react-native-vector-icons/FontAwesome5';
-import I18n from '../service/i18n';
-
+import {
+  View,
+  Text,
+  StyleSheet,
+  ScrollView,
+  ActivityIndicator,
+  SafeAreaView,
+  TextInput,
+  Keyboard,
+  Image
+} from "react-native";
+import { Colors } from "../constants";
+import Manager from "../service/dataManager";
+import Button from "../custom/button";
+import { DrawerActions } from "react-navigation-drawer";
+import { NavigationActions } from "react-navigation";
+import Icon from "react-native-vector-icons/FontAwesome5";
+import I18n from "../service/i18n";
 
 export default class Search extends React.Component {
-    static navigationOptions = ({navigation}) => ({
-        title: '',
-        header: null
-    })
+  static navigationOptions = ({ navigation }) => ({
+    title: "",
+    header: null
+  });
 
-    constructor(props){
-        super(props)
-        this.type = ['users', "batches", "posts"]
-        this.data = null
+  constructor(props) {
+    super(props);
+    this.type = ["users", "batches", "posts"];
+    this.data = null;
 
-        this.showUser= true,
-        this.showPost= true,
-        this.showInstitution= true,
-        this.showCourses= true,
-        this.showBatches= true
+    (this.showUser = true),
+      (this.showPost = true),
+      (this.showInstitution = true),
+      (this.showCourses = true),
+      (this.showBatches = true);
 
-        this.state = {
-            loading: false,
-            updateToggle: false,
-            showAll: true,
-            showUser: true,
-            userBackground: Colors.alternative,
-            institutionBackground: Colors.alternative,
-            coursesBackground: Colors.alternative,
-            postsBackground: Colors.alternative,
-            batchesBackground: Colors.alternative,
-            showPost: true,
-            showInstitution: true,
-            showCourses: true,
-            showBatches: true
-        }
+    this.state = {
+      loading: false,
+      updateToggle: false,
+      showAll: true,
+      showUser: true,
+      userBackground: Colors.alternative,
+      institutionBackground: Colors.alternative,
+      coursesBackground: Colors.alternative,
+      postsBackground: Colors.alternative,
+      batchesBackground: Colors.alternative,
+      showPost: true,
+      showInstitution: true,
+      showCourses: true,
+      showBatches: true
+    };
+  }
+
+  _searchTextChange = text => {
+    console.log("search text changed");
+    this.searchText = text;
+  };
+  _onEndEditing = () => {
+    console.log("on end editing");
+    // this.setState({
+    //     loading: true
+    // })
+    // Manager.search(`/api/search?query=${this.searchText}`, 'GET')
+  };
+
+  _onSubmitEditing = () => {
+    console.log("on submit editing");
+    this.setState({
+      loading: true
+    });
+    Manager.search(`/api/search?query=${this.searchText}`, "GET");
+  };
+  _refresh = () => {
+    this.setState({
+      loading: true
+    });
+    Manager.search(`/api/search?query=${this.searchText}`, "GET");
+  };
+  componentDidMount() {
+    console.log("search component did mount");
+    this.props.navigation.setParams({ backButton: this._backButtonPressed });
+    Manager.addListener("SEARCH_S", this._searchSuccess);
+    Manager.addListener("SEARCH_E", this._searchError);
+  }
+
+  componentWillUnmount() {
+    console.log("search component will unmount");
+    Manager.removeListener("SEARCH_S", this._searchSuccess);
+    Manager.removeListener("SEARCH_E", this._searchError);
+  }
+
+  _searchSuccess = data => {
+    console.log("search data : ", data);
+    this.data = data.data;
+    this.setState({
+      loading: false
+    });
+  };
+
+  _searchError = error => {
+    console.log("search error : ", error);
+  };
+
+  _backButtonPressed = () => {
+    console.log("back button pressed");
+    const backAction = NavigationActions.back({
+      key: null
+    });
+    this.props.navigation.dispatch(backAction);
+  };
+
+  _navigateBatch = item => {
+    this.props.navigation.navigate("BatchItem", { url: item.url });
+  };
+  _unFriend = (id) => {
+    console.log("sending unfriend request");
+    this.requestType = "U";
+    Manager.friendRequest("/api/friend-request/unfriend", "POST", {
+      professional_id: id
+    });
+    this._refresh();
+  };
+  _accept = id => {
+    Manager.friendRequest("/api/friend-request/accept", "POST", {
+      professional_id: id
+    });
+    this._refresh();
+  };
+
+  _deny = id => {
+    console.log("Deny");
+    Manager.friendRequest("/api/friend-request/deny", "POST", {
+      professional_id: id
+    });
+    this._refresh();
+  };
+
+  _renderBatches = () => {
+    if (this.data) {
+      let list = this.data.filter(item => {
+        const match = item.type == "batches" ? true : false;
+        return match;
+      });
+
+      if (list.length > 0) {
+        return (
+          <View>
+            <View style={{ paddingLeft: 10, paddingTop: 18, paddingBottom: 8 }}>
+              <Text style={styles.bodyHeader}>{I18n.t("Batches")}</Text>
+            </View>
+            <View style={styles.sectionBody}>
+              {list.map(item => {
+                return (
+                  <Button
+                    key={`pelt-${Math.random(1)}`}
+                    onPress={() => this._navigateBatch(item)}
+                  >
+                    <View style={[styles.item, { alignItems: "flex-start" }]}>
+                      <View>
+                        <Text
+                          style={[
+                            styles.itemText,
+                            { fontWeight: "600", fontSize: 16 }
+                          ]}
+                        >
+                          {item.title}
+                        </Text>
+                      </View>
+                    </View>
+                  </Button>
+                );
+              })}
+            </View>
+          </View>
+        );
+      }
+      return null;
     }
+    return null;
+  };
 
-    _searchTextChange = (text) => {
-        console.log("search text changed")
-        this.searchText = text
+  _navigatePost = item => {
+    this.props.navigation.navigate("OpenFeed", { item: item.searchable });
+  };
 
-    }
-    _onEndEditing = () => {
-        console.log("on end editing")
-        // this.setState({
-        //     loading: true
-        // })
-        // Manager.search(`/api/search?query=${this.searchText}`, 'GET')
-    }
+  _renderPosts = () => {
+    if (this.data) {
+      let list = this.data.filter(item => {
+        const match = item.type == "posts" ? true : false;
+        return match;
+      });
 
-    _onSubmitEditing = () => {
-        console.log("on submit editing")
-        this.setState({
-            loading: true
-        })
-        Manager.search(`/api/search?query=${this.searchText}`, 'GET')
-    }
-
-    componentDidMount() {
-        console.log("search component did mount")
-        this.props.navigation.setParams({ backButton: this._backButtonPressed});
-        Manager.addListener('SEARCH_S', this._searchSuccess)
-        Manager.addListener('SEARCH_E', this._searchError)
-    }
-
-    componentWillUnmount() {
-        console.log("search component will unmount")
-        Manager.removeListener('SEARCH_S', this._searchSuccess)
-        Manager.removeListener('SEARCH_E', this._searchError)
-    }
-
-    _searchSuccess = (data) => {
-        console.log('search data : ', data)
-        this.data = data.data
-        this.setState({
-            loading: false
-        })
-    }
-
-    _searchError = (error) => {
-        console.log("search error : ", error)
-    }
-
-    _backButtonPressed = () => {
-        console.log("back button pressed")
-        const backAction = NavigationActions.back({
-            key: null,
-        });
-        this.props.navigation.dispatch(backAction);
-    }
-
-    _navigateBatch = (item) => {
-        this.props.navigation.navigate("BatchItem", {url: item.url})
-    }
-
-    _renderBatches = () => {
-        if(this.data){
-            let list = this.data.filter(item => {
-                const match = item.type == 'batches' ? true: false
-                return match
-            })
-
-            if(list.length > 0){
-                return(
+      if (list.length > 0) {
+        return (
+          <View>
+            <View style={{ paddingLeft: 10, paddingTop: 18, paddingBottom: 8 }}>
+              <Text style={styles.bodyHeader}>{I18n.t("POST")}</Text>
+            </View>
+            <View style={styles.sectionBody}>
+              {list.map(item => {
+                return (
+                  <Button
+                    onPress={() => this._navigatePost(item)}
+                    key={`pelt-${Math.random(1)}`}
+                    style={[styles.item]}
+                  >
                     <View>
-                        <View style={{paddingLeft: 10, paddingTop: 18, paddingBottom: 8}}>
-                            <Text style={styles.bodyHeader}>{I18n.t('Batches')}</Text>
-                        </View>
-                        <View style={styles.sectionBody}>
-                        {
-                            list.map(item => {
-                                return(
-                                    <Button key={`pelt-${Math.random(1)}`} onPress={() => this._navigateBatch(item)}>
-                                        <View style={[styles.item, {alignItems: 'flex-start'}]}>
-                                            <View>
-                                                <Text style={[styles.itemText, {fontWeight: '600', fontSize:    16}]}>{item.title}</Text>
-                                            </View>
-                                        </View>
-                                    </Button>
-                                )
-                            })
-                        }
-                        </View>
+                      <Text
+                        style={[
+                          styles.itemText,
+                          { fontWeight: "600", fontSize: 16 }
+                        ]}
+                      >
+                        {item.title}
+                      </Text>
                     </View>
-                )
-            }
-            return null
-        }
-        return null
+                  </Button>
+                );
+              })}
+            </View>
+          </View>
+        );
+      }
+      return null;
     }
+    return null;
+  };
 
-    _navigatePost = (item) => {
-        this.props.navigation.navigate("OpenFeed", {item: item.searchable})
-    }
+  _navigateUser = item => {
+    this.props.navigation.navigate("Profile", { url: item.url });
+  };
+  _sendFriendRequest = id => {
+    console.log("sending friend request");
+    this.requestType = "S";
+    Manager.friendRequest("/api/friend-request/send", "POST", {
+      professional_id: id
+    });
 
-    _renderPosts = () => {
-        if(this.data){
-            let list = this.data.filter(item => {
-                const match = item.type == 'posts' ? true: false
-                return match
-            })
-
-            if(list.length > 0){
-                return(
+  };
+  _renderUsers = () => {
+    if (this.data) {
+      let list = this.data.filter(item => {
+        const match = item.type == "users" ? true : false;
+        return match;
+      });
+      console.log("render users", list);
+      if (list.length > 0) {
+        return (
+          <View>
+            <View style={{ paddingLeft: 10, paddingTop: 18, paddingBottom: 8 }}>
+              <Text style={styles.bodyHeader}>{I18n.t("Users")}</Text>
+            </View>
+            <View style={styles.sectionBody}>
+              {!this.state.loading && list.map(item => {
+                return (
+                  <View style={styles.userBody}>
                     <View>
-                        <View style={{paddingLeft: 10, paddingTop: 18, paddingBottom: 8}}>
-                            <Text style={styles.bodyHeader}>{I18n.t('POST')}</Text>
+                      <Button
+                        onPress={() => this._navigateUser(item)}
+                        key={`pelt-${Math.random(1)}`}
+                        style={[styles.item]}
+                      >
+                        <View>
+                          <Image
+                            style={styles.image}
+                            source={{ uri: item.searchable.basic.profile_pic }}
+                            defaultSource={require("../resources/in_2.jpg")}
+                            resizeMode="cover"
+                            onError={error => console.log(error)}
+                          />
                         </View>
-                        <View style={styles.sectionBody}>
-                        {
-                            list.map(item => {
-                                return(
-                                    <Button onPress={() => this._navigatePost(item)} key={`pelt-${Math.random(1)}`} style={[styles.item]}>
-                                        <View>
-                                            <Text style={[styles.itemText, {fontWeight: '600', fontSize: 16}]}>{item.title}</Text>
-                                        </View>
-                                    </Button>
-                                )
-                            })
-                        }
+                        <View style={{ width: "100%" }}>
+                          <Text
+                            style={[
+                              styles.itemText,
+                              { fontWeight: "600", fontSize: 16 }
+                            ]}
+                          >
+                            {item.title}
+                          </Text>
+                          <Text style={styles.mutualFriendsCount}>
+                            {
+                              item.searchable.friends_meta.mutual_friends_count
+                            }{" "}
+                            {I18n.t("Mutual_friends")}
+                          </Text>
+                          {!item.searchable.friends_meta.is_friends &&
+                          !item.searchable.friends_meta
+                            .has_sent_friend_request_to_this_profile &&
+                          !item.searchable.friends_meta
+                            .has_friend_request_from_this_profile && (
+                            <View
+                              style={{
+                                flexDirection: "row",
+                                alignItems: "center",
+                                marginTop: 5,
+                                marginLeft: 10
+                              }}
+                            >
+                              <Button
+                                style={{
+                                  minWidth: 120,
+                                  borderWidth: StyleSheet.hairlineWidth,
+                                  borderRadius: 22,
+                                  flexDirection: "row",
+                                  justifyContent: "center",
+                                  alignItems: "center",
+                                  backgroundColor: "#3b5998",
+                                  padding: 12
+                                }}
+                                onPress={this._sendFriendRequest.bind(this,
+                                  item.searchable.basic.id
+                                )}
+                                rippleColor={Colors.secondaryDark}
+                              >
+                                <Icon name="user-plus" size={12} color="#fff" />
+                                <Text
+                                  style={{
+                                    fontWeight: "600",
+                                    fontSize: 14,
+                                    color: "#fff",
+                                    paddingLeft: 5
+                                  }}
+                                >
+                                  {" "}
+                                  Add friend{" "}
+                                </Text>
+                              </Button>
+                            </View>
+                          )}
+                          {!item.searchable.friends_meta.is_friends &&
+                          item.searchable.friends_meta
+                            .has_friend_request_from_this_profile && (
+                            <View
+                              style={{
+                                flexDirection: "row",
+                                alignItems: "center",
+                                marginTop: 5,
+                                marginLeft: 10
+                              }}
+                            >
+                              <Button
+                                style={{
+                                  minWidth: 120,
+                                  borderRadius: 22,
+                                  flexDirection: "row",
+                                  justifyContent: "center",
+                                  alignItems: "center",
+                                  backgroundColor: "#3b5998",
+                                  padding: 12
+                                }}
+                                onPress={this._accept.bind(this,item.searchable.basic.id)}
+                                rippleColor={Colors.secondaryDark}
+                              >
+                                <Icon
+                                  name="user-minus"
+                                  size={12}
+                                  color="#fff"
+                                />
+                                <Text
+                                  style={{
+                                    fontWeight: "600",
+                                    fontSize: 14,
+                                    color: "#fff",
+                                    paddingLeft: 5
+                                  }}
+                                >
+                                  {" "}
+                                  Confirm{" "}
+                                </Text>
+                              </Button>
+                              <Button
+                                style={{
+                                  minWidth: 120,
+
+                                  borderRadius: 22,
+                                  flexDirection: "row",
+                                  justifyContent: "center",
+                                  alignItems: "center",
+                                  backgroundColor: "#dfe3ee",
+                                  padding: 12,
+                                  marginLeft: 10
+                                }}
+                                onPress={this._deny.bind(this, item.searchable.basic.id)}
+                                rippleColor={Colors.secondaryDark}
+                              >
+                                <Icon
+                                  name="user-minus"
+                                  size={12}
+                                  color="#000000"
+                                />
+                                <Text
+                                  style={{
+                                    fontWeight: "600",
+                                    fontSize: 14,
+                                    color: "#000",
+                                    paddingLeft: 5
+                                  }}
+                                >
+                                  {" "}
+                                  Cancel{" "}
+                                </Text>
+                              </Button>
+                            </View>
+                          )}
+                          {!item.searchable.friends_meta.is_friends &&
+                          item.searchable.friends_meta
+                            .has_sent_friend_request_to_this_profile &&
+                          !item.searchable.friends_meta
+                            .has_friend_request_from_this_profile && (
+                            <View
+                              style={{
+                                flexDirection: "row",
+                                alignItems: "center",
+                                marginTop: 5,
+                                marginLeft: 10
+                              }}
+                            >
+                              <Button
+                                style={{
+                                  minWidth: 120,
+                                  borderRadius: 22,
+                                  flexDirection: "row",
+                                  justifyContent: "center",
+                                  alignItems: "center",
+                                  backgroundColor: "#dfe3ee",
+                                  padding: 12
+                                }}
+                                onPress={this._deny.bind(this, item.searchable.basic.id)}
+                                rippleColor={Colors.secondaryDark}
+                              >
+                                <Icon
+                                  name="user-minus"
+                                  size={12}
+                                  color="#000"
+                                />
+                                <Text
+                                  style={{
+                                    fontWeight: "600",
+                                    fontSize: 14,
+                                    color: "#000",
+                                    paddingLeft: 5
+                                  }}
+                                >
+                                  {" "}
+                                  Cancel request{" "}
+                                </Text>
+                              </Button>
+                            </View>
+                          )}
+                          {item.searchable.friends_meta.is_friends && (
+                            <View
+                              style={{
+                                flexDirection: "row",
+                                alignItems: "center",
+                                marginTop: 5,
+                                marginLeft: 10
+                              }}
+                            >
+                              <Button
+                                style={{
+                                  minWidth: 120,
+                                  borderRadius: 22,
+                                  flexDirection: "row",
+                                  justifyContent: "center",
+                                  alignItems: "center",
+                                  backgroundColor: "#dfe3ee",
+                                  padding: 12
+                                }}
+                                onPress={this._unFriend.bind(this, item.searchable.basic.id)}
+                                rippleColor={Colors.secondaryDark}
+                              >
+                                <Icon
+                                  name="user-minus"
+                                  size={12}
+                                  color="#000"
+                                />
+                                <Text
+                                  style={{
+                                    fontWeight: "600",
+                                    fontSize: 14,
+                                    color: "#000",
+                                    paddingLeft: 5
+                                  }}
+                                >
+                                  {" "}
+                                  Un-friend{" "}
+                                </Text>
+                              </Button>
+                            </View>
+                          )}
                         </View>
+                      </Button>
                     </View>
-                )
-            }
-            return null
-        }
-        return null
+                    <View style={styles.separator} />
+                  </View>
+                );
+              })}
+            </View>
+          </View>
+        );
+      }
+      return null;
     }
+    return null;
+  };
 
-    _navigateUser = (item) => {
-        this.props.navigation.navigate("Profile", {url: item.url})
-    }
+  _navigateCourse = item => {
+    // this.props.navigation.navigate("BatchItem", {url: item.url})
+    this.props.navigation.navigate("Courses", { url: item.url });
+  };
 
-    _renderUsers = () => {
-        if(this.data){
-            let list = this.data.filter(item => {
-                const match = item.type == 'users' ? true: false
-                return match
-            })
+  _renderCourses = () => {
+    if (this.data) {
+      let list = this.data.filter(item => {
+        const match = item.type == "courses" ? true : false;
+        return match;
+      });
 
-            if(list.length > 0){
-                return(
+      if (list.length > 0) {
+        return (
+          <View>
+            <View style={{ paddingLeft: 10, paddingTop: 18, paddingBottom: 8 }}>
+              <Text style={styles.bodyHeader}>{I18n.t("Courses")}</Text>
+            </View>
+            <View style={styles.sectionBody}>
+              {list.map(item => {
+                return (
+                  <Button
+                    onPress={() => this._navigateCourse(item)}
+                    key={`pelt-${Math.random(1)}`}
+                    style={[styles.item]}
+                  >
                     <View>
-                        <View style={{paddingLeft: 10, paddingTop: 18, paddingBottom: 8}}>
-                            <Text style={styles.bodyHeader}>{I18n.t('Users')}</Text>
-                        </View>
-                        <View style={styles.sectionBody}>
-                        {
-                            list.map(item => {
-                                return(
-                                    <Button onPress={() => this._navigateUser(item)} key={`pelt-${Math.random(1)}`} style={[styles.item]}>
-                                        <View>
-                                            <Image style={styles.image}
-                                                source={{uri: item.searchable.basic.profile_pic}}
-                                                defaultSource={require('../resources/in_2.jpg')}
-                                                resizeMode='cover'
-                                                onError={(error) => console.log(error)}
-                                            />
-                                        </View>
-                                        <View>
-                                            <Text style={[styles.itemText, {fontWeight: '600', fontSize: 16}]}>{item.title}</Text>
-                                        </View>
-                                    </Button>
-                                )
-                            })
-                        }
-                        </View>
+                      <Text
+                        style={[
+                          styles.itemText,
+                          { fontWeight: "600", fontSize: 16 }
+                        ]}
+                      >
+                        {item.title}
+                      </Text>
                     </View>
-                )
-            }
-            return null
-        }
-        return null
+                  </Button>
+                );
+              })}
+            </View>
+          </View>
+        );
+      }
+      return null;
     }
+    return null;
+  };
 
-    _navigateCourse = (item) => {
-        // this.props.navigation.navigate("BatchItem", {url: item.url})
-        this.props.navigation.navigate("Courses", {url: item.url})
-    }
+  _navigateInstitute = item => {
+    this.props.navigation.navigate("Institution", { item: item.searchable });
+  };
 
-    _renderCourses = () => {
-        if(this.data){
-            let list = this.data.filter(item => {
-                const match = item.type == 'courses' ? true: false
-                return match
-            })
+  _renderInstitutions = () => {
+    if (this.data) {
+      let list = this.data.filter(item => {
+        const match = item.type == "institutions" ? true : false;
+        return match;
+      });
 
-            if(list.length > 0){
-                return(
+      if (list.length > 0) {
+        return (
+          <View>
+            <View style={{ paddingLeft: 10, paddingTop: 18, paddingBottom: 8 }}>
+              <Text style={styles.bodyHeader}>{I18n.t("Institutions")}</Text>
+            </View>
+            <View style={styles.sectionBody}>
+              {list.map(item => {
+                return (
+                  <Button
+                    onPress={() => this._navigateInstitute(item)}
+                    key={`pelt-${Math.random(1)}`}
+                    style={[styles.item]}
+                  >
                     <View>
-                        <View style={{paddingLeft: 10, paddingTop: 18, paddingBottom: 8}}>
-                            <Text style={styles.bodyHeader}>{I18n.t('Courses')}</Text>
-                        </View>
-                        <View style={styles.sectionBody}>
-                        {
-                            list.map(item => {
-                                return(
-                                    <Button onPress={() => this._navigateCourse(item)} key={`pelt-${Math.random(1)}`} style={[styles.item]}>
-                                        <View>
-                                            <Text style={[styles.itemText, {fontWeight: '600', fontSize: 16}]}>{item.title}</Text>
-                                        </View>
-                                    </Button>
-                                )
-                            })
-                        }
-                        </View>
+                      <Text
+                        style={[
+                          styles.itemText,
+                          { fontWeight: "600", fontSize: 16 }
+                        ]}
+                      >
+                        {item.title}
+                      </Text>
                     </View>
-                )
-            }
-            return null
-        }
-        return null
+                  </Button>
+                );
+              })}
+            </View>
+          </View>
+        );
+      }
+      return null;
     }
+    return null;
+  };
 
-    _navigateInstitute = (item) => {
-        this.props.navigation.navigate("Institution", {item: item.searchable})
-    }
+  _renderSearchBar = () => {
+    return (
+      <SafeAreaView forceInset={{ top: "always" }}>
+        <View style={styles.header}>
+          <Button style={styles.drawerButton} onPress={this._backButtonPressed}>
+            <Icon
+              name="arrow-left"
+              size={22}
+              color={Colors.onSurface}
+              style={{ padding: 10 }}
+            />
+          </Button>
+          <View style={styles.search}>
+            <TextInput
+              style={styles.textInput}
+              placeholder="Search"
+              allowFontScaling={false}
+              onChangeText={this._searchTextChange}
+              onSubmitEditing={this._onSubmitEditing}
+              autoCorrect={false}
+              autoFocus={true}
+              enablesReturnKeyAutomatically={true}
+              returnKeyType="search"
+            />
+          </View>
+        </View>
+      </SafeAreaView>
+    );
+  };
 
-    _renderInstitutions = () => {
-        if(this.data){
-            let list = this.data.filter(item => {
-                const match = item.type == 'institutions' ? true: false
-                return match
-            })
+  _updateFilter = () => {
+    console.log("new filter state: ");
+    this.setState(previousState => ({
+      updateToggle: !previousState.updateToggle
+    }));
+  };
 
-            if(list.length > 0){
-                return(
-                    <View>
-                        <View style={{paddingLeft: 10, paddingTop: 18, paddingBottom: 8}}>
-                            <Text style={styles.bodyHeader}>{I18n.t('Institutions')}</Text>
-                        </View>
-                        <View style={styles.sectionBody}>
-                        {
-                            list.map(item => {
-                                return(
-                                    <Button onPress={() => this._navigateInstitute(item)} key={`pelt-${Math.random(1)}`} style={[styles.item]}>
-                                        <View>
-                                            <Text style={[styles.itemText, {fontWeight: '600', fontSize: 16}]}>{item.title}</Text>
-                                        </View>
-                                    </Button>
-                                )
-                            })
-                        }
-                        </View>
-                    </View>
-                )
-            }
-            return null
-        }
-        return null
-    }
+  _renderFilters = () => {
+    console.log("render filter : ", this.state);
 
-    _renderSearchBar = () => {
-        return(
-            <SafeAreaView forceInset={{ top: 'always'}}>
-                <View style={styles.header}>
-                    <Button style={styles.drawerButton} onPress={this._backButtonPressed} >
-                        <Icon name="arrow-left" size={22} color={Colors.onSurface} style={{padding:10}}/>
-                    </Button>
-                    <View style={styles.search}>
-                        <TextInput style={styles.textInput}
-                            placeholder="Search"
-                            allowFontScaling={false}
-                            onChangeText={this._searchTextChange}
-                            onSubmitEditing={this._onSubmitEditing}
-                            autoCorrect={false}
-                            autoFocus={true}
-                            enablesReturnKeyAutomatically={true}
-                            returnKeyType='search'
-                            />
-                    </View>
-                </View>
-            </SafeAreaView>
-        )
-    }
+    return (
+      <View>
+        <ScrollView horizontal={true}>
+          <Button
+            onPress={() => {
+              this.setState(previousState => ({
+                showUser: !previousState.showUser,
+                userBackground: !previousState.showUser
+                  ? Colors.alternative
+                  : Colors.background
+              }));
+            }}
+          >
+            <View
+              style={[
+                {
+                  borderRadius: 20,
+                  margin: 10,
+                  padding: 8,
+                  borderWidth: 1,
+                  backgroundColor: this.state.userBackground
+                }
+              ]}
+            >
+              <Text>{I18n.t("Users")}</Text>
+            </View>
+          </Button>
+          <Button
+            onPress={() => {
+              this.setState(previousState => ({
+                showInstitution: !previousState.showInstitution,
+                institutionBackground: !previousState.showInstitution
+                  ? Colors.alternative
+                  : Colors.background
+              }));
+            }}
+          >
+            <View
+              style={[
+                {
+                  borderRadius: 20,
+                  margin: 10,
+                  padding: 8,
+                  borderWidth: 1,
+                  backgroundColor: this.state.institutionBackground
+                }
+              ]}
+            >
+              <Text>{I18n.t("Institutions")}</Text>
+            </View>
+          </Button>
+          <Button
+            onPress={() => {
+              this.setState(previousState => ({
+                showBatches: !previousState.showBatches,
+                batchesBackground: !previousState.showBatches
+                  ? Colors.alternative
+                  : Colors.background
+              }));
+            }}
+          >
+            <View
+              style={[
+                {
+                  borderRadius: 20,
+                  margin: 10,
+                  padding: 8,
+                  borderWidth: 1,
+                  backgroundColor: this.state.batchesBackground
+                }
+              ]}
+            >
+              <Text>{I18n.t("Batches")}</Text>
+            </View>
+          </Button>
+          <Button
+            onPress={() => {
+              this.setState(previousState => ({
+                showCourses: !previousState.showCourses,
+                coursesBackground: !previousState.showCourses
+                  ? Colors.alternative
+                  : Colors.background
+              }));
+            }}
+          >
+            <View
+              style={[
+                {
+                  borderRadius: 20,
+                  margin: 10,
+                  padding: 8,
+                  borderWidth: 1,
+                  backgroundColor: this.state.coursesBackground
+                }
+              ]}
+            >
+              <Text>{I18n.t("Courses")}</Text>
+            </View>
+          </Button>
+          <Button
+            onPress={() => {
+              this.setState(previousState => ({
+                showPost: !previousState.showPost,
+                postsBackground: !previousState.showPost
+                  ? Colors.alternative
+                  : Colors.background
+              }));
+            }}
+          >
+            <View
+              style={[
+                {
+                  borderRadius: 20,
+                  margin: 10,
+                  padding: 8,
+                  borderWidth: 1,
+                  backgroundColor: this.state.postsBackground
+                }
+              ]}
+            >
+              <Text>{I18n.t("POST")}</Text>
+            </View>
+          </Button>
+        </ScrollView>
+      </View>
+    );
+  };
 
-    _updateFilter = () => {
-        console.log("new filter state: ")
-        this.setState(previousState => ({
-            updateToggle: !previousState.updateToggle
-        })
-    )
-    }
-
-    _renderFilters = () => {
-        console.log("render filter : ", this.state)
-
-        return(
+  render() {
+    console.log("search render");
+    return (
+      <View style={styles.container}>
+        {this._renderSearchBar()}
+        {this.data ? this.data.length > 0 ? this._renderFilters() : null : null}
+        {this.state.loading ? (
+          <View
+            style={{
+              justifyContent: "center",
+              alignItems: "center",
+              padding: 10
+            }}
+          >
+            <ActivityIndicator
+              animating={this.state.loading}
+              size="large"
+              color={Colors.secondaryDark}
+            />
+          </View>
+        ) : null}
+        <ScrollView>
+          {this.data ? this.data.length > 0 ? (
             <View>
-                <ScrollView horizontal={true}>
-                    <Button onPress={() => {this.setState(previousState => ({
-                        showUser: !previousState.showUser,
-                        userBackground: !previousState.showUser? Colors.alternative : Colors.background
-                    }))}}>
-                        <View style={[{borderRadius:20, margin: 10, padding:8, borderWidth: 1, backgroundColor: this.state.userBackground}]}>
-                            <Text>{I18n.t('Users')}</Text>
-                        </View>
-                    </Button>
-                    <Button onPress={() => {this.setState(previousState => ({
-                        showInstitution: !previousState.showInstitution,
-                        institutionBackground: !previousState.showInstitution? Colors.alternative : Colors.background
-                    }))}}>
-                        <View style={[{borderRadius:20, margin: 10, padding:8, borderWidth: 1, backgroundColor: this.state.institutionBackground}]}>
-                            <Text>{I18n.t('Institutions')}</Text>
-                        </View>
-                    </Button>
-                    <Button onPress={() => {this.setState(previousState => ({
-                        showBatches: !previousState.showBatches,
-                        batchesBackground: !previousState.showBatches? Colors.alternative : Colors.background
-                    }))}}>
-                        <View style={[{borderRadius:20, margin: 10, padding:8, borderWidth: 1, backgroundColor: this.state.batchesBackground}]}>
-                            <Text>{I18n.t('Batches')}</Text>
-                        </View>
-                    </Button>
-                    <Button onPress={() => {this.setState(previousState => ({
-                        showCourses: !previousState.showCourses,
-                        coursesBackground: !previousState.showCourses? Colors.alternative : Colors.background
-                    }))}}>
-                        <View style={[{borderRadius:20, margin: 10, padding:8, borderWidth: 1, backgroundColor: this.state.coursesBackground}]}>
-                            <Text>{I18n.t('Courses')}</Text>
-                        </View>
-                    </Button>
-                    <Button onPress={() => {this.setState(previousState => ({
-                        showPost: !previousState.showPost,
-                        postsBackground: !previousState.showPost ? Colors.alternative : Colors.background
-                    }))}}>
-                        <View style={[{borderRadius:20, margin: 10, padding:8, borderWidth: 1, backgroundColor: this.state.postsBackground}]}>
-                            <Text>{I18n.t('POST')}</Text>
-                        </View>
-                    </Button>
-                    </ScrollView>
+              {this.state.showUser ? this._renderUsers() : null}
+              {this.state.showInstitution ? this._renderInstitutions() : null}
+              {this.state.showBatches ? this._renderBatches() : null}
+              {this.state.showCourses ? this._renderCourses() : null}
+              {this.state.showPost ? this._renderPosts() : null}
             </View>
-        )
-    }
-
-
-    render() {
-        console.log("search render")
-        return(
-            <View style={styles.container}>
-                {this._renderSearchBar()}
-                {
-                    this.data ?
-                    this.data.length > 0 ?
-                    this._renderFilters()
-                    : null
-                    : null
-                }
-                {
-                    this.state.loading ?
-                    <View style={{justifyContent: "center", alignItems: "center", padding: 10}}>
-                        <ActivityIndicator animating={this.state.loading} size="large" color={Colors.secondaryDark} />
-                    </View>
-                    :null
-                }
-                <ScrollView>
-                {
-                    this.data ?
-                    this.data.length > 0 ?
-                    <View>
-                        {this.state.showUser ? this._renderUsers() : null}
-                        {this.state.showInstitution ?  this._renderInstitutions() : null}
-                        {this.state.showBatches ? this._renderBatches(): null}
-                        {this.state.showCourses ? this._renderCourses(): null}
-                        {this.state.showPost ? this._renderPosts(): null}
-                    </View>
-                    :
-                    <View style={{
-                        backgroundColor: Colors.background,
-                        justifyContent: 'center',
-                        alignItems: 'center',
-                        opacity: 1,
-                        width: '100%',
-                        paddingTop: 20
-                    }}>
-                        <Text style={{color: Colors.secondaryDark, fontSize: 22,fontWeight: '700', opacity: 0.4}}>No result</Text>
-                    </View>
-                    : null
-                }
-                </ScrollView>
+          ) : (
+            <View
+              style={{
+                backgroundColor: Colors.background,
+                justifyContent: "center",
+                alignItems: "center",
+                opacity: 1,
+                width: "100%",
+                paddingTop: 20
+              }}
+            >
+              <Text
+                style={{
+                  color: Colors.secondaryDark,
+                  fontSize: 22,
+                  fontWeight: "700",
+                  opacity: 0.4
+                }}
+              >
+                No result
+              </Text>
             </View>
-        )
-    }
+          ) : null}
+        </ScrollView>
+      </View>
+    );
+  }
 }
 
-
 const styles = StyleSheet.create({
-    container: {
-        flex: 1,
-        backgroundColor: Colors.background,
-    },
-    bodyHeader: {
-        fontSize: 16,
-        fontWeight: '600',
-        color: Colors.onSurface,
-        opacity: 0.4
-    },
-    sectionBody: {
-        backgroundColor: Colors.surface,
-    },
-    item: {
-        flexDirection: 'row',
-        alignItems: 'center',
-        padding: 10,
-        paddingVertical: 20,
-    },
-    itemText: {
-        paddingLeft: 10,
-        fontSize: 14,
-        fontWeight: '400',
-    },
-    header: {
-        flexDirection: 'row',
-        alignItems: 'center',
-        height: 46,
-        backgroundColor: Colors.surface,
-        borderBottomWidth: StyleSheet.hairlineWidth,
-        borderColor: Colors.background
-
-    },
-    search:{
-        flex: 1,
-        justifyContent:'flex-start',
-        alignItems: 'center',
-    },
-    textInput:{
-        height: '100%',
-        width: '100%',
-        fontSize: 18,
-        paddingLeft: 5,
-    },
-    drawerButton: {
-        marginLeft: 5,
-        marginRight: 10,
-        borderRadius: 20
-    },
-    image: {
-        borderRadius: 20,
-        width: 40,
-        height: 40,
-    },
-})
+  container: {
+    flex: 1,
+    backgroundColor: Colors.background
+  },
+  bodyHeader: {
+    fontSize: 16,
+    fontWeight: "600",
+    color: Colors.onSurface,
+    opacity: 0.4
+  },
+  sectionBody: {
+    backgroundColor: Colors.background
+  },
+  item: {
+    flexDirection: "row",
+    alignItems: "center",
+    padding: 10,
+    paddingVertical: 20
+  },
+  itemText: {
+    paddingLeft: 10,
+    fontSize: 14,
+    fontWeight: "400"
+  },
+  header: {
+    flexDirection: "row",
+    alignItems: "center",
+    height: 46,
+    backgroundColor: Colors.surface,
+    borderBottomWidth: StyleSheet.hairlineWidth,
+    borderColor: Colors.background
+  },
+  search: {
+    flex: 1,
+    justifyContent: "flex-start",
+    alignItems: "center"
+  },
+  textInput: {
+    height: "100%",
+    width: "100%",
+    fontSize: 18,
+    paddingLeft: 5
+  },
+  drawerButton: {
+    marginLeft: 5,
+    marginRight: 10,
+    borderRadius: 20
+  },
+  image: {
+    borderRadius: 50,
+    width: 100,
+    height: 100
+  },
+  mutualFriendsCount: {
+    fontSize: 12,
+    fontWeight: "300",
+    paddingLeft: 10
+  },
+  buttons: {
+    justifyContent: "flex-start",
+    flexDirection: "row",
+    borderWidth: StyleSheet.hairlineWidth,
+    borderColor: "#3b5998",
+    marginLeft: 10,
+    marginTop: 10,
+    backgroundColor: "#3b5998",
+    borderRadius: 22,
+    width: "35%"
+  },
+  separator: {
+    width: "100%",
+    height: StyleSheet.hairlineWidth,
+    backgroundColor: Colors.background,
+    marginTop: 5
+  },
+  acceptButton: {
+    paddingVertical: 10,
+    paddingHorizontal: 10,
+    flexDirection: "row",
+    alignSelf: "center"
+  },
+  userBody: {
+    backgroundColor: Colors.surface,
+    marginBottom: 10,
+    paddingBottom: 0
+  }
+});

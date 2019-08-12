@@ -85,10 +85,12 @@ export default class NewsFeed extends React.Component {
             refreshing: false,
             data: this.data,
             totalPage: data.meta.total,
-            currentPage: data.meta.current_page
+            currentPage: data.meta.current_page,
+            faceData:[],
+            remainingFaces:0
         }));
-    }
 
+    }
     _newsError = (error) => {
         console.log("newsFeed, error received :", error)
         this.setState({
@@ -137,6 +139,7 @@ export default class NewsFeed extends React.Component {
                 commentCallback={() => this._comment(item)}
                 instituteCallback={() => this._institute(item)}
                 likeCallback = {() => this._like(item)}
+
                 touchable
             />
         )

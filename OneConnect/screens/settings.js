@@ -297,14 +297,14 @@ class ProfileList extends React.Component {
                 <TouchableWithoutFeedback onPress={this._showDateTimePicker} >
                     <View style={styles.item}>
                         <Icon name="calendar-day" size={18} color={Colors.primaryDark} />
-                        <Text style={styles.itemText}>{this.state.dob}</Text>
+                        <Text style={[styles.itemText,{lineHeight: 50}]}>{this.state.dob}</Text>
                     </View>
                 </TouchableWithoutFeedback>
 
                 <TouchableWithoutFeedback onPress={this._showGenderPicker} >
                     <View style={styles.item}>
                         <Icon name="venus-mars" size={18} color={Colors.primaryDark} />
-                        <Text style={styles.itemText}>{this.state.gender}</Text>
+                        <Text style={[styles.itemText,{lineHeight: 50}]}>{this.state.gender}</Text>
                     </View>
                 </TouchableWithoutFeedback>
             </View>
@@ -425,13 +425,19 @@ const styles = StyleSheet.create({
         flexDirection: 'row',
         alignItems: 'center',
         padding: 10,
+        
         paddingVertical: 20,
     },
     itemText: {
         flex: 1,
         marginLeft: 10,
+        paddingLeft: 10,
         fontSize: 16,
         fontWeight: '400',
+        backgroundColor: Colors.background,
+        minHeight: 40,
+        justifyContent: "center",
+        alignItems: 'center',
     },
     itemsTextLabel: {
         flex:1,
@@ -458,7 +464,9 @@ const styles = StyleSheet.create({
         borderRadius: 30,
         paddingVertical: 15,
         marginHorizontal: 15,
-        marginBottom: 5
+        marginBottom: 5,
+        marginTop: 10,
+        color: '#fff'
     }
 });
 

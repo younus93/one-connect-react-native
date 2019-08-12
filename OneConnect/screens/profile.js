@@ -1,5 +1,5 @@
 import React from "react";
-import { View, Text, ScrollView, Image, StyleSheet, FlatList, SectionList, SafeAreaView, TouchableWithoutFeedback, TextInput, Animated, Easing, ActivityIndicator,ImageBackground, Modal, Platform, Linking} from "react-native";
+import { View, Text, TouchableOpacity, ScrollView, Dimensions, Image, StyleSheet, FlatList, SectionList, SafeAreaView, TouchableWithoutFeedback, TextInput, Animated, Easing, ActivityIndicator,ImageBackground, Modal, Platform, Linking} from "react-native";
 import { DrawerActions } from 'react-navigation-drawer';
 import { NavigationActions } from 'react-navigation';
 import {Colors} from '../constants';
@@ -8,7 +8,8 @@ import Button from '../custom/button';
 import Icon from 'react-native-vector-icons/FontAwesome5';
 import ImagePicker from 'react-native-image-picker';
 import I18n from '../service/i18n';
-
+import Lightbox from 'react-native-lightbox';
+import { TabView, SceneMap } from 'react-native-tab-view';
 
 export default class Profile extends React.Component {
     static navigationOptions = ({navigation}) => {
@@ -30,6 +31,7 @@ export default class Profile extends React.Component {
 
     constructor(props){
         super(props)
+        console.log(props)
         this.props.navigation.setParams({ title: I18n.t('Profile')});
         this.url = props.navigation.getParam('url', '/api/profile')
         this.accessLevel = props.navigation.getParam('accessLevel', 0)
@@ -40,7 +42,13 @@ export default class Profile extends React.Component {
             updateNeeded: false,
             loading: true,
             error: false,
-            errorText: null
+            errorText: null,
+            index: 0,
+            routes: [
+                { key: 'basic', title: 'Basic' },
+                { key: 'background', title: 'Background' },
+                { key: 'tags', title: 'Tags' },
+            ],
         }
     }
 
@@ -115,6 +123,36 @@ export default class Profile extends React.Component {
         this.props.navigation.navigate('Settings', {data: this.data, callback: this._needsUpdate})
     }
 
+    renderFirstRoute = () => {
+        return <ProfileList currentView="basic" accessLevel={this.accessLevel} data={this.data} navigate={this._navigateToSettings} navigation={this.props.navigation}/>
+    }
+
+    renderSecondRoute = () => {
+        return <ProfileList currentView="background" accessLevel={this.accessLevel} data={this.data} navigate={this._navigateToSettings} navigation={this.props.navigation}/>
+    }
+
+    renderThirdRoute = () => {
+        return <ProfileList currentView="tags" accessLevel={this.accessLevel} data={this.data} navigate={this._navigateToSettings} navigation={this.props.navigation}/>
+    }
+
+    _renderTabBar = props => {
+        const inputRange = props.navigationState.routes.map((x, i) => i);
+        return (
+          <View style={styles.tabBar}>
+            {props.navigationState.routes.map((route, i) => {
+              const style = props.navigationState.index === i ? styles.tabItemActive : styles.tabItem
+              return (
+                <TouchableOpacity
+                  style={style}
+                  onPress={() => this.setState({ index: i })}>
+                  <Text style={{ color: '#fff' }}>{route.title}</Text>
+                </TouchableOpacity>
+              );
+            })}
+          </View>
+        );
+    };
+
     render() {
 
         if(this.state.loading){
@@ -129,7 +167,19 @@ export default class Profile extends React.Component {
             <View style={styles.container}>
                 <ScrollView alwaysBounceVertical={false} bounces={false}>
                     <ImageView accessLevel={this.accessLevel} data={this.data}/>
-                    <ProfileList accessLevel={this.accessLevel} data={this.data} navigate={this._navigateToSettings}navigation={this.props.navigation}/>
+                    <TabView
+                        navigationState={this.state}
+                        renderScene={SceneMap({
+                            basic: this.renderFirstRoute,
+                            background: this.renderSecondRoute,
+                            tags: this.renderThirdRoute,
+                        })}
+                        renderTabBar={this._renderTabBar}
+                        activeColor="#000000"
+                        inactiveColor="#000000"
+                        onIndexChange={index => this.setState({ index })}
+                        initialLayout={{ width: Dimensions.get('window').width }}
+                    />
                 </ScrollView>
             </View>
         );
@@ -227,43 +277,40 @@ class ImageView extends React.Component {
             if(!this.data.friends_meta.is_friends) {
                 if(this.data.friends_meta.has_friend_request_from_this_profile) {
                     return(
-                        <View style={{flex: 1, flexDirection: 'row', backgroundColor: Colors.surface, padding: 10, justifyContent: 'flex-end', alignItems: 'center'}}>
-
-                            <View>
-                                <Button style={{borderWidth: StyleSheet.hairlineWidth, borderRadius: 5, flexDirection: 'row', justifyContent: 'center', alignItems: 'center', borderColor: Colors.safe, paddingHorizontal:5, marginBottom: 5}} onPress={this._acceptRequest} rippleColor={Colors.safe}>
-                                    <Icon name="user-check" size={12} color={Colors.safe} />
-                                    <Text style={{fontWeight: '600', fontSize: 14, color: Colors.safe}}> Accept Friend Request </Text>
+                        <View style={{flexDirection: 'row', alignItems: 'center'}}>
+                                <Button style={{borderWidth: StyleSheet.hairlineWidth, borderRadius: 5, flexDirection: 'row', justifyContent: 'center', alignItems: 'center', backgroundColor: Colors.primaryDark,padding:12, marginRight: 15}} onPress={this._acceptRequest} rippleColor={Colors.safe}>
+                                    <Icon name="user-check" size={12} color={'#fff'} />
+                                    <Text style={{fontWeight: '600', fontSize: 14, color: '#fff', paddingLeft: 5}}> Accept Friend Request </Text>
                                 </Button>
-                                <Button style={{borderWidth: StyleSheet.hairlineWidth, borderRadius: 5, flexDirection: 'row', justifyContent: 'center', alignItems: 'center', borderColor: Colors.primaryDark, paddingHorizontal:5}} onPress={this._denyRequest} rippleColor={Colors.primaryDark}>
-                                    <Icon name="user-times" size={12} color={Colors.primaryDark} />
-                                    <Text style={{fontWeight: '600', fontSize: 14, color: Colors.primaryDark}}> Deny Friend Request </Text>
+                                <Button style={{borderWidth: StyleSheet.hairlineWidth, borderRadius: 5, flexDirection: 'row', justifyContent: 'center', alignItems: 'center', backgroundColor: Colors.secondaryDark,padding:12}} onPress={this._denyRequest} rippleColor={Colors.primaryDark}>
+                                    <Icon name="user-times" size={12} color={'#fff'} />
+                                    <Text style={{fontWeight: '600', fontSize: 14, color: '#fff', paddingLeft: 5}}> Deny Friend Request </Text>
                                 </Button>
-                            </View>
                         </View>
                     )
                 }
                 if(!this.data.friends_meta.has_sent_friend_request_to_this_profile){
                     return(
-                        <View style={{flex: 1, flexDirection: 'row', backgroundColor: Colors.surface, padding: 10, justifyContent: 'flex-end', alignItems: 'center'}}>
+                        <View style={{flexDirection: 'row', alignItems: 'center'}}>
 
-                            <Button style={{borderWidth: StyleSheet.hairlineWidth, borderRadius: 5, flexDirection: 'row', justifyContent: 'center', alignItems: 'center', borderColor: Colors.safe, paddingHorizontal:5}} onPress={this._sendFriendRequest} rippleColor={Colors.safe}>
-                                <Icon name="user-plus" size={12} color={Colors.safe} />
-                                <Text style={{fontWeight: '600', fontSize: 14, color: Colors.safe}}> Send Friend Request </Text>
+                            <Button style={{minWidth: 120,borderWidth: StyleSheet.hairlineWidth, borderRadius: 5, flexDirection: 'row', justifyContent: 'center', alignItems: 'center', backgroundColor: Colors.primaryDark,padding:12, marginRight: 15}} onPress={this._sendFriendRequest} rippleColor={Colors.safe}>
+                                <Icon name="user-plus" size={12} color={'#fff'}/>
+                                <Text style={{fontWeight: '600', fontSize: 14, color: '#fff'}}> Send Friend Request </Text>
                             </Button>
                         </View>
                     )
                 }
                 return(
-                    <View style={{flex: 1, flexDirection: 'row', backgroundColor: Colors.surface, padding: 10, justifyContent: 'space-between', alignItems: 'center'}}>
+                    <View style={{flexDirection: 'row', backgroundColor: Colors.surface, padding: 10, justifyContent: 'space-between', alignItems: 'center'}}>
                         <Text style={{fontWeight: '600', fontSize: 14, color: Colors.secondaryDark}}>Friend Request Sent</Text>
                     </View>
                 )
             }
             return(
-                <View style={{flex: 1, flexDirection: 'row', backgroundColor: Colors.surface, padding: 10, justifyContent: 'flex-end', alignItems: 'center'}}>
-                    <Button style={{borderWidth: StyleSheet.hairlineWidth, borderRadius: 5, flexDirection: 'row', justifyContent: 'center', alignItems: 'center', borderColor: Colors.secondaryDark,paddingHorizontal:5}} onPress={this._unFriend} rippleColor={Colors.secondaryDark}>
-                        <Icon name="user-minus" size={12} color={Colors.secondaryDark} />
-                        <Text style={{fontWeight: '600', fontSize: 14, color: Colors.secondaryDark}}> Un-Friend </Text>
+                <View style={{flexDirection: 'row', alignItems: 'center'}}>
+                    <Button style={{minWidth: 120, borderWidth: StyleSheet.hairlineWidth, borderRadius: 5, flexDirection: 'row', justifyContent: 'center', alignItems: 'center', backgroundColor: Colors.secondaryDark,padding:12}} onPress={this._unFriend} rippleColor={Colors.secondaryDark}>
+                        <Icon name="user-minus" size={12} color='#fff' />
+                        <Text style={{fontWeight: '600', fontSize: 14, color: '#fff', paddingLeft: 5}}> Un-Friend </Text>
                     </Button>
                 </View>
             )
@@ -326,18 +373,30 @@ class ImageView extends React.Component {
         });
     }
 
+    renderLightBoxImage = () => {
+        return (
+            <Image
+            style={styles.lightBoxImage}
+            resizeMode="contain"
+            source={this.state.profilePhoto}
+            />
+        );
+    }
+
     render() {
+        console.log('accessLevel',this.accessLevel)
       return (
           <View>
           <ImageBackground style={styles.banner} source={this.state.bannerPhoto} blurRadius={3} imageStyle={{resizeMode: 'cover'}}>
               <SafeAreaView forceInset={{ top: 'always'}}>
                   <View style={{flexDirection: 'row', justifyContent: 'center', alignItems: 'center'}}>
-                      <Image style={styles.image}
-                          source={this.state.profilePhoto}
-                          resizeMode='cover'
-                          defaultSource={require('../resources/dummy_profile.png')}
-                          onError={(error) => console.log(error)}
-                      />
+                  <Lightbox underlayColor="white" renderContent={this.renderLightBoxImage} style={styles.lightBox}>
+                    <Image
+                        style={styles.image}
+                        resizeMode="cover"
+                        source={this.state.profilePhoto}
+                    />
+                  </Lightbox> 
                       {
                           this.accessLevel ?
                           <Button style={{marginLeft: -40,marginTop: -10, padding: 10, alignSelf: 'flex-start'}} onPress={() => this._editPhoto('profile')}>
@@ -351,7 +410,6 @@ class ImageView extends React.Component {
                       <Text style={{color: Colors.alternative, fontWeight: '600', fontSize: 18}}>{this.data.basic.salutation + ' ' + this.data.basic.f_name + ' ' + this.data.basic.l_name}</Text>
                       <Text style={{paddingTop: 5,color: Colors.alternative, fontWeight: '600', fontSize: 14}}>{this.data.current_company ? this.data.current_company.designation + ' at ' + this.data.current_company.name: null}</Text>
                   </View>
-
               </SafeAreaView>
               {
                   this.accessLevel ?
@@ -361,10 +419,8 @@ class ImageView extends React.Component {
                   :
                   null
               }
+              {this._renderFriendRequestControll()}
           </ImageBackground>
-          <View>
-            {this._renderFriendRequestControll()}
-          </View>
           </View>
 
       );
@@ -612,9 +668,10 @@ class ProfileList extends React.Component {
     }
 
     render() {
+        const { currentView } = this.props;
         return(
             <View>
-                <View>
+                {currentView === 'basic' && <View>
                     <View style={{flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center'}}>
                         <Text style={styles.header}>{I18n.t('Profile_Information')}</Text>
                         {
@@ -629,10 +686,10 @@ class ProfileList extends React.Component {
                     <View style={styles.sectionBody}>
                         {this._renderBasicSection(this.data.basic)}
                     </View>
-                </View>
-                {this._renderExperienceSection(this.data.companies)}
-                {this._renderTagsSection(this.data.tags)}
-                {this._renderPrivacySetting(this.data.privacy)}
+                </View>}
+                {currentView === 'basic' && this._renderPrivacySetting(this.data.privacy)}
+                {currentView === 'background' && this._renderExperienceSection(this.data.companies)}
+                {currentView === 'tags' && this._renderTagsSection(this.data.tags)}
                 <View style={{width: '100%', padding: 10}} />
                 <View>
                     <Modal animationType="fade" transparent={true} visible={this.state.isTagModal} onRequestClose={this._toggleModal}>
@@ -662,19 +719,48 @@ const styles = StyleSheet.create({
         flex: 1,
         backgroundColor: Colors.background,
     },
+    tabBar: {
+        flexDirection: 'row',
+        backgroundColor: Colors.primaryDark
+    },
+    tabItem: {
+        flex: 1,
+        alignItems: 'center',
+        padding: 16,
+    },
+    tabItemActive: {
+        flex: 1,
+        alignItems: 'center',
+        padding: 16,
+        borderBottomColor: '#fff',
+        borderBottomWidth: 2
+    },
     banner: {
         // width: '100%',
         // aspectRatio: 2,
         justifyContent: "center",
         alignItems: 'center',
         paddingVertical: 20,
-        paddingBottom: 5,
+        // paddingBottom: 5,
     },
     image: {
         borderRadius: 92,
         width: 180,
         height: 180,
-        // backfaceVisibility: 'visible',
+        backfaceVisibility: 'visible',
+        
+    },
+    lightBox: {
+        width: 180,
+        height: 180,
+        borderRadius: 92,
+    },
+    lightBoxImage: {
+        borderRadius: 92,
+        width: '100%',
+        height: '100%',
+        justifyContent: "center",
+        alignItems: 'center',
     },
     bio: {
         justifyContent: 'center',

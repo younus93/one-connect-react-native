@@ -29,15 +29,17 @@ class dataManager {
         this.eventEmitter.emit(eventName, data)
     }
 
-    setToken = (token, profilePic) => {
+    setToken = (token, profilePic,id) => {
         this.token = token;
         this.profilePicUrl = profilePic
-        AsyncStorage.multiGet(['@appKey', '@locale'])
+        console.log('setToken',id)
+        AsyncStorage.multiGet(['@appKey', '@locale','@id'])
         .then(res => {
+             console.log('setToken',res)
             if(!res[0][1]){
-                AsyncStorage.multiSet([['@appKey', token], ['@profilePic', profilePic]])
-                .then(response => console.log("token saved"))
-                .catch(error => console.log("token not saved"))
+                AsyncStorage.multiSet([['@appKey', token], ['@profilePic', profilePic],['@id',id+""]])
+                .then(response => {console.log('setToken',id);console.log("token saved")})
+                .catch(error => console.log("token not saved",error))
             }
 
             if(res[1][1]) {
@@ -47,7 +49,7 @@ class dataManager {
         .catch(error => {
             console.log("storage error : ", error)
             AsyncStorage.multiSet([['@appKey', token], ['@profilePic', profilePic]])
-            .then(response => console.log(" token saved"))
+            .then(response => console.log(" token saved z"))
             .catch(error => console.log("token not saved"))
         })
     }
@@ -105,6 +107,20 @@ class dataManager {
         })
     }
 
+    deleteComments = (uri, method, data=null) => {
+        Call(uri, method, data, this.token)
+        .then(response => {
+            console.log('deleteComment',response)
+            if(response.action === "true"){
+                this.eventEmitter.emit('DELETE_COMMENT_S',response)
+            }
+            // this.eventEmitter.emit('NEW_COMMENTS_S', response)
+        })
+        .catch(error => {
+            console.log('deleteComment',error)
+        })
+    }
+    
     like = (uri, method, data=null) => {
 
         Call(uri, method, data, this.token)
@@ -267,6 +283,22 @@ class dataManager {
         })
         .catch(error => {
             this.eventEmitter.emit('PRIVACY_E', error)
+        })
+    }
+    forgotPassword = (uri, method, data=null) => {
+        Call(uri, method, data, this.token)
+        .then(response => {
+            console.log("forgotPassword",response.data.action)
+            if(response.data.action === "true")
+            this.eventEmitter.emit('FORGOT_S', response)
+            else {
+            console.log("forgotPassword error",response)
+            this.eventEmitter.emit('FORGOT_E',response)
+            }
+        })
+        .catch(error => {
+            console.log("forgotPassword error",error)
+            this.eventEmitter.emit('FORGOT_E', error)
         })
     }
 }

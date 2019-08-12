@@ -23,5 +23,9 @@ export default {
     Users: 'Users',
     Batchmates: 'Batchmates',
     Privacy: 'Privacy',
-    Search: 'Search'
+    Search: 'Search',
+    Accept:'Accept',
+    Reject:'Reject',
+    You_have: 'You have',
+    Mutual_friends:'mutual friends'
 }
