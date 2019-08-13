@@ -271,7 +271,10 @@ class ImageView extends React.Component {
         this.requestType = 'U'
         Manager.friendRequest('/api/friend-request/deny', 'POST', {professional_id: this.data.basic.id})
     }
-
+    // _deleteRequest = () => {
+    //      console.log("delete request")
+    //       Manager.friendRequest('/api/friend-request/deny', 'DELETE', {professional_id: this.data.basic.id})
+    // }
     _renderFriendRequestControll = () => {
         if(!this.accessLevel) {
             if(!this.data.friends_meta.is_friends) {
@@ -280,11 +283,11 @@ class ImageView extends React.Component {
                         <View style={{flexDirection: 'row', alignItems: 'center'}}>
                                 <Button style={{borderWidth: StyleSheet.hairlineWidth, borderRadius: 5, flexDirection: 'row', justifyContent: 'center', alignItems: 'center', backgroundColor: Colors.primaryDark,padding:12, marginRight: 15}} onPress={this._acceptRequest} rippleColor={Colors.safe}>
                                     <Icon name="user-check" size={12} color={'#fff'} />
-                                    <Text style={{fontWeight: '600', fontSize: 14, color: '#fff', paddingLeft: 5}}> Accept Friend Request </Text>
+                                    <Text style={{fontWeight: '600', fontSize: 14, color: '#fff', paddingLeft: 5}}> Confirm </Text>
                                 </Button>
                                 <Button style={{borderWidth: StyleSheet.hairlineWidth, borderRadius: 5, flexDirection: 'row', justifyContent: 'center', alignItems: 'center', backgroundColor: Colors.secondaryDark,padding:12}} onPress={this._denyRequest} rippleColor={Colors.primaryDark}>
                                     <Icon name="user-times" size={12} color={'#fff'} />
-                                    <Text style={{fontWeight: '600', fontSize: 14, color: '#fff', paddingLeft: 5}}> Deny Friend Request </Text>
+                                    <Text style={{fontWeight: '600', fontSize: 14, color: '#fff', paddingLeft: 5}}> Delete </Text>
                                 </Button>
                         </View>
                     )
@@ -293,7 +296,7 @@ class ImageView extends React.Component {
                     return(
                         <View style={{flexDirection: 'row', alignItems: 'center'}}>
 
-                            <Button style={{minWidth: 120,borderWidth: StyleSheet.hairlineWidth, borderRadius: 5, flexDirection: 'row', justifyContent: 'center', alignItems: 'center', backgroundColor: Colors.primaryDark,padding:12, marginRight: 15}} onPress={this._sendFriendRequest} rippleColor={Colors.safe}>
+                            <Button style={{minWidth: 120,borderWidth: StyleSheet.hairlineWidth, borderRadius: 5, flexDirection: 'row', justifyContent: 'center', alignItems: 'center', backgroundColor: Colors.primaryLight,padding:12, marginRight: 15}} onPress={this._sendFriendRequest} rippleColor={Colors.safe}>
                                 <Icon name="user-plus" size={12} color={'#fff'}/>
                                 <Text style={{fontWeight: '600', fontSize: 14, color: '#fff'}}> Send Friend Request </Text>
                             </Button>
@@ -301,9 +304,13 @@ class ImageView extends React.Component {
                     )
                 }
                 return(
-                    <View style={{flexDirection: 'row', backgroundColor: Colors.surface, padding: 10, justifyContent: 'space-between', alignItems: 'center'}}>
-                        <Text style={{fontWeight: '600', fontSize: 14, color: Colors.secondaryDark}}>Friend Request Sent</Text>
-                    </View>
+                    <View style={{flexDirection: 'row', alignItems: 'center'}}>
+
+                            <Button style={{minWidth: 120,borderWidth: StyleSheet.hairlineWidth, borderRadius: 5, flexDirection: 'row', justifyContent: 'center', alignItems: 'center', backgroundColor: Colors.error,padding:12, marginRight: 15}} onPress={this._denyRequest} rippleColor={Colors.safe}>
+                                <Icon name="user-plus" size={12} color={'#fff'}/>
+                                <Text style={{fontWeight: '600', fontSize: 14, color: '#fff'}}> Cancel Request </Text>
+                            </Button>
+                        </View>
                 )
             }
             return(
@@ -497,8 +504,11 @@ class ProfileList extends React.Component {
         const monthNames = ["January", "February", "March", "April", "May", "June",
             "July", "August", "September", "October", "November", "December"
         ];
-        let dob = new Date(section.dob.split('T')[0])
-        dob = monthNames[dob.getMonth()] + ' ' + dob.getDate()
+        let dob = "";
+        if(section.dob) {
+         dob = new Date(section.dob.split('T')[0])
+        dob = monthNames[dob.getMonth()] + ' ' + dob.getDate()}
+        
         return (
             <View>
                 <View key={`pelt-${Math.random(1)}`} style={styles.item}>
@@ -546,18 +556,17 @@ class ProfileList extends React.Component {
             // }
             return(
                 <View>
-                    <View style={{flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center', paddingRight: 10}}>
+                    <View style={{flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center'}}>
                         <Text style={styles.header}>Experience</Text>
                         {
                             this.accessLevel ?
-                            <View style={styles.header}>
-                            <Button style={styles.headerButton} onPress={this._navigateToAddCompany} color={Colors.alternative} title="Add Company"/>
-                            </View>
+                            <Button style={{padding: 10}} onPress={()=>{this._navigateToAddCompany()}}>
+                                <Icon name="pen" size={16} color={Colors.secondaryDark}/>
+                            </Button>
                             :
                             null
                         }
                     </View>
-
                     <View style={styles.sectionBody}>
                     {
                         section.map(item => {
@@ -590,18 +599,17 @@ class ProfileList extends React.Component {
             //<Icon name="pen" size={16} color={Colors.secondaryLight}/>
             return(
                 <View>
-                    <View style={{flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center', paddingRight: 10}}>
-                        <Text style={styles.header}>{I18n.t('Tags')}</Text>
+                    <View style={{flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center'}}>
+                        <Text style={styles.header}>Tags</Text>
                         {
                             this.accessLevel ?
-                            <View style={styles.header}>
-                            <Button style={styles.headerButton} onPress={this._showTagModal} color={Colors.alternative} title="Add Tag" />
-                            </View>
+                            <Button style={{padding: 10}}  onPress={this._showTagModal}>
+                                <Icon name="pen" size={16} color={Colors.secondaryDark}/>
+                            </Button>
                             :
                             null
                         }
                     </View>
-
                     <View style={[styles.sectionBody, {flexDirection: 'row', flexWrap: 'wrap', padding: 10}]}>
                     {
                         section.map(item => {
@@ -771,12 +779,11 @@ const styles = StyleSheet.create({
         backgroundColor: Colors.surface,
     },
     header: {
-        paddingLeft: 10,
-        paddingTop: 18,
-        paddingBottom: 8,
         fontSize: 16,
         fontWeight: '600',
         color: Colors.onSurface,
+        opacity: 0.4
+
         // opacity: 0.4
     },
     sectionText: {

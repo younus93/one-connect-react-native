@@ -17,7 +17,7 @@ import { DrawerActions } from "react-navigation-drawer";
 import { NavigationActions } from "react-navigation";
 import Icon from "react-native-vector-icons/FontAwesome5";
 import I18n from "../service/i18n";
-
+const UUID = require('uuid');
 export default class Search extends React.Component {
   static navigationOptions = ({ navigation }) => ({
     title: "",
@@ -113,7 +113,7 @@ export default class Search extends React.Component {
   _navigateBatch = item => {
     this.props.navigation.navigate("BatchItem", { url: item.url });
   };
-  _unFriend = (id) => {
+  _unFriend = id => {
     console.log("sending unfriend request");
     this.requestType = "U";
     Manager.friendRequest("/api/friend-request/unfriend", "POST", {
@@ -236,7 +236,6 @@ export default class Search extends React.Component {
     Manager.friendRequest("/api/friend-request/send", "POST", {
       professional_id: id
     });
-
   };
   _renderUsers = () => {
     if (this.data) {
@@ -251,252 +250,54 @@ export default class Search extends React.Component {
             <View style={{ paddingLeft: 10, paddingTop: 18, paddingBottom: 8 }}>
               <Text style={styles.bodyHeader}>{I18n.t("Users")}</Text>
             </View>
-            <View style={styles.sectionBody}>
-              {!this.state.loading && list.map(item => {
-                return (
-                  <View style={styles.userBody}>
-                    <View>
-                      <Button
-                        onPress={() => this._navigateUser(item)}
-                        key={`pelt-${Math.random(1)}`}
-                        style={[styles.item]}
-                      >
-                        <View>
-                          <Image
-                            style={styles.image}
-                            source={{ uri: item.searchable.basic.profile_pic }}
-                            defaultSource={require("../resources/in_2.jpg")}
-                            resizeMode="cover"
-                            onError={error => console.log(error)}
-                          />
-                        </View>
-                        <View style={{ width: "100%" }}>
-                          <Text
-                            style={[
-                              styles.itemText,
-                              { fontWeight: "600", fontSize: 16 }
-                            ]}
-                          >
-                            {item.title}
-                          </Text>
-                          <Text style={styles.mutualFriendsCount}>
-                            {
-                              item.searchable.friends_meta.mutual_friends_count
-                            }{" "}
-                            {I18n.t("Mutual_friends")}
-                          </Text>
-                          {!item.searchable.friends_meta.is_friends &&
-                          !item.searchable.friends_meta
-                            .has_sent_friend_request_to_this_profile &&
-                          !item.searchable.friends_meta
-                            .has_friend_request_from_this_profile && (
-                            <View
-                              style={{
-                                flexDirection: "row",
-                                alignItems: "center",
-                                marginTop: 5,
-                                marginLeft: 10
+            <View style={styles.userSectionBody}>
+              {!this.state.loading &&
+                list.map(item => {
+                  return (
+                    <View style={styles.userBody}>
+                      <View>
+                        <Button
+                          onPress={() => this._navigateUser(item)}
+                          key={`pelt-${Math.random(1)}`}
+                          style={[styles.item]}
+                        >
+                          <View>
+                            <Image
+                              style={styles.image}
+                              source={{
+                                uri: item.searchable.basic.profile_pic
                               }}
+                              defaultSource={require("../resources/in_2.jpg")}
+                              resizeMode="cover"
+                              onError={error => console.log(error)}
+                            />
+                          </View>
+                          <View style={{ width: "100%",flexShrink:1 }}>
+                            <Text
+                              style={[
+                                styles.itemText,
+                                { fontWeight: "600", fontSize: 16 }
+                              ]}
                             >
-                              <Button
-                                style={{
-                                  minWidth: 120,
-                                  borderWidth: StyleSheet.hairlineWidth,
-                                  borderRadius: 22,
-                                  flexDirection: "row",
-                                  justifyContent: "center",
-                                  alignItems: "center",
-                                  backgroundColor: "#3b5998",
-                                  padding: 12
-                                }}
-                                onPress={this._sendFriendRequest.bind(this,
-                                  item.searchable.basic.id
-                                )}
-                                rippleColor={Colors.secondaryDark}
-                              >
-                                <Icon name="user-plus" size={12} color="#fff" />
-                                <Text
-                                  style={{
-                                    fontWeight: "600",
-                                    fontSize: 14,
-                                    color: "#fff",
-                                    paddingLeft: 5
-                                  }}
-                                >
-                                  {" "}
-                                  Add friend{" "}
-                                </Text>
-                              </Button>
+                              {item.title}
+                            </Text>
+                            <Text style={styles.mutualFriendsCount}>
+                              {
+                                item.searchable.friends_meta
+                                  .mutual_friends_count
+                              }{" "}
+                              {I18n.t("Mutual_friends")}
+                            </Text>
+                            <View style={styles.tags}>
+                              {item.searchable.tags.map(tag => <Text style={styles.tag} key={UUID.v4()}>{tag.name}</Text>)} 
                             </View>
-                          )}
-                          {!item.searchable.friends_meta.is_friends &&
-                          item.searchable.friends_meta
-                            .has_friend_request_from_this_profile && (
-                            <View
-                              style={{
-                                flexDirection: "row",
-                                alignItems: "center",
-                                marginTop: 5,
-                                marginLeft: 10
-                              }}
-                            >
-                              <Button
-                                style={{
-                                  minWidth: 120,
-                                  borderRadius: 22,
-                                  flexDirection: "row",
-                                  justifyContent: "center",
-                                  alignItems: "center",
-                                  backgroundColor: "#3b5998",
-                                  padding: 12
-                                }}
-                                onPress={this._accept.bind(this,item.searchable.basic.id)}
-                                rippleColor={Colors.secondaryDark}
-                              >
-                                <Icon
-                                  name="user-minus"
-                                  size={12}
-                                  color="#fff"
-                                />
-                                <Text
-                                  style={{
-                                    fontWeight: "600",
-                                    fontSize: 14,
-                                    color: "#fff",
-                                    paddingLeft: 5
-                                  }}
-                                >
-                                  {" "}
-                                  Confirm{" "}
-                                </Text>
-                              </Button>
-                              <Button
-                                style={{
-                                  minWidth: 120,
-
-                                  borderRadius: 22,
-                                  flexDirection: "row",
-                                  justifyContent: "center",
-                                  alignItems: "center",
-                                  backgroundColor: "#dfe3ee",
-                                  padding: 12,
-                                  marginLeft: 10
-                                }}
-                                onPress={this._deny.bind(this, item.searchable.basic.id)}
-                                rippleColor={Colors.secondaryDark}
-                              >
-                                <Icon
-                                  name="user-minus"
-                                  size={12}
-                                  color="#000000"
-                                />
-                                <Text
-                                  style={{
-                                    fontWeight: "600",
-                                    fontSize: 14,
-                                    color: "#000",
-                                    paddingLeft: 5
-                                  }}
-                                >
-                                  {" "}
-                                  Cancel{" "}
-                                </Text>
-                              </Button>
-                            </View>
-                          )}
-                          {!item.searchable.friends_meta.is_friends &&
-                          item.searchable.friends_meta
-                            .has_sent_friend_request_to_this_profile &&
-                          !item.searchable.friends_meta
-                            .has_friend_request_from_this_profile && (
-                            <View
-                              style={{
-                                flexDirection: "row",
-                                alignItems: "center",
-                                marginTop: 5,
-                                marginLeft: 10
-                              }}
-                            >
-                              <Button
-                                style={{
-                                  minWidth: 120,
-                                  borderRadius: 22,
-                                  flexDirection: "row",
-                                  justifyContent: "center",
-                                  alignItems: "center",
-                                  backgroundColor: "#dfe3ee",
-                                  padding: 12
-                                }}
-                                onPress={this._deny.bind(this, item.searchable.basic.id)}
-                                rippleColor={Colors.secondaryDark}
-                              >
-                                <Icon
-                                  name="user-minus"
-                                  size={12}
-                                  color="#000"
-                                />
-                                <Text
-                                  style={{
-                                    fontWeight: "600",
-                                    fontSize: 14,
-                                    color: "#000",
-                                    paddingLeft: 5
-                                  }}
-                                >
-                                  {" "}
-                                  Cancel request{" "}
-                                </Text>
-                              </Button>
-                            </View>
-                          )}
-                          {item.searchable.friends_meta.is_friends && (
-                            <View
-                              style={{
-                                flexDirection: "row",
-                                alignItems: "center",
-                                marginTop: 5,
-                                marginLeft: 10
-                              }}
-                            >
-                              <Button
-                                style={{
-                                  minWidth: 120,
-                                  borderRadius: 22,
-                                  flexDirection: "row",
-                                  justifyContent: "center",
-                                  alignItems: "center",
-                                  backgroundColor: "#dfe3ee",
-                                  padding: 12
-                                }}
-                                onPress={this._unFriend.bind(this, item.searchable.basic.id)}
-                                rippleColor={Colors.secondaryDark}
-                              >
-                                <Icon
-                                  name="user-minus"
-                                  size={12}
-                                  color="#000"
-                                />
-                                <Text
-                                  style={{
-                                    fontWeight: "600",
-                                    fontSize: 14,
-                                    color: "#000",
-                                    paddingLeft: 5
-                                  }}
-                                >
-                                  {" "}
-                                  Un-friend{" "}
-                                </Text>
-                              </Button>
-                            </View>
-                          )}
-                        </View>
-                      </Button>
+                          </View>
+                        </Button>
+                      </View>
+                      <View style={styles.separator} />
                     </View>
-                    <View style={styles.separator} />
-                  </View>
-                );
-              })}
+                  );
+                })}
             </View>
           </View>
         );
@@ -840,6 +641,9 @@ const styles = StyleSheet.create({
     opacity: 0.4
   },
   sectionBody: {
+    backgroundColor: Colors.surface
+  },
+  userSectionBody: {
     backgroundColor: Colors.background
   },
   item: {
@@ -914,5 +718,16 @@ const styles = StyleSheet.create({
     backgroundColor: Colors.surface,
     marginBottom: 10,
     paddingBottom: 0
+  },
+  tags: {
+    fontSize: 12,
+    fontWeight: "300",
+    flexDirection: "row",
+    flexWrap:"wrap",
+    paddingRight:10,
+    flexShrink: 1
+  },
+  tag: {
+    paddingLeft: 10
   }
 });

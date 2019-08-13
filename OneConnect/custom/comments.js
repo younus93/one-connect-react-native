@@ -42,21 +42,20 @@ export default class Comments extends React.Component {
       <View style={[styles.container]}>
         <View style={styles.display}>
           <View style={styles.paddingHorizontal}>
-            <Image
-              style={styles.image}
-              source={{ uri: this.state.data.poster.profile_pic }}
-              defaultSource={require("../resources/dummy_profile.png")}
-              resizeMode="cover"
-              onError={error => console.log(error)}
-            />
+            <TouchableWithoutFeedback onPress={this._navigateUser}>
+              <Image
+                style={styles.image}
+                source={{ uri: this.state.data.poster.profile_pic }}
+                defaultSource={require("../resources/dummy_profile.png")}
+                resizeMode="cover"
+                onError={error => console.log(error)}
+              />
+            </TouchableWithoutFeedback>
           </View>
         </View>
         <View style={[styles.body]}>
-          <Button
-            onPress={this._navigateUser}
-            style={[styles.paddingHorizontal10]}
-          >
-            <Text style={styles.headerText}>
+          <View style={[styles.paddingHorizontal10]}>
+            <Text style={styles.headerText} onPress={this._navigateUser}>
               {this.state.data.poster.f_name +
                 " " +
                 this.state.data.poster.l_name}
@@ -67,20 +66,23 @@ export default class Comments extends React.Component {
             <View style={[{ paddingTop: 20, paddingBottom: 5 }]}>
               <Text style={styles.bodyText}>{this.state.data.body}</Text>
             </View>
-          </Button>
+          </View>
           {this.props.userId === this.state.data.poster.id + "" && (
             <Button
               style={{
                 position: "absolute",
-                right: 15,
-                top: 15
+                right: 0,
+                top: 15,
+                width:"10%",
+                height:"30%",
+                alignItems:"center"
               }}
               onPress={() => {
                 this._deleteComment();
               }}
               rippleColor={Colors.safe}
             >
-              <Icon name="trash" size={12} color={Colors.error} />
+              <Icon name="trash" size={12} color={Colors.error} style={{alignSelf:"center"}} />
             </Button>
           )}
         </View>

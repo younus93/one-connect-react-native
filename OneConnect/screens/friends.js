@@ -17,7 +17,7 @@ import Manager from "../service/dataManager";
 import Button from "../custom/button";
 import Icon from "react-native-vector-icons/FontAwesome5";
 import I18n from "../service/i18n";
-
+const UUID = require('uuid');
 export default class Friends extends React.Component {
   static navigationOptions = ({ navigation }) => ({
     title: navigation.getParam("title"),
@@ -134,13 +134,20 @@ export default class Friends extends React.Component {
               onError={error => console.log(error)}
             />
           </View>
-          <View>
+          <View style={styles.profileContainer}>
             <Text style={styles.name}>{item.f_name + " " + item.l_name}</Text>
 
             <Text style={styles.mutualFriendsCount}>
-              {I18n.t("You_have")} {item.friends_meta.mutual_friends_count}{" "}
+              {item.friends_meta.mutual_friends_count}{" "}
               {I18n.t("Mutual_friends")}
             </Text>
+            <View style={styles.tags}>
+              {item.tags.map(tag => (
+                <Text style={styles.tag} key={UUID.v4()}>
+                  {tag.name}
+                </Text>
+              ))}
+            </View>
           </View>
         </View>
       </Button>
@@ -326,13 +333,26 @@ const styles = StyleSheet.create({
     fontWeight: "600"
   },
   image: {
-    borderRadius: 20,
-    width: 40,
-    height: 40
+    borderRadius: 60,
+    width: 120,
+    height: 120
   },
   mutualFriendsCount: {
     fontSize: 12,
     fontWeight: "300",
     paddingLeft: 10
+  },
+  tags: {
+    fontSize: 12,
+    fontWeight: "300",
+    flexDirection: "row",
+    flexWrap:"wrap",
+    paddingRight:10,
+  },
+  tag: {
+    paddingLeft: 10
+  },  
+  profileContainer:{
+    flexShrink:1
   }
 });
