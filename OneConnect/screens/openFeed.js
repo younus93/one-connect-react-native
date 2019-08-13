@@ -174,8 +174,7 @@ export default class OpenFeed extends React.Component {
 
   _profile = item => {
     this.props.navigation.navigate("Profile", {
-      url: item.poster.resource_url,
-      accessLevel: 1
+      url: item.poster.resource_url
     });
   };
 

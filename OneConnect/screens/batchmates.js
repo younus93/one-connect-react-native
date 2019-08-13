@@ -73,7 +73,7 @@ export default class BatchMates extends React.Component {
 
   _navigateMate = item => {
     console.log("pressed item :", item);
-    this.props.navigation.navigate("Profile", { url: item[0].resource_url,accessLevel:1 });
+    this.props.navigation.navigate("Profile", { url: item[0].resource_url});
   };
 
   _renderMateList = ({ item }) => {
