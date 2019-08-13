@@ -556,8 +556,7 @@ class ProfileList extends React.Component {
             // }
             return(
                 <View>
-                    <View style={{flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center'}}>
-                        <Text style={styles.header}>Experience</Text>
+                    <View style={{flexDirection: 'row', justifyContent: 'flex-end', alignItems: 'center'}}>
                         {
                             this.accessLevel ?
                             <Button style={{padding: 10}} onPress={()=>{this._navigateToAddCompany()}}>
@@ -600,7 +599,6 @@ class ProfileList extends React.Component {
             return(
                 <View>
                     <View style={{flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center'}}>
-                        <Text style={styles.header}>Tags</Text>
                         {
                             this.accessLevel ?
                             <Button style={{padding: 10}}  onPress={this._showTagModal}>
@@ -680,8 +678,7 @@ class ProfileList extends React.Component {
         return(
             <View>
                 {currentView === 'basic' && <View>
-                    <View style={{flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center'}}>
-                        <Text style={styles.header}>{I18n.t('Profile_Information')}</Text>
+                    <View style={{flexDirection: 'row', justifyContent: 'flex-end', alignItems: 'center'}}>
                         {
                             this.accessLevel ?
                             <Button style={{padding: 10}} onPress={this.props.navigate}>
