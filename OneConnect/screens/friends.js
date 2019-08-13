@@ -48,7 +48,8 @@ export default class Friends extends React.Component {
       loading: true,
       error: false,
       errorText: null,
-      updateToggle: false
+      updateToggle: false,
+      data: null
     };
   }
 
@@ -86,7 +87,8 @@ export default class Friends extends React.Component {
     this.state = {
       loading: true,
       error: false,
-      errorText: null
+      errorText: null,
+      data:null
     };
     Manager.friends(this.url, "GET");
   };
@@ -97,7 +99,8 @@ export default class Friends extends React.Component {
     this.setState({
       loading: false,
       error: false,
-      errorText: null
+      errorText: null,
+      data:this.data
     });
   };
 
@@ -258,7 +261,16 @@ export default class Friends extends React.Component {
       // const {data} = this.data;
       let regex = new RegExp("^" + text, "i");
       const searchedData = this.data.filter(item => {
-        const match = regex.test(item[0].f_name) || regex.test(item[0].l_name);
+        console.log('search friend',item)
+        let match = regex.test(item.f_name) || regex.test(item.l_name);
+        let tagMatch = false;
+        item.tags.map(tag => {
+          if(regex.test(tag.name)) {
+            tagMatch=true
+          }
+        })
+        match = tagMatch || match
+        console.log('search return match',match)
         return match;
       });
       console.log("searched list : ", searchedData);
@@ -269,7 +281,7 @@ export default class Friends extends React.Component {
   render() {
     return (
       <FlatList
-        data={this.data}
+        data={this.state.data}
         keyExtractor={this._keyExtractor}
         renderItem={this._renderMateList}
         ItemSeparatorComponent={this._itemSeparator}

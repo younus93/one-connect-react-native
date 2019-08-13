@@ -24,11 +24,12 @@ export default class BatchMates extends React.Component {
     super(props);
     // this.url = props.navigation.getParam('url')
     this.data = props.navigation.getParam("item");
+    console.log('props in batchmates',props.navigation.getParam("item"))
     this.state = {
       data: this.data,
       loading: false,
       error: false,
-      errorText: null
+      errorText: null,
     };
   }
 
@@ -72,7 +73,7 @@ export default class BatchMates extends React.Component {
 
   _navigateMate = item => {
     console.log("pressed item :", item);
-    this.props.navigation.navigate("Profile", { url: item[0].resource_url });
+    this.props.navigation.navigate("Profile", { url: item[0].resource_url,accessLevel:1 });
   };
 
   _renderMateList = ({ item }) => {
@@ -218,7 +219,16 @@ export default class BatchMates extends React.Component {
       // const {data} = this.data;
       let regex = new RegExp("^" + text, "i");
       const searchedData = this.data.filter(item => {
-        const match = regex.test(item[0].f_name) || regex.test(item[0].l_name);
+        console.log('search batchmates',item[0])
+        let match = regex.test(item[0].f_name) || regex.test(item[0].l_name);
+        let tagMatch = false;
+        item[0].tags.map(tag => {
+          if(regex.test(tag.name)) {
+            tagMatch=true
+          }
+        })
+        match = tagMatch || match
+        console.log('search return match',match)
         return match;
       });
       console.log("searched list : ", searchedData);
