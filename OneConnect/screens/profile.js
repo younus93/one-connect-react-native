@@ -276,7 +276,7 @@ class ImageView extends React.Component {
     //       Manager.friendRequest('/api/friend-request/deny', 'DELETE', {professional_id: this.data.basic.id})
     // }
     _renderFriendRequestControll = () => {
-        if(!this.accessLevel) {
+        if(!this.accessLevel  && !this.data.friends_meta.is_user) {
             if(!this.data.friends_meta.is_friends) {
                 if(this.data.friends_meta.has_friend_request_from_this_profile) {
                     return(
