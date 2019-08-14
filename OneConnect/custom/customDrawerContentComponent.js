@@ -126,6 +126,7 @@ const styles = StyleSheet.create({
   header: {
       backgroundColor: Colors.primary,
       opacity: 0.8,
+      paddingTop: 40,
       height: '20%'
   },
   body: {
