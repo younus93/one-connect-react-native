@@ -296,7 +296,7 @@ class ImageView extends React.Component {
                     return(
                         <View style={{flexDirection: 'row', alignItems: 'center'}}>
 
-                            <Button style={{minWidth: 120,borderWidth: StyleSheet.hairlineWidth, borderRadius: 5, flexDirection: 'row', justifyContent: 'center', alignItems: 'center', backgroundColor: Colors.primaryLight,padding:12, marginRight: 15}} onPress={this._sendFriendRequest} rippleColor={Colors.safe}>
+                            <Button style={{minWidth: 120,borderWidth: StyleSheet.hairlineWidth, borderRadius: 5, flexDirection: 'row', justifyContent: 'center', alignItems: 'center', backgroundColor: Colors.alternative1,padding:12, marginRight: 15}} onPress={this._sendFriendRequest} rippleColor={Colors.safe}>
                                 <Icon name="user-plus" size={12} color={'#fff'}/>
                                 <Text style={{fontWeight: '600', fontSize: 14, color: '#fff'}}> Send Friend Request </Text>
                             </Button>
@@ -575,7 +575,7 @@ class ProfileList extends React.Component {
                                     <View>
                                         <Text style={[styles.itemText, {fontWeight: '600', fontSize: 16}]}>{item.designation}</Text>
                                         <Text style={[styles.itemText, {paddingTop: 5}]}>{item.name}</Text>
-                                        <Text style={[styles.itemText, {paddingTop: 5}]}>Since {item.started_working_at.split(' ')[0]}</Text>
+                                        <Text style={[styles.itemText, {paddingTop: 5}]}>{item.started_working_at ? 'Since '+item.started_working_at.split(' ')[0] : ''}</Text>
                                     </View>
                                 </View>
                             )

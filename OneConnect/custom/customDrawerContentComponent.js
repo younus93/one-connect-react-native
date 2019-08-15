@@ -154,7 +154,7 @@ const styles = StyleSheet.create({
       fontWeight: '600',
   },
   footer: {
-      backgroundColor: Colors.primaryDark,
+      backgroundColor: Colors.primary,
       // marginTop: 'auto',
       padding: 15
   },

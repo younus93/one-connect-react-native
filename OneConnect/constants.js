@@ -40,11 +40,32 @@
 //     safeDark: 'green'
 // }
 
+// export const Colors = {
+//     background: '#eff1f9',
+//     primary: '#FFFFFF',
+//     primaryDark: '#283593',
+//     primaryLight: '#FFFFFF',
+//     secondary: '#ef5350',
+//     secondaryDark: '#b61827',
+//     secondaryLight: '#ff867c',
+//     surface: '#FFFFFF',
+//     error: '#B00020',
+//     onPrimary: '#000000',
+//     onSecondary: '#000000',
+//     onBackground: '#000000',
+//     onSurface: '#000000',
+//     onError: '#FFFFFF',
+//     alternative: '#aab6fe',
+//     alert: '#F44336',
+//     safe: '#05f100',
+//     safeDark: 'green'
+// }
+
 export const Colors = {
     background: '#eff1f9',
-    primary: '#FFFFFF',
-    primaryDark: '#283593',
-    primaryLight: '#FFFFFF',
+    primary: '#ffecb3',
+    primaryDark: '#000000',
+    primaryLight: '#ffffe5',
     secondary: '#ef5350',
     secondaryDark: '#b61827',
     secondaryLight: '#ff867c',
@@ -56,7 +77,9 @@ export const Colors = {
     onSurface: '#000000',
     onError: '#FFFFFF',
     alternative: '#aab6fe',
+    alternative1: '#465eeb', 
     alert: '#F44336',
     safe: '#05f100',
-    safeDark: 'green'
+    safeDark: 'green',
+    SendRequest : '#00600f'
 }
