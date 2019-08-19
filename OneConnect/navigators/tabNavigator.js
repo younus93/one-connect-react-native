@@ -93,7 +93,7 @@ const navigatorConfig = {
                 lableName = I18n.t('Search');
             }
             else if (routeName === 'NotificationStack') {
-                titleName = 'Notifications'
+                titleName = 'Alerts'
                 lableName = I18n.t('Notifications');
             }
             else if (routeName === 'FriendsStack') {

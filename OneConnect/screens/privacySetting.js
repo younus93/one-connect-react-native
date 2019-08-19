@@ -21,7 +21,7 @@ export default class Privacy extends React.Component {
         this.data = props.navigation.getParam('data', null)
         console.log("privacy data : ", this.data)
         this.settingItems = ['email', 'phone_number', 'designation', 'bio']
-        this.level = ['Public', 'Friends', 'Courses', 'Batches', 'Institution']
+        this.level = ['Friends','Batches', 'Courses','Institution','Public']
 
         this.state = {
             data: this.data,

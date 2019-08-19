@@ -419,12 +419,12 @@ class ImageView extends React.Component {
                   </View>
               </SafeAreaView>
               {
-                  this.accessLevel ?
-                  <Button style={{padding: 10, alignSelf: 'flex-end'}} onPress={() => this._editPhoto('banner')}>
-                      <Icon name="pen" size={16} color={Colors.secondaryDark}/>
-                  </Button>
-                  :
-                  null
+                //   this.accessLevel ?
+                // //   <Button style={{padding: 10, alignSelf: 'flex-end'}} onPress={() => this._editPhoto('banner')}>
+                // //       <Icon name="pen" size={16} color={Colors.secondaryDark}/>
+                // //   </Button>
+                //   :
+                //   null
               }
               {this._renderFriendRequestControll()}
           </ImageBackground>
@@ -506,14 +506,23 @@ class ProfileList extends React.Component {
         ];
         let dob = "";
         if(section.dob) {
-         dob = new Date(section.dob.split('T')[0])
-        dob = monthNames[dob.getMonth()] + ' ' + dob.getDate()}
+        dob = new Date(section.dob.split('T')[0])
+        dob = monthNames[dob.getMonth()] + ' ' + dob.getDate()
+        }
         
         return (
             <View>
                 <View key={`pelt-${Math.random(1)}`} style={styles.item}>
                     <Icon name="user" size={18} color={Colors.primaryDark} />
+                    <Text style={styles.itemText}>{section.salutation}</Text>
+                </View>
+                <View key={`pelt-${Math.random(1)}`} style={styles.item}>
+                    <Icon name="user" size={18} color={Colors.primaryDark} />
                     <Text style={styles.itemText}>{section.f_name + ' ' + section.l_name}</Text>
+                </View>
+                <View key={`pelt-${Math.random(1)}`} style={styles.item}>
+                    <Icon name="smile-wink" size={18} color={Colors.primaryDark} />
+                    <Text style={styles.itemText}>{section.nick_name}</Text>
                 </View>
                 <Button key={`pelt-${Math.random(1)}`} style={styles.item} onPress={() => this._makeCall(section.phone_number)}>
                     <Icon name="phone" size={18} color={Colors.primaryDark} />
@@ -575,7 +584,8 @@ class ProfileList extends React.Component {
                                     <View>
                                         <Text style={[styles.itemText, {fontWeight: '600', fontSize: 16}]}>{item.designation}</Text>
                                         <Text style={[styles.itemText, {paddingTop: 5}]}>{item.name}</Text>
-                                        <Text style={[styles.itemText, {paddingTop: 5}]}>Since {item.started_working_at.split(' ')[0]}</Text>
+                                        {item.started_working_at &&  <Text style={[styles.itemText, {paddingTop: 5}]}>Since {item.started_working_at.split(' ')[0]}</Text>}
+                                       
                                     </View>
                                 </View>
                             )
@@ -598,7 +608,7 @@ class ProfileList extends React.Component {
             //<Icon name="pen" size={16} color={Colors.secondaryLight}/>
             return(
                 <View>
-                    <View style={{flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center'}}>
+                    <View style={{flexDirection: 'row', justifyContent: 'flex-end', alignItems: 'center'}}>
                         {
                             this.accessLevel ?
                             <Button style={{padding: 10}}  onPress={this._showTagModal}>
