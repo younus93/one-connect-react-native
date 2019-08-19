@@ -86,7 +86,46 @@ export default class CustomDrawerContentComponent extends React.Component {
                             </View>
                         </View>
                     </Button>
-
+                    <Button onPress={this.navigateToScreen('NewsFeed')}>
+                        <View style={styles.item}>
+                            <View style={styles.icon}>
+                                <Icon name="rss-square" size={iconSize} color={Colors.primaryDark} />
+                            </View>
+                            <View style={styles.textBody}>
+                                <Text style={styles.bodyTextstyle}>{I18n.t('Newsfeed')}</Text>
+                            </View>
+                        </View>
+                    </Button>
+                    <Button onPress={this.navigateToScreen('Search')}>
+                        <View style={styles.item}>
+                            <View style={styles.icon}>
+                                <Icon name="search" size={iconSize} color={Colors.primaryDark} />
+                            </View>
+                            <View style={styles.textBody}>
+                                <Text style={styles.bodyTextstyle}>{I18n.t('Search')}</Text>
+                            </View>
+                        </View>
+                    </Button>
+                     <Button onPress={this.navigateToScreen('Notification')}>
+                        <View style={styles.item}>
+                            <View style={styles.icon}>
+                                <Icon name="bell" size={iconSize} color={Colors.primaryDark} />
+                            </View>
+                            <View style={styles.textBody}>
+                                <Text style={styles.bodyTextstyle}>{I18n.t('Notifications')}</Text>
+                            </View>
+                        </View>
+                    </Button>
+                    <Button onPress={this.navigateToScreen('Friends')}>
+                        <View style={styles.item}>
+                            <View style={styles.icon}>
+                                <Icon name="user-friends" size={iconSize} color={Colors.primaryDark} />
+                            </View>
+                            <View style={styles.textBody}>
+                                <Text style={styles.bodyTextstyle}>{I18n.t('Friends')}</Text>
+                            </View>
+                        </View>
+                    </Button>
                     <View style={styles.item}>
                         <View>
                             <Text style={styles.bodyTextstyle}>En</Text>
@@ -98,8 +137,9 @@ export default class CustomDrawerContentComponent extends React.Component {
                             <Text style={styles.bodyTextstyle}>Th</Text>
                         </View>
                     </View>
+                    
                 </View>
-
+                
                 <Button style={styles.footer} onPress={this.navigateToScreen('AuthLoading', {action: 'logout'})}>
                     <View>
                         <SafeAreaView forceInset={{ bottom: 'always'}}>

@@ -66,7 +66,7 @@ export default class AddCompany extends React.Component {
     }
 
     _companyError = error => {
-        console.log("add company success : ", error)
+        console.log("add company error : ", error)
         this.setState({
             loading: false,
             error: true,
@@ -238,7 +238,7 @@ export default class AddCompany extends React.Component {
 
     _submit = () => {
         console.log('submitting : ', this.formData)
-        if(Object.keys(this.formData).length == 11) {
+        if(this.formData['name'] && this.formData['designation']) {
             this.setState({
                 loading: true
             })
@@ -276,7 +276,7 @@ export default class AddCompany extends React.Component {
             <ScrollView style={styles.container}>
                 {this._renderForm()}
                 <View style={{margin: 10, marginTop: 20, marginBottom: 40}}>
-                    <Button onPress={this._submit} style={styles.button} title="SUBMIT" color={Colors.alternative}>
+                    <Button onPress={()=>{this._submit()}} style={styles.button} title="SUBMIT" color={Colors.alternative}>
                     </Button>
                 </View>
                 <DateTimePicker
