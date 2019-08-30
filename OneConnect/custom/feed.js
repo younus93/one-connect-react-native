@@ -91,6 +91,18 @@ export default class Feed extends React.Component {
     this.props.instituteCallback();
   };
 
+  _likeText = () => {
+    if(this.state.likeIconActive)
+      return "You and " + (this.state.totalLikes - 1) + " others liked it!";
+    if(this.props.data.likers.length > 0)
+      return this.props.data.likers[0].f_name +" and " + (this.state.totalLikes - 1) + " others liked it!";
+    return "No Likes yet";
+  }
+  
+  _commentText = () => {
+    return this.state.commentsCount + " comments";
+  }
+  
   _profile = () => {
     // this.props.profileCallback()
   };
@@ -105,6 +117,7 @@ export default class Feed extends React.Component {
       let likeData = {};
       likeData.id = index;
       likeData.imageUrl = like.profile_pic;
+      likeData.name = like.f_name,
       faceData.push(likeData);
     });
     console.log('faceData',faceData)
@@ -155,6 +168,22 @@ export default class Feed extends React.Component {
           </View>
           <View style={styles.separator} />
           <View style={styles.footer}>
+          <Text style={[
+                  styles.footerMetaElementText,
+                  { color: this.state.likeActiveFont }
+                ]}
+              >
+              { this._likeText() }
+              </Text>
+              <Text style={[
+                  styles.footerMetaElementText,
+                  { color: this.state.likeActiveFont }
+                ]}
+              >
+              { this._commentText() }
+              </Text>
+          </View>
+          <View style={styles.footer}>
             <Button onPress={this._liked} style={styles.footerElement}>
               <Icon
                 name="heart"
@@ -168,45 +197,15 @@ export default class Feed extends React.Component {
                   { color: this.state.likeActiveFont }
                 ]}
               >
-                {this.state.totalLikes} {I18n.t("Like")}
+              {I18n.t("Like") }
               </Text>
             </Button>
             <Button onPress={this._comment} style={styles.footerElement}>
               <Icon name="comment" size={20} color={Colors.secondaryDark} />
               <Text style={styles.footerElementText}>
-                {this.state.commentsCount} {I18n.t("Comment")}
+                {I18n.t("Comment")}
               </Text>
             </Button>
-          </View>
-          <View style={styles.facePile}>
-            {faceData.length > 0 && (
-              <FacePile
-                numFaces={5}
-                faces={faceData}
-                hideOverflow={false}
-                circleSize={20}
-                containerStyle={{
-                  alignItems: "flex-start",
-                  alignSelf: "flex-start",
-                  justifyContent: "flex-start"
-                }}
-              />
-            )}
-
-            {remainingFaces > 0 && (
-              <Text
-                style={{
-                  color: Colors.onSurface,
-                  fontSize: 14,
-                  fontWeight: "600",
-                  opacity: 0.4,
-                  paddingTop: 10,
-                  paddingLeft: 20
-                }}
-              >
-                +{remainingFaces} liked this
-              </Text>
-            )}
           </View>
         </View>
       </TouchableWithoutFeedback>
@@ -221,8 +220,13 @@ export default class Feed extends React.Component {
 
 const styles = StyleSheet.create({
   container: {
-    paddingHorizontal: 20,
-    paddingTop: 20,
+    // paddingHorizontal: 20,
+    // paddingTop: 10,
+    paddingHorizontal : 10,
+    paddingVertical : 5,
+    marginHorizontal : 10,
+    marginVertical : 5,
+    borderRadius : 10,
     backgroundColor: Colors.surface
   },
   separator: {
@@ -248,6 +252,14 @@ const styles = StyleSheet.create({
     justifyContent: "space-between",
     alignItems: "center",
     opacity: 0.7
+  },
+  footerMetaElementText : {
+    fontSize: 10,
+    fontWeight: "600",
+    opacity: 0.6,
+    paddingLeft: 5,
+    flexWrap : 'wrap',
+    maxWidth : '50%'
   },
   footerElementText: {
     color: Colors.onSurface,
@@ -280,8 +292,10 @@ const styles = StyleSheet.create({
   },
   image: {
     borderRadius: 20,
-    width: 40,
-    height: 40
+    width: 60,
+    height: 60,
+    aspectRatio : 1,
+    resizeMode : 'contain'
   },
   shadow: {
     shadowColor: Colors.secondary,

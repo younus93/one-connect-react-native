@@ -185,6 +185,8 @@ export default class OpenFeed extends React.Component {
           style={{
             backgroundColor: Colors.background,
             padding: 10,
+            margin : 10,
+            borderRadius : 10,
             justifyContent: "center",
             alignItems: "center"
           }}

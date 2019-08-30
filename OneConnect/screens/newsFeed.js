@@ -77,7 +77,7 @@ export default class NewsFeed extends React.Component {
     }
 
     _newsSuccess = (data) => {
-        console.log("news feed successfull : ", data)
+        console.log("news feed successfull : ",)
         // TODO: FIX IT.
         this.data = [...this.data, ...data.data]
         this.setState(state => ({
@@ -174,7 +174,7 @@ export default class NewsFeed extends React.Component {
         const {loading} = this.state
         if(!loading && this.data) {
             return(
-                <View style={{backgroundColor:Colors.background, padding: 10, justifyContent:"center", alignItems: "center"}}><Text style={{color: Colors.secondaryDark, fontWeight: '500', opacity: 0.4}}>End of list.</Text></View>
+                <View style={{backgroundColor:Colors.background, padding: 10, justifyContent:"center", alignItems: "center"}}><Text style={{color: Colors.secondaryDark, fontWeight: '500', opacity: 0.4}}>No more posts to show!</Text></View>
             )
         }
         else {
@@ -200,6 +200,7 @@ export default class NewsFeed extends React.Component {
     }
 
     _refresh = () => {
+        console.log("Calling this when refreshing page!");
         this.setState({
             data: [],
             loading: true,
@@ -246,7 +247,7 @@ export default class NewsFeed extends React.Component {
                 ListFooterComponent={this._listFooter}
                 onEndReached={this._loadMore}
                 onEndReachedThreshold={0.7}
-                onRefresh={this._refresh}
+                // onRefresh={this._refresh}
                 refreshing={this.state.refreshing}
                 style={{backgroundColor: Colors.background}}
                 />

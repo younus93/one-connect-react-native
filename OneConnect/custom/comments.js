@@ -96,6 +96,8 @@ const styles = StyleSheet.create({
     //flex: 1,
     flexDirection: "row",
     padding: 10,
+    margin : 10,
+    borderRadius : 10,
     backgroundColor: Colors.surface
   },
   display: {
