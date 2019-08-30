@@ -7,6 +7,7 @@ import {
   ActivityIndicator,
   SafeAreaView,
   TextInput,
+  Dimensions,
   Image
 } from "react-native";
 import { DrawerActions } from "react-navigation-drawer";
@@ -15,8 +16,13 @@ import Manager from "../service/dataManager";
 import Button from "../custom/button";
 import Icon from "react-native-vector-icons/FontAwesome5";
 import I18n from "../service/i18n";
-import Toast, { DURATION } from "react-native-easy-toast";
+// import Toast, { DURATION } from "react-native-easy-toast";
+import Toast from 'react-native-simple-toast';
 import UserList from "../custom/userList";
+import { TabView, SceneMap } from 'react-native-tab-view';
+import SearchUserList from "../custom/searchUserList";
+import FriendRequestList from "../custom/FriendRequests";
+
 export default class Notification extends React.Component {
   static navigationOptions = ({ navigation }) => ({
     title: navigation.getParam("title"),
@@ -44,8 +50,14 @@ export default class Notification extends React.Component {
     this.type = ["Birthdays", "Friend requests"];
     this.data = null;
     this.state = {
+      birthdays : [],
       loading: true,
-      updateToggle: false
+      updateToggle: false,
+      index: 0,
+      routes: [
+        { key: 'first', title: 'Birthdays' },
+        { key: 'second', title: 'Friend Requests' },
+      ],
     };
   }
 
@@ -55,6 +67,7 @@ export default class Notification extends React.Component {
     Manager.addListener("NOTIFICATION_S", this._notificationSuccess);
     Manager.addListener("NOTIFICATION_E", this._notificationError);
     Manager.addListener("NOTIFICATION_U", this._refresh);
+    Manager.addListener("F_REQUEST_S", this._friendRequestSuccess);
     Manager.addListener("LANG_U", this._updateLanguage);
 
     Manager.notification(`/api/notifications`, "GET");
@@ -89,12 +102,25 @@ export default class Notification extends React.Component {
   };
 
   _notificationSuccess = data => {
-    console.log("notification data : ", data);
+    console.log("Notifications are success");
     this.data = data.data;
+    console.log(data);
     this.setState({
       loading: false,
-      incomingFriendships: data.data.incomingFriendships
+      incomingFriendships: data.data.incomingFriendships,
+      birthdays: data.data.birthdays.map(item => {
+        let user = {};
+        user.id = item.searchable.basic.id;
+        user.f_name = item.searchable.basic.f_name;
+        user.l_name = item.searchable.basic.l_name;
+        user.profile_pic = item.searchable.basic.profile_pic;
+        user.tags = item.searchable.tags;
+        user.friends_meta = item.searchable.friends_meta;
+        user.extra_info = item.birthdayString;
+        return user;
+      }),
     });
+    console.log(this.state);
   };
 
   _notificationError = error => {
@@ -113,49 +139,7 @@ export default class Notification extends React.Component {
     this.props.navigation.navigate("Profile", { url: item.url });
   };
   _renderBirthdays = section => {
-    console.log("birthday section : ", section);
-    if (section && section.length > 0) {
-      console.log("data availabe");
-      return (
-        <View>
-          <View style={{ paddingLeft: 10, paddingTop: 18, paddingBottom: 8 }}>
-            <Text style={styles.bodyHeader}>Birthdays</Text>
-          </View>
-          <View style={styles.sectionBody}>
-            {section.map(item => {
-              return (
-                <Button
-                  onPress={() => this._navigateUser(item)}
-                  key={`pelt-${Math.random(1)}`}
-                  style={[styles.item]}
-                >
-                  <View>
-                    <Image
-                      style={styles.image}
-                      source={{ uri: item.searchable.basic.profile_pic }}
-                      defaultSource={require("../resources/in_2.jpg")}
-                      resizeMode="cover"
-                      onError={error => console.log(error)}
-                    />
-                  </View>
-                  <View>
-                    <Text
-                      style={[
-                        styles.itemText,
-                        { fontWeight: "600", fontSize: 16 }
-                      ]}
-                    >
-                      {item.title}
-                    </Text>
-                  </View>
-                </Button>
-              );
-            })}
-          </View>
-        </View>
-      );
-    }
-    return null;
+
   };
   // return(
   //     <View style={{
@@ -168,6 +152,7 @@ export default class Notification extends React.Component {
   //         <Text style={{color: Colors.secondaryDark, fontSize: 16,fontWeight: '700', opacity: 0.4}}>You don't have any friend's birthday today.</Text>
   //     </View>
   // )
+
 
   _navigatePost = item => {
     this.props.navigation.navigate("OpenFeed", { item: item.searchable });
@@ -217,188 +202,54 @@ export default class Notification extends React.Component {
     });
   };
 
-  _accept = id => {
-    Manager.friendRequest("/api/friend-request/accept", "POST", {
-      professional_id: id
-    });
-    this._refresh();
-    this.refs.toast.show("Friend request accepted", 500, () => {});
+  
+  
+  
+  FirstRoute = () => {
+    console.log("First Route");
+    console.log(this.state);
+    if (this.state.birthdays.length > 0)
+      return <SearchUserList userList={this.state.birthdays}
+        navigation={this.props.navigation}
+      ></SearchUserList>;
+    return <></>;
   };
-  _deny = id => {
-    console.log("Deny");
-    Manager.friendRequest("/api/friend-request/deny", "POST", {
-      professional_id: id
-    });
-    this._refresh();
-    this.refs.toast.show("Friend request rejected", 500, () => {});
-  };
-  _renderFriendRequest = section => {
-    console.log("friend messages : ", section);
-    if (section && section.length > 0) {
-      console.log("data availabe");
-      return (
-        <View>
-          <View style={{ paddingLeft: 10, paddingTop: 18, paddingBottom: 8 }}>
-            <Text style={styles.bodyHeader}>Friend Request</Text>
-          </View>
-          <View style={styles.friendReqSectionBody}>
-            {section.map(item => {
-              return (
-                <View
-                  key={`pelt-${Math.random(1)}`}
-                  style={styles.friendReqBody}
-                >
-                  <Button
-                    onPress={() => this._navigateMate(item)}
-                    style={styles.item}
-                  >
-                    <View>
-                      <Image
-                        style={styles.image}
-                        source={{ uri: item.sender.profile_pic }}
-                        resizeMode="cover"
-                        onError={error => console.log(error)}
-                      />
-                    </View>
-                    <View style={styles.profileContainer}>
-                      <Text style={styles.name}>
-                        {item.sender.f_name + " " + item.sender.l_name}
-                      </Text>
-                      <Text style={styles.mutualFriendsCount}>
-                        {item.sender.friends_meta.mutual_friends_count}{" "}
-                        {I18n.t("Mutual_friends")}
-                      </Text>
-                      <View style={styles.tags}>
-                        {item.searchable.tags.map(tag => (
-                          <Text style={styles.tag} key={UUID.v4()}>
-                            {tag.name}
-                          </Text>
-                        ))}
-                      </View>
-                      <View style={styles.buttons}>
-                        <Button
-                          onPress={() => this._accept(item.sender.id)}
-                          key={`pelt-accept-${Math.random(1)}`}
-                          style={[
-                            styles.acceptButton,
-                            { backgroundColor: "#3b5998" }
-                          ]}
-                        >
-                          <Icon
-                            name="check-circle"
-                            size={20}
-                            color={Colors.primary}
-                            style={[styles.acceptButton]}
-                          />
-                          <Text style={{ padding: 10, color: Colors.primary }}>
-                            Confirm
-                          </Text>
-                        </Button>
-                        <Button
-                          onPress={() => this._deny(item.sender.id)}
-                          key={`pelt-deny-de${Math.random(1)}`}
-                          style={[
-                            styles.acceptButton,
-                            { backgroundColor: "#dfe3ee" }
-                          ]}
-                        >
-                          <Icon
-                            name="times-circle"
-                            size={20}
-                            color={Colors.onPrimary}
-                            style={[styles.acceptButton]}
-                          />
-                          <Text
-                            style={{
-                              padding: 10,
-                              paddingRight: 15,
-                              color: Colors.onPrimary
-                            }}
-                          >
-                            Delete
-                          </Text>
-                        </Button>
-                      </View>
-                    </View>
-                  </Button>
-                </View>
-              );
-            })}
-          </View>
-        </View>
-      );
-    }
-    return null;
+  SecondRoute = () => {
+    console.log("Seond route");
+    console.log(this.state);
+    if (this.state.incomingFriendships.length > 0)
+      return <FriendRequestList incomingFriendships={this.state.incomingFriendships} navigation={this.props.navigation}></FriendRequestList> 
+    return <></>;
   };
 
   render() {
-    console.log("incomingFriendships", this.state);
+    if(!this.state.loading)
     return (
-      <View style={styles.container}>
-        {this.state.loading ? (
-          <View
-            style={{
-              justifyContent: "center",
-              alignItems: "center",
-              padding: 10
-            }}
-          >
-            <ActivityIndicator
-              animating={this.state.loading}
-              size="large"
-              color={Colors.secondaryDark}
-            />
-          </View>
-        ) : null}
-        <ScrollView>
-          {this.data ? this.data.birthdays.length > 0 ||
-          this.data.batch_messages.length > 0 ||
-          this.data.incomingFriendships.length > 0 ? (
-            <View>
-              {this._renderBirthdays(this.data.birthdays)}
-              {this._renderBatchMessages(this.data.batch_messages)}
-              {
-                <UserList
-                  _accept={this._accept}
-                  _deny={this._deny}
-                  section={this.state.incomingFriendships}
-                  _navigateMate={this._navigateMate}
-                />
-              }
-            </View>
-          ) : (
-            <View
-              style={{
-                backgroundColor: Colors.background,
-                justifyContent: "center",
-                alignItems: "center",
-                opacity: 1,
-                width: "100%",
-                paddingTop: 20
-              }}
-            >
-              <Text
-                style={{
-                  color: Colors.secondaryDark,
-                  fontSize: 22,
-                  fontWeight: "700",
-                  opacity: 0.4
-                }}
-              >
-                {I18n.t("No_Notifications_yet")}
-              </Text>
-            </View>
-          ) : null}
-        </ScrollView>
-        <Toast
-          ref="toast"
-          style={{ backgroundColor: Colors.onPrimary }}
-          position="bottom"
-          positionValue={200}
-          fadeInDuration={100}
-          fadeOutDuration={100}
-          opacity={0.8}
-          textStyle={{ color: Colors.primary }}
+      <ScrollView>
+      <TabView
+        navigationState={this.state}
+        renderScene={SceneMap({
+          first: this.FirstRoute,
+          second: this.SecondRoute,
+        })}
+        onIndexChange={index => this.setState({ index })}
+        initialLayout={{ width: Dimensions.get('window').width }}
+        style={styles.container}
+      />
+      </ScrollView>
+    );
+    return(
+      <View
+        style={{
+          justifyContent: "center",
+          alignItems: "center",
+          padding: 10
+        }}
+      >
+        <ActivityIndicator
+          animating={this.state.loading}
+          size="large"
+          color={Colors.secondaryDark}
         />
       </View>
     );
@@ -406,6 +257,9 @@ export default class Notification extends React.Component {
 }
 
 const styles = StyleSheet.create({
+  scene: {
+    flex: 1,
+  },
   container: {
     flex: 1,
     backgroundColor: Colors.background
@@ -433,7 +287,7 @@ const styles = StyleSheet.create({
     alignItems: "center",
     padding: 20,
     paddingVertical: 20,
-    backgroundColor:Colors.surface
+    backgroundColor: Colors.surface
   },
   itemText: {
     paddingLeft: 10,
@@ -488,6 +342,7 @@ const styles = StyleSheet.create({
   buttons: {
     justifyContent: "space-between",
     flexDirection: "row",
+    textAlign : 'center',
     marginTop: 5,
     width: "70%"
   },
@@ -499,10 +354,12 @@ const styles = StyleSheet.create({
   },
   acceptButton: {
     justifyContent: "space-between",
+    textAlign : "center",
     flexDirection: "row",
+    width : '50%',
     marginLeft: 10,
     marginTop: 10,
-    borderRadius: 22
+    borderRadius: 10
   },
   tags: {
     fontSize: 12,

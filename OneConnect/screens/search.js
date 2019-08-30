@@ -1,5 +1,4 @@
 import React from "react";
-import Toast from 'react-native-simple-toast';
 
 import {
   View,
@@ -19,7 +18,10 @@ import Button from "../custom/button";
 import { DrawerActions } from "react-navigation-drawer";
 import { NavigationActions } from "react-navigation";
 import Icon from "react-native-vector-icons/FontAwesome5";
+import SerachUserList from "../custom/searchUserList";
 import I18n from "../service/i18n";
+import SearchUserList from "../custom/searchUserList";
+// import SearchUserList from "../custom/searchUserList";
 const UUID = require('uuid');
 export default class Search extends React.Component {
   static navigationOptions = ({ navigation }) => ({
@@ -92,7 +94,6 @@ export default class Search extends React.Component {
     this.props.navigation.setParams({ backButton: this._backButtonPressed });
     Manager.addListener("SEARCH_S", this._searchSuccess);
     Manager.addListener("SEARCH_E", this._searchError);
-    Manager.addListener("F_REQUEST_S", this._friendRequestSuccess);
   }
 
   componentWillUnmount() {
@@ -108,6 +109,17 @@ export default class Search extends React.Component {
       const match = item.type == "users" ? true : false;
       return match;
     });  
+    userList = userList.map(item => {
+      let user = {};
+      console.log(item);
+      user.id = item.searchable.basic.id;
+      user.f_name = item.searchable.basic.f_name;
+      user.l_name = item.searchable.basic.l_name;
+      user.profile_pic = item.searchable.basic.profile_pic;
+      user.tags = item.searchable.tags;
+      user.friends_meta = item.searchable.friends_meta;
+      return user;  
+    });
     this.setState({
       userList : userList,
       loading: false,
@@ -133,49 +145,6 @@ export default class Search extends React.Component {
   _navigateBatch = item => {
     this.props.navigation.navigate("BatchItem", { url: item.url });
   };
-
-  _sendFriendRequest = id => {
-    console.log("sending friend request");
-    this.requestType = "S";
-    Manager.friendRequest("/api/friend-request/send", "POST", {
-      professional_id: id
-    });
-    // this._refresh();
-  };
-
-  _friendRequestSuccess = response => {
-    let userList = this.state.userList.filter(item => {
-      if(item.searchable.basic.id == response.profile.id){
-        if(this.requestType == "S")
-        item.searchable.friends_meta.has_sent_friend_request_to_this_profile = true;
-        else
-        item.searchable.friends_meta.has_sent_friend_request_to_this_profile = false; 
-      }
-      return item;
-    });
-    this.setState({...this.state, userList : userList});
-    Toast.showWithGravity(response.message, Toast.LONG, Toast.TOP)
-  }
-
-
-  _unFriend = id => {
-    this.requestType = "U";
-    Manager.friendRequest("/api/friend-request/unfriend", "POST", {
-      professional_id: id
-    });
-    // this._refresh();
-  };
-
-  _unfriendRequestSuccess = response => {
-    let userList = this.state.userList.filter(item => {
-      if(item.searchable.basic.id == response.profile.id){
-        item.searchable.friends_meta.has_sent_friend_request_to_this_profile = true;
-      }
-      return item;
-    });
-    this.setState({...this.state, userList : userList});
-    Toast.show(response.message);
-  }
 
   _accept = id => {
     Manager.friendRequest("/api/friend-request/accept", "POST", {
@@ -294,100 +263,13 @@ export default class Search extends React.Component {
     return null;
   };
 
-  _navigateUser = item => {
-    this.props.navigation.navigate("Profile", { url: item.url });
-  };
   
   _renderUsers = () => {
     if (this.state.userList) {    
       console.log(this.state.userList);
       if(this.state.userList.length > 0) {
         return (
-          <View>
-            <View style={{ paddingLeft: 10, paddingTop: 18, paddingBottom: 8 }}>
-              <Text style={styles.bodyHeader}>{I18n.t("Users")}</Text>
-            </View>
-            <View style={styles.userSectionBody}>
-              {!this.state.loading &&
-                this.state.userList.map(item => {
-                  return (
-                    <View style={styles.userBody}>
-                      <View>
-                        <Button
-                          onPress={() => this._navigateUser(item)}
-                          key={`pelt-${Math.random(1)}`}
-                          style={[styles.item]}
-                        >
-                          <View>
-                            <Image
-                              style={styles.image}
-                              source={{
-                                uri: item.searchable.basic.profile_pic
-                              }}
-                              defaultSource={require("../resources/dummy_profile.png")}
-                              resizeMode="cover"
-                              onError={error => console.log(error)}
-                            />
-                          </View>
-                          <View style={{ width: "100%",flexShrink:1 }}>
-                            <Text
-                              style={[
-                                styles.itemText,
-                                { fontWeight: "600", fontSize: 16 }
-                              ]}
-                            >
-                              {item.title}
-                            </Text>
-                            <Text style={styles.mutualFriendsCount}>
-                              {
-                                item.searchable.friends_meta
-                                  .mutual_friends_count
-                              }{" "}
-                              {I18n.t("Mutual_friends")}
-                            </Text>
-                            <View style={styles.tags}>
-                              {item.searchable.tags.map(tag => <Text style={styles.tag} key={UUID.v4()}>{tag.name}</Text>)} 
-                            </View>
-                          </View>
-                          { item.searchable.friends_meta.has_sent_friend_request_to_this_profile ? 
-                          <View>                        
-                          <Button 
-                              onPress={() => this._unFriend(item.searchable.basic.id)}
-                              key={`pelt-${Math.random(1)}`}
-                              style={[styles.item]}
-                            > 
-                            <Icon
-                                name="user-minus"
-                                size={22}
-                                color={Colors.yellowDark}
-                                style={{ padding: 10 }}
-                              /> 
-                              </Button>
-                            </View> 
-                          : 
-                              <View>                        
-                              <Button 
-                                  onPress={() => this._sendFriendRequest(item.searchable.basic.id)}
-                                  key={`pelt-${Math.random(1)}`}
-                                  style={[styles.item]}
-                                > 
-                                <Icon
-                                    name="user-plus"
-                                    size={22}
-                                    color={Colors.yellowDark}
-                                    style={{ padding: 10 }}
-                                  /> 
-                                  </Button>
-                                </View>
-                          }
-                        </Button>
-                      </View>
-                      <View style={styles.separator} />
-                    </View>
-                  );
-                })}
-            </View>
-          </View>
+           <SearchUserList userList={this.state.userList} navigation={this.props.navigation}></SearchUserList>
         );
       }
       return null;
