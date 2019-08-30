@@ -6,6 +6,7 @@ import {
   ScrollView,
   ActivityIndicator,
   SafeAreaView,
+  TouchableWithoutFeedback,
   TextInput,
   Keyboard,
   Image
@@ -142,7 +143,8 @@ export default class Search extends React.Component {
         const match = item.type == "batches" ? true : false;
         return match;
       });
-
+      console.log("Batch list");
+      console.log(list);
       if (list.length > 0) {
         return (
           <View>
@@ -152,21 +154,35 @@ export default class Search extends React.Component {
             <View style={styles.sectionBody}>
               {list.map(item => {
                 return (
+
                   <Button
-                    key={`pelt-${Math.random(1)}`}
-                    onPress={() => this._navigateBatch(item)}
+                  onPress={() => this._navigateBatch(item)}
+                  key={`pelt-${Math.random(1)}`}
+                    style={[styles.item]}
                   >
-                    <View style={[styles.item, { alignItems: "flex-start" }]}>
-                      <View>
-                        <Text
-                          style={[
-                            styles.itemText,
-                            { fontWeight: "600", fontSize: 16 }
-                          ]}
-                        >
-                          {item.title}
-                        </Text>
+                    <View>
+                      <TouchableWithoutFeedback onPress={this._navigateUser}>
+                        <Image
+                          style={styles.resourceImage}
+                          source={{ uri: item.searchable.institution.profile_pic }}
+                          defaultSource={require("../resources/dummy_profile.png")}
+                          resizeMode="cover"
+                          onError={error => console.log(error)}
+                        />
+                      </TouchableWithoutFeedback>
                       </View>
+                    <View>
+                      <Text
+                        style={[
+                          styles.itemText,
+                          { fontWeight: "600", fontSize: 16 }
+                        ]}
+                      >
+                        {item.title}
+                      </Text>
+                      <Text style={styles.itemText}>
+                        Institution : {item.searchable.institution.name}
+                      </Text>
                     </View>
                   </Button>
                 );
@@ -334,6 +350,17 @@ export default class Search extends React.Component {
                     style={[styles.item]}
                   >
                     <View>
+                      <TouchableWithoutFeedback onPress={this._navigateUser}>
+                        <Image
+                          style={styles.resourceImage}
+                          source={{ uri: item.searchable.institution.profile_pic }}
+                          defaultSource={require("../resources/dummy_profile.png")}
+                          resizeMode="cover"
+                          onError={error => console.log(error)}
+                        />
+                      </TouchableWithoutFeedback>
+                      </View>
+                    <View>
                       <Text
                         style={[
                           styles.itemText,
@@ -341,6 +368,9 @@ export default class Search extends React.Component {
                         ]}
                       >
                         {item.title}
+                      </Text>
+                      <Text style={styles.itemText}>
+                        Institution : {item.searchable.institution.name}
                       </Text>
                     </View>
                   </Button>
@@ -380,6 +410,18 @@ export default class Search extends React.Component {
                     key={`pelt-${Math.random(1)}`}
                     style={[styles.item]}
                   >
+                    <View>
+                      <TouchableWithoutFeedback onPress={this._navigateUser}>
+                        <Image
+                          style={styles.resourceImage}
+                          source={{ uri: item.searchable.profile_pic }}
+                          defaultSource={require("../resources/dummy_profile.png")}
+                          resizeMode="cover"
+                          onError={error => console.log(error)}
+                        />
+                      </TouchableWithoutFeedback>
+                      </View>
+
                     <View>
                       <Text
                         style={[
@@ -630,6 +672,11 @@ export default class Search extends React.Component {
 }
 
 const styles = StyleSheet.create({
+  resourceImage : {
+    height : 60,
+    width : 60,
+    resizeMode : 'contain'
+  },
   container: {
     flex: 1,
     backgroundColor: Colors.background
