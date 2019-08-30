@@ -81,5 +81,6 @@ export const Colors = {
     alert: '#F44336',
     safe: '#05f100',
     safeDark: 'green',
-    SendRequest : '#00600f'
+    SendRequest : '#00600f',
+    searchFilterSelected : '#f1b31b',
 }

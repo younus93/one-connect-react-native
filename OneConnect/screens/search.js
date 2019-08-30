@@ -29,6 +29,7 @@ export default class Search extends React.Component {
     super(props);
     this.type = ["users", "batches", "posts"];
     this.data = null;
+    this.searchText = '';
 
     (this.showUser = true),
       (this.showPost = true),
@@ -41,11 +42,11 @@ export default class Search extends React.Component {
       updateToggle: false,
       showAll: true,
       showUser: true,
-      userBackground: Colors.alternative,
-      institutionBackground: Colors.alternative,
-      coursesBackground: Colors.alternative,
-      postsBackground: Colors.alternative,
-      batchesBackground: Colors.alternative,
+      userBackground: Colors.searchFilterSelected,
+      institutionBackground: Colors.searchFilterSelected,
+      coursesBackground: Colors.searchFilterSelected,
+      postsBackground: Colors.searchFilterSelected,
+      batchesBackground: Colors.searchFilterSelected,
       showPost: true,
       showInstitution: true,
       showCourses: true,
@@ -57,6 +58,7 @@ export default class Search extends React.Component {
     console.log("search text changed");
     this.searchText = text;
   };
+  
   _onEndEditing = () => {
     console.log("on end editing");
     // this.setState({
@@ -68,7 +70,11 @@ export default class Search extends React.Component {
   _onSubmitEditing = () => {
     console.log("on submit editing");
     this.setState({
-      loading: true
+      ...this.state, loading: true, 
+      showUser: false, showPost: false,
+      showInstitution: false,
+      showCourses: false,
+      showBatches: false,
     });
     Manager.search(`/api/search?query=${this.searchText}`, "GET");
   };
@@ -95,7 +101,11 @@ export default class Search extends React.Component {
     console.log("search data : ", data);
     this.data = data.data;
     this.setState({
-      loading: false
+      loading: false,
+      showUser: true, showPost: true,
+      showInstitution: true,
+      showCourses: true,
+      showBatches: true  
     });
   };
 
@@ -143,8 +153,6 @@ export default class Search extends React.Component {
         const match = item.type == "batches" ? true : false;
         return match;
       });
-      console.log("Batch list");
-      console.log(list);
       if (list.length > 0) {
         return (
           <View>
@@ -283,7 +291,7 @@ export default class Search extends React.Component {
                               source={{
                                 uri: item.searchable.basic.profile_pic
                               }}
-                              defaultSource={require("../resources/in_2.jpg")}
+                              defaultSource={require("../resources/dummy_profile.png")}
                               resizeMode="cover"
                               onError={error => console.log(error)}
                             />
@@ -482,131 +490,131 @@ export default class Search extends React.Component {
   };
 
   _renderFilters = () => {
-    console.log("render filter : ", this.state);
-
     return (
-      <View>
+      <View style={{ marginTop : 5 }}>
         <ScrollView horizontal={true}>
+
           <Button
+            style={styles.CircleShapeView}
             onPress={() => {
               this.setState(previousState => ({
                 showUser: !previousState.showUser,
                 userBackground: !previousState.showUser
-                  ? Colors.alternative
+                  ? Colors.searchFilterSelected
                   : Colors.background
               }));
             }}
           >
             <View
-              style={[
-                {
-                  borderRadius: 20,
-                  margin: 10,
-                  padding: 8,
-                  borderWidth: 1,
-                  backgroundColor: this.state.userBackground
-                }
-              ]}
+              style={{ alignItems: "center", borderWidth:1,
+              borderColor:'rgba(0,0,0,0.2)',
+              alignItems:'center',
+              justifyContent:'center',
+              marginHorizontal : 5,
+              width:80,
+              height:80,
+              borderRadius:40,
+              backgroundColor : this.state.userBackground }}            
             >
+              <Icon
+                name="users"
+                size={22}
+                color={Colors.onSurface}
+              />
               <Text>{I18n.t("Users")}</Text>
             </View>
           </Button>
+        
           <Button
+           style={styles.CircleShapeView}
             onPress={() => {
               this.setState(previousState => ({
                 showInstitution: !previousState.showInstitution,
                 institutionBackground: !previousState.showInstitution
-                  ? Colors.alternative
+                  ? Colors.searchFilterSelected
                   : Colors.background
               }));
             }}
           >
             <View
-              style={[
-                {
-                  borderRadius: 20,
-                  margin: 10,
-                  padding: 8,
-                  borderWidth: 1,
-                  backgroundColor: this.state.institutionBackground
-                }
-              ]}
+              style={{ alignItems: "center", borderWidth:1,
+              borderColor:'rgba(0,0,0,0.2)',
+              alignItems:'center',
+              justifyContent:'center',
+              marginHorizontal : 5,
+              width:80,
+              height:80,
+              borderRadius:40,
+              backgroundColor : this.state.institutionBackground }}            
             >
+            <Icon
+                name="archway"
+                size={22}
+                color={Colors.onSurface}
+              />
               <Text>{I18n.t("Institutions")}</Text>
             </View>
           </Button>
           <Button
+            style={styles.CircleShapeView}
             onPress={() => {
               this.setState(previousState => ({
                 showBatches: !previousState.showBatches,
                 batchesBackground: !previousState.showBatches
-                  ? Colors.alternative
+                  ? Colors.searchFilterSelected
                   : Colors.background
               }));
             }}
           >
-            <View
-              style={[
-                {
-                  borderRadius: 20,
-                  margin: 10,
-                  padding: 8,
-                  borderWidth: 1,
-                  backgroundColor: this.state.batchesBackground
-                }
-              ]}
+             <View
+              style={{ alignItems: "center", borderWidth:1,
+              borderColor:'rgba(0,0,0,0.2)',
+              alignItems:'center',
+              justifyContent:'center',
+              marginHorizontal : 5,
+              width:80,
+              height:80,
+              borderRadius:40,
+              backgroundColor : this.state.batchesBackground }}            
             >
+            <Icon
+                name="briefcase"
+                size={22}
+                color={Colors.onSurface}
+              />
               <Text>{I18n.t("Batches")}</Text>
             </View>
           </Button>
           <Button
+            style={styles.CircleShapeView}
             onPress={() => {
               this.setState(previousState => ({
                 showCourses: !previousState.showCourses,
                 coursesBackground: !previousState.showCourses
-                  ? Colors.alternative
+                  ? Colors.searchFilterSelected
                   : Colors.background
               }));
-            }}
-          >
-            <View
-              style={[
-                {
-                  borderRadius: 20,
-                  margin: 10,
-                  padding: 8,
-                  borderWidth: 1,
-                  backgroundColor: this.state.coursesBackground
-                }
-              ]}
+            }}>
+             <View
+              style={{ alignItems: "center", borderWidth:1,
+              borderColor:'rgba(0,0,0,0.2)',
+              alignItems:'center',
+              justifyContent:'center',
+              marginHorizontal : 5,
+              width:80,
+              height:80,
+              borderRadius:40,
+              backgroundColor : this.state.coursesBackground }}            
             >
+              <Icon
+                  name="chalkboard-teacher"
+                  size={22}
+                  color={Colors.onSurface}
+                />
               <Text>{I18n.t("Courses")}</Text>
             </View>
           </Button>
-          <Button
-            onPress={() => {
-              this.setState(previousState => ({
-                showPost: !previousState.showPost,
-                postsBackground: !previousState.showPost
-                  ? Colors.alternative
-                  : Colors.background
-              }));
-            }}
-          >
-            <View
-              style={[
-                {
-                  borderRadius: 20,
-                  margin: 10,
-                  padding: 8,
-                  borderWidth: 1,
-                  backgroundColor: this.state.postsBackground
-                }
-              ]}
-            >
-              <Text>{I18n.t("POST")}</Text>
-            </View>
-          </Button>
+
         </ScrollView>
       </View>
     );
@@ -618,6 +626,7 @@ export default class Search extends React.Component {
       <View style={styles.container}>
         {this._renderSearchBar()}
         {this.data ? this.data.length > 0 ? this._renderFilters() : null : null}
+        {/* {this._renderFilters()} */}
         {this.state.loading ? (
           <View
             style={{
@@ -666,6 +675,7 @@ export default class Search extends React.Component {
             </View>
           ) : null}
         </ScrollView>
+      
       </View>
     );
   }
@@ -776,5 +786,15 @@ const styles = StyleSheet.create({
   },
   tag: {
     paddingLeft: 10
+  },
+  CircleShapeView: {
+    borderWidth:1,
+    borderColor:'rgba(0,0,0,0.2)',
+    alignItems:'center',
+    justifyContent:'center',
+    marginHorizontal : 5,
+    width:80,
+    height:80,
+    borderRadius:40,
   }
 });
