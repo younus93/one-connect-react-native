@@ -1,4 +1,6 @@
 import React from "react";
+import Toast from 'react-native-simple-toast';
+
 import {
   View,
   Text,
@@ -29,7 +31,7 @@ export default class Search extends React.Component {
     super(props);
     this.type = ["users", "batches", "posts"];
     this.data = null;
-    this.searchText = '';
+    this.searchText = 'ja';
 
     (this.showUser = true),
       (this.showPost = true),
@@ -50,8 +52,10 @@ export default class Search extends React.Component {
       showPost: true,
       showInstitution: true,
       showCourses: true,
-      showBatches: true
+      showBatches: true,
+      userList : '',
     };
+    this._onSubmitEditing();
   }
 
   _searchTextChange = text => {
@@ -89,6 +93,7 @@ export default class Search extends React.Component {
     this.props.navigation.setParams({ backButton: this._backButtonPressed });
     Manager.addListener("SEARCH_S", this._searchSuccess);
     Manager.addListener("SEARCH_E", this._searchError);
+    Manager.addListener("F_REQUEST_S", this._friendRequestSuccess);
   }
 
   componentWillUnmount() {
@@ -100,7 +105,12 @@ export default class Search extends React.Component {
   _searchSuccess = data => {
     console.log("search data : ", data);
     this.data = data.data;
+    let userList = this.data.filter(item => {
+      const match = item.type == "users" ? true : false;
+      return match;
+    });  
     this.setState({
+      userList : userList,
       loading: false,
       showUser: true, showPost: true,
       showInstitution: true,
@@ -124,21 +134,56 @@ export default class Search extends React.Component {
   _navigateBatch = item => {
     this.props.navigation.navigate("BatchItem", { url: item.url });
   };
+
+  _sendFriendRequest = id => {
+    console.log("sending friend request");
+    this.requestType = "S";
+    Manager.friendRequest("/api/friend-request/send", "POST", {
+      professional_id: id
+    });
+    // this._refresh();
+  };
+
+  _friendRequestSuccess = response => {
+    let userList = this.state.userList.filter(item => {
+      if(item.searchable.basic.id == response.profile.id){
+        if(this.requestType == "S")
+        item.searchable.friends_meta.has_sent_friend_request_to_this_profile = true;
+        else
+        item.searchable.friends_meta.has_sent_friend_request_to_this_profile = false; 
+      }
+      return item;
+    });
+    this.setState({...this.state, userList : userList});
+    Toast.showWithGravity(response.message, Toast.LONG, Toast.TOP)
+  }
+
+
   _unFriend = id => {
-    console.log("sending unfriend request");
     this.requestType = "U";
     Manager.friendRequest("/api/friend-request/unfriend", "POST", {
       professional_id: id
     });
-    this._refresh();
+    // this._refresh();
   };
+
+  _unfriendRequestSuccess = response => {
+    let userList = this.state.userList.filter(item => {
+      if(item.searchable.basic.id == response.profile.id){
+        item.searchable.friends_meta.has_sent_friend_request_to_this_profile = true;
+      }
+      return item;
+    });
+    this.setState({...this.state, userList : userList});
+    Toast.show(response.message);
+  }
+
   _accept = id => {
     Manager.friendRequest("/api/friend-request/accept", "POST", {
       professional_id: id
     });
     this._refresh();
   };
-
   _deny = id => {
     console.log("Deny");
     Manager.friendRequest("/api/friend-request/deny", "POST", {
@@ -146,7 +191,6 @@ export default class Search extends React.Component {
     });
     this._refresh();
   };
-
   _renderBatches = () => {
     if (this.data) {
       let list = this.data.filter(item => {
@@ -254,21 +298,11 @@ export default class Search extends React.Component {
   _navigateUser = item => {
     this.props.navigation.navigate("Profile", { url: item.url });
   };
-  _sendFriendRequest = id => {
-    console.log("sending friend request");
-    this.requestType = "S";
-    Manager.friendRequest("/api/friend-request/send", "POST", {
-      professional_id: id
-    });
-  };
+  
   _renderUsers = () => {
-    if (this.data) {
-      let list = this.data.filter(item => {
-        const match = item.type == "users" ? true : false;
-        return match;
-      });
-      console.log("render users", list);
-      if (list.length > 0) {
+    if (this.state.userList) {    
+      console.log(this.state.userList);
+      if(this.state.userList.length > 0) {
         return (
           <View>
             <View style={{ paddingLeft: 10, paddingTop: 18, paddingBottom: 8 }}>
@@ -276,7 +310,7 @@ export default class Search extends React.Component {
             </View>
             <View style={styles.userSectionBody}>
               {!this.state.loading &&
-                list.map(item => {
+                this.state.userList.map(item => {
                   return (
                     <View style={styles.userBody}>
                       <View>
@@ -316,6 +350,37 @@ export default class Search extends React.Component {
                               {item.searchable.tags.map(tag => <Text style={styles.tag} key={UUID.v4()}>{tag.name}</Text>)} 
                             </View>
                           </View>
+                          { item.searchable.friends_meta.has_sent_friend_request_to_this_profile ? 
+                          <View>                        
+                          <Button 
+                              onPress={() => this._unFriend(item.searchable.basic.id)}
+                              key={`pelt-${Math.random(1)}`}
+                              style={[styles.item]}
+                            > 
+                            <Icon
+                                name="user-minus"
+                                size={22}
+                                color={Colors.yellowDark}
+                                style={{ padding: 10 }}
+                              /> 
+                              </Button>
+                            </View> 
+                          : 
+                              <View>                        
+                              <Button 
+                                  onPress={() => this._sendFriendRequest(item.searchable.basic.id)}
+                                  key={`pelt-${Math.random(1)}`}
+                                  style={[styles.item]}
+                                > 
+                                <Icon
+                                    name="user-plus"
+                                    size={22}
+                                    color={Colors.yellowDark}
+                                    style={{ padding: 10 }}
+                                  /> 
+                                  </Button>
+                                </View>
+                          }
                         </Button>
                       </View>
                       <View style={styles.separator} />

@@ -83,4 +83,5 @@ export const Colors = {
     safeDark: 'green',
     SendRequest : '#00600f',
     searchFilterSelected : '#f1b31b',
+    yellowDark : '#f1b31b' 
 }
