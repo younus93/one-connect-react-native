@@ -31,7 +31,7 @@ export default class Search extends React.Component {
     super(props);
     this.type = ["users", "batches", "posts"];
     this.data = null;
-    this.searchText = 'ja';
+    this.searchText = '';
 
     (this.showUser = true),
       (this.showPost = true),
@@ -55,7 +55,6 @@ export default class Search extends React.Component {
       showBatches: true,
       userList : '',
     };
-    this._onSubmitEditing();
   }
 
   _searchTextChange = text => {
