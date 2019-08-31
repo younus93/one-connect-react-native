@@ -280,6 +280,27 @@ class dataManager {
         })
     }
 
+    addEducation = (uri, method, data=null) => {
+        console.log("Education", this.token);
+        Call(uri, method, data, this.token)
+        .then(response => {
+            this.eventEmitter.emit('A_EDUCATION_S', response)
+        })
+        .catch(error => {
+            this.eventEmitter.emit('A_EDUCATION_E', error)
+        })
+    }
+
+    removeEducation = (uri, method, data=null) => {
+        Call(uri, method, data, this.token)
+        .then(response => {
+            this.eventEmitter.emit('D_EDUCATION_S', response)
+        })
+        .catch(error => {
+            this.eventEmitter.emit('D_EDUCATION_E', error)
+        })
+    }
+
     industryType = (uri, method, data=null) => {
         Call(uri, method, data, this.token)
         .then(response => {

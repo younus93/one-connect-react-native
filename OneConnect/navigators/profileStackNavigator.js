@@ -7,6 +7,7 @@ import Button from '../custom/button';
 import Profile from '../screens/profile';
 import Settings from '../screens/settings';
 import AddCompany from '../screens/addCompany';
+import AddEducation from '../screens/addEducation';
 import ChangePassword from '../screens/changePassword';
 import Privacy from '../screens/privacySetting';
 import Icon from 'react-native-vector-icons/FontAwesome5';
@@ -45,10 +46,16 @@ const ProfileStack = createStackNavigator({
             title: `CHANGE PASSWORD`,
         }),
     },
+    AddEducation: {
+        screen: AddEducation,
+        navigationOptions: () => ({
+            title: `Add Educational Details`,
+        }),
+    },
     AddCompany: {
         screen: AddCompany,
         navigationOptions: () => ({
-            title: `ADD COMPANY`,
+            title: `Add Company Details`,
         }),
     },
     Privacy: {

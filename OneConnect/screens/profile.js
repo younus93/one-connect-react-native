@@ -64,6 +64,7 @@ export default class Profile extends React.Component {
         Manager.addListener('PIC_S', this._profilePicSuccess)
         Manager.addListener('LANG_U', this._updateLanguage)
         Manager.addListener('D_COMPANY_S', this._removeCompanySuccess)
+        Manager.addListener('D_EDUCATION_S', this._removeEducationSuccess)
         Manager.profile(this.url, 'GET')
         this.props.navigation.setParams({ backButton: this._backButtonPressed });
         this.props.navigation.setParams({ hamPressed: this._hamPressed });
@@ -111,6 +112,19 @@ export default class Profile extends React.Component {
         })
         console.log(this.state);
         Toast.showWithGravity("Company Sync successfull!", Toast.SHORT, Toast.TOP)
+    }
+
+    _removeEducationSuccess = (data) => {
+        console.log("Remove Company Success", data);
+        this.data = data.data;
+        this.setState({
+            loading: false,
+            error: false,
+            profile: data.data,
+            errorText: null
+        })
+        console.log(this.state);
+        Toast.showWithGravity("Education Detail removed!", Toast.SHORT, Toast.TOP)
     }
 
     renderLightBoxImage = () => {
@@ -224,9 +238,19 @@ export default class Profile extends React.Component {
         this.props.navigation.navigate('AddCompany')
     }
 
+    _navigateToEducation = () => {
+        this.props.navigation.navigate('AddEducation')
+    }
+
+
     _removeCompany = (company) => {
         console.log(company);
         Manager.removeCompany("/api/companies/delete", "POST", company);
+    }
+
+    _removeEducation = (education) => {
+        console.log(education);
+        Manager.removeEducation(`/api/educations/${education.id}/delete`, "POST");
     }
 
     _renderProfile() {
@@ -255,7 +279,7 @@ export default class Profile extends React.Component {
                                         {
                                             this.state.profile.editable ?
                                                 <Button onPress={this._navigateToSettings}>
-                                                    <Icon name="edit" color={Colors.yellowDark} style={{ fontSize: 16, marginLeft: 10, marginTop : 5 }}></Icon>
+                                                    <Icon name="edit" color={Colors.yellowDark} style={{ fontSize: 16, marginLeft: 10, marginTop: 5 }}></Icon>
                                                 </Button>
                                                 : null
                                         }
@@ -327,7 +351,7 @@ export default class Profile extends React.Component {
                                         {
                                             this.state.profile.editable ?
                                                 <Button onPress={this._navigateToAddCompany}>
-                                                    <Icon name="plus-circle" color={Colors.yellowDark} style={{ fontSize: 16, marginLeft: 10,  marginTop : 3 }}></Icon>
+                                                    <Icon name="plus-circle" color={Colors.yellowDark} style={{ fontSize: 16, marginLeft: 10, marginTop: 3 }}></Icon>
                                                 </Button>
                                                 : null
                                         }
@@ -350,9 +374,13 @@ export default class Profile extends React.Component {
                                                                 {item.name}
                                                             </Text>
                                                         </View>
-                                                        <Button onPress={() => this._removeCompany(item)}>
-                                                            <Icon name="trash" size={18} color={Colors.primaryDark} style={{ padding: 10 }} />
-                                                        </Button>
+                                                        {
+                                                            this.state.profile.editable ?
+                                                                <Button onPress={() => this._removeCompany(item)}>
+                                                                    <Icon name="trash" size={18} color={Colors.primaryDark} style={{ padding: 10 }} />
+                                                                </Button>
+                                                                : null
+                                                        }
                                                     </View>
                                                 )
                                             })
@@ -369,9 +397,18 @@ export default class Profile extends React.Component {
                             </View>
                             <View style={styles.container}>
                                 <View style={styles.bio}>
-                                    <Text style={{ color: Colors.yellowDark, fontWeight: '600', fontSize: 20 }}>
-                                        EDUCATION
+                                    <View style={{ flexDirection: 'row' }}>
+                                        <Text style={{ color: Colors.yellowDark, fontWeight: '600', fontSize: 20 }}>
+                                            EDUCATION
                                     </Text>
+                                        {
+                                            this.state.profile.editable ?
+                                                <Button onPress={this._navigateToEducation}>
+                                                    <Icon name="plus-circle" color={Colors.yellowDark} style={{ fontSize: 16, marginLeft: 10, marginTop: 3 }}></Icon>
+                                                </Button>
+                                                : null
+                                        }
+                                    </View>
                                 </View>
                                 <View style={styles.sectionBody}>
                                     {
@@ -380,7 +417,7 @@ export default class Profile extends React.Component {
                                                 return (
                                                     <View key={`pelt-${Math.random(1)}`} style={[styles.item, { alignItems: 'flex-start' }]}>
                                                         <Icon name="book" size={35} color={Colors.primaryDark} style={{ padding: 10 }} />
-                                                        <View>
+                                                        <View style={{ flex:1 }}>
                                                             <Text style={[styles.itemText, { fontWeight: '600', fontSize: 16 }]}>
                                                                 {item.college_name}
                                                             </Text>
@@ -388,6 +425,13 @@ export default class Profile extends React.Component {
                                                                 {item.degree_name}
                                                             </Text>
                                                         </View>
+                                                        {
+                                                            this.state.profile.editable ?
+                                                                <Button onPress={() => this._removeEducation(item)}>
+                                                                    <Icon name="trash" size={18} color={Colors.primaryDark} style={{ padding: 10 }} />
+                                                                </Button>
+                                                                : null
+                                                        }
                                                     </View>
                                                 )
                                             })
