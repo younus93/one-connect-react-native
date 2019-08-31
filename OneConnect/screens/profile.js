@@ -1,8 +1,8 @@
 import React from "react";
-import { View, Text, TouchableOpacity, ScrollView, Dimensions, Image, StyleSheet, FlatList, SectionList, SafeAreaView, TouchableWithoutFeedback, TextInput, Animated, Easing, ActivityIndicator,ImageBackground, Modal, Platform, Linking} from "react-native";
+import { View, Text, TouchableOpacity, ScrollView, Dimensions, Image, StyleSheet, FlatList, SectionList, SafeAreaView, TouchableWithoutFeedback, TextInput, Animated, Easing, ActivityIndicator, ImageBackground, Modal, Platform, Linking } from "react-native";
 import { DrawerActions } from 'react-navigation-drawer';
 import { NavigationActions } from 'react-navigation';
-import {Colors} from '../constants';
+import { Colors } from '../constants';
 import Manager from '../service/dataManager';
 import Button from '../custom/button';
 import Icon from 'react-native-vector-icons/FontAwesome5';
@@ -12,44 +12,40 @@ import Lightbox from 'react-native-lightbox';
 import { TabView, SceneMap } from 'react-native-tab-view';
 
 export default class Profile extends React.Component {
-    static navigationOptions = ({navigation}) => {
+
+    static navigationOptions = ({ navigation }) => {
         const accessLevel = navigation.getParam('accessLevel', 0)
-        let options = {title: navigation.getParam('title'),
-        headerLeftContainerStyle: {
-            paddingLeft: 15
-        }}
-        if(accessLevel) {
-            options['headerLeft'] = <View style={{flexDirection: 'row'}}>
-                <Button style={{borderRadius: 20}} onPress={navigation.getParam('hamPressed')} >
-                    <Icon name="bars" size={22} color={Colors.onPrimary} style={{padding:10}}/>
+        let options = {
+            title: navigation.getParam('title'),
+            headerLeftContainerStyle: {
+                paddingLeft: 15
+            }
+        }
+        if (accessLevel) {
+            options['headerLeft'] = <View style={{ flexDirection: 'row' }}>
+                <Button style={{ borderRadius: 20 }} onPress={navigation.getParam('hamPressed')} >
+                    <Icon name="bars" size={22} color={Colors.onPrimary} style={{ padding: 10 }} />
                 </Button>
             </View>
         }
         return options
     }
 
-
-    constructor(props){
+    constructor(props) {
         super(props)
-        console.log(props)
-        this.props.navigation.setParams({ title: I18n.t('Profile')});
+        this.props.navigation.setParams({ title: I18n.t('Profile') });
         this.url = props.navigation.getParam('url', '/api/profile')
         this.accessLevel = props.navigation.getParam('accessLevel', 0)
         // console.log("profile url is : ", this.url, this.accessLevel, this.accessLevel==1)
-        this.props.navigation.setParams({accessLevel: this.accessLevel });
+        this.props.navigation.setParams({ accessLevel: this.accessLevel });
 
         this.state = {
             updateNeeded: false,
             loading: true,
             error: false,
             errorText: null,
-            index: 0,
-            routes: [
-                { key: 'basic', title: 'Basic' },
-                { key: 'background', title: 'Background' },
-                { key: 'tags', title: 'Tags' },
-            ],
         }
+        console.log(props);
     }
 
     componentDidMount() {
@@ -57,11 +53,9 @@ export default class Profile extends React.Component {
         Manager.addListener('PROFILE_S', this._profileSuccess)
         Manager.addListener('PROFILE_E', this._profileError)
         Manager.addListener('LANG_U', this._updateLanguage)
-
         Manager.profile(this.url, 'GET')
-
-        this.props.navigation.setParams({backButton: this._backButtonPressed });
-        this.props.navigation.setParams({hamPressed: this._hamPressed });
+        this.props.navigation.setParams({ backButton: this._backButtonPressed });
+        this.props.navigation.setParams({ hamPressed: this._hamPressed });
     }
 
     componentWillUnmount() {
@@ -69,13 +63,6 @@ export default class Profile extends React.Component {
         Manager.removeListener('PROFILE_S', this._profileSuccess)
         Manager.removeListener('PROFILE_E', this._profileError)
         Manager.removeListener('LANG_U', this._updateLanguage)
-    }
-
-    _updateLanguage = () => {
-        this.props.navigation.setParams({ title: I18n.t('Profile')});
-        this.setState(previousState => {
-            updateNeeded: !previousState.updateNeeded
-        })
     }
 
     _hamPressed = () => {
@@ -92,403 +79,27 @@ export default class Profile extends React.Component {
 
     _profileSuccess = (data) => {
         console.log("profile successful, data received :", data)
-        this.data = data.data
+        this.data = data.data;
         this.setState({
             loading: false,
             error: false,
+            profile: data.data,
             errorText: null
         })
-    }
-
-    _profileError = (error) => {
-        console.log("profile, error received :", error)
-        this.setState({
-            loading: false,
-            error: true,
-            errorText: null
-        })
-    }
-
-    _needsUpdate = () => {
-        console.log("profile needs update")
-        this.setState({
-            loading: true,
-            error: false,
-            errorText: null
-        })
-    }
-
-    _navigateToSettings = () => {
-        console.log("navigateing to settings")
-        this.props.navigation.navigate('Settings', {data: this.data, callback: this._needsUpdate})
-    }
-
-    renderFirstRoute = () => {
-        return <ProfileList currentView="basic" accessLevel={this.accessLevel} data={this.data} navigate={this._navigateToSettings} navigation={this.props.navigation}/>
-    }
-
-    renderSecondRoute = () => {
-        return <ProfileList currentView="background" accessLevel={this.accessLevel} data={this.data} navigate={this._navigateToSettings} navigation={this.props.navigation}/>
-    }
-
-    renderThirdRoute = () => {
-        return <ProfileList currentView="tags" accessLevel={this.accessLevel} data={this.data} navigate={this._navigateToSettings} navigation={this.props.navigation}/>
-    }
-
-    _renderTabBar = props => {
-        const inputRange = props.navigationState.routes.map((x, i) => i);
-        return (
-          <View style={styles.tabBar}>
-            {props.navigationState.routes.map((route, i) => {
-              const style = props.navigationState.index === i ? styles.tabItemActive : styles.tabItem
-              return (
-                <TouchableOpacity
-                  style={style}
-                  onPress={() => this.setState({ index: i })}>
-                  <Text style={{ color: '#fff' }}>{route.title}</Text>
-                </TouchableOpacity>
-              );
-            })}
-          </View>
-        );
-    };
-
-    render() {
-
-        if(this.state.loading){
-            return(
-                <View style={[styles.container, {justifyContent:'center', alignItems: 'center'}]}>
-                    <ActivityIndicator animating={this.state.loading} size="large" color={Colors.secondaryDark} />
-                </View>
-            )
-        }
-
-        return (
-            <View style={styles.container}>
-                <ScrollView alwaysBounceVertical={false} bounces={false}>
-                    <ImageView accessLevel={this.accessLevel} data={this.data}/>
-                    <TabView
-                        navigationState={this.state}
-                        renderScene={SceneMap({
-                            basic: this.renderFirstRoute,
-                            background: this.renderSecondRoute,
-                            tags: this.renderThirdRoute,
-                        })}
-                        renderTabBar={this._renderTabBar}
-                        activeColor="#000000"
-                        inactiveColor="#000000"
-                        onIndexChange={index => this.setState({ index })}
-                        initialLayout={{ width: Dimensions.get('window').width }}
-                    />
-                </ScrollView>
-            </View>
-        );
-    }
-}
-
-
-
-
-
-class ImageView extends React.Component {
-    constructor(props){
-        super(props);
-        this.data = props.data
-        this.accessLevel = props.accessLevel
-        this.requestType = null
-
-        this.state = {
-            updateToggle: false,
-            profilePhoto: {uri: this.data.basic.profile_pic},
-            bannerPhoto: {uri: this.data.basic.banner_pic}
-        }
-    }
-
-    componentDidMount() {
-        Manager.addListener('F_REQUEST_S', this._requestSuccess)
-        Manager.addListener('F_REQUEST_E', this._requestError)
-    }
-
-    componentWillUnmount() {
-        Manager.removeListener('F_REQUEST_S', this._requestSuccess)
-        Manager.removeListener('F_REQUEST_E', this._requestError)
-    }
-
-    _requestSuccess = data => {
-        if(data){
-            if(data.success){
-                switch(this.requestType) {
-                    case 'S':
-                        this.data.friends_meta.has_sent_friend_request_to_this_profile = true;
-                        break;
-                    case 'U':
-                        this.data.friends_meta.is_friends = false;
-                        this.data.friends_meta.has_sent_friend_request_to_this_profile = false;
-                        this.data.friends_meta.has_friend_request_from_this_profile = false;
-                        Manager.emitEvent('NOTIFICATION_U')
-                        break;
-                    case 'A':
-                        this.data.friends_meta.is_friends = true;
-                        Manager.emitEvent('NOTIFICATION_U')
-                        break;
-                }
-            }
-        }
-        console.log("f request success data : ", data)
-        this.setState(previousState => ({
-            updateToggle: !previousState.updateToggle,
-        }))
-    }
-
-    _requestError = error => {
-        console.log("f request error data : ", error)
-        // this.setState(previousState => ({
-        //     updateToggle: !previousState.updateToggle,
-        //     isTagModal: false
-        // }))
-    }
-
-    _sendFriendRequest = () => {
-        console.log("sending friend request")
-        this.requestType = 'S'
-        Manager.friendRequest('/api/friend-request/send', 'POST', {professional_id: this.data.basic.id})
-    }
-
-    _unFriend = () => {
-        console.log("sending unfriend request")
-        this.requestType = 'U'
-        Manager.friendRequest('/api/friend-request/unfriend', 'POST', {professional_id: this.data.basic.id})
-    }
-
-    _acceptRequest = () => {
-        console.log("accepting request")
-        this.requestType = 'A'
-        Manager.friendRequest('/api/friend-request/accept', 'POST', {professional_id: this.data.basic.id})
-    }
-
-    _denyRequest = () => {
-        console.log("accepting request")
-        this.requestType = 'U'
-        Manager.friendRequest('/api/friend-request/deny', 'POST', {professional_id: this.data.basic.id})
-    }
-    // _deleteRequest = () => {
-    //      console.log("delete request")
-    //       Manager.friendRequest('/api/friend-request/deny', 'DELETE', {professional_id: this.data.basic.id})
-    // }
-    _renderFriendRequestControll = () => {
-        if(!this.accessLevel  && !this.data.friends_meta.is_user) {
-            if(!this.data.friends_meta.is_friends) {
-                if(this.data.friends_meta.has_friend_request_from_this_profile) {
-                    return(
-                        <View style={{flexDirection: 'row', alignItems: 'center'}}>
-                                <Button style={{borderWidth: StyleSheet.hairlineWidth, borderRadius: 5, flexDirection: 'row', justifyContent: 'center', alignItems: 'center', backgroundColor: Colors.primaryDark,padding:12, marginRight: 15}} onPress={this._acceptRequest} rippleColor={Colors.safe}>
-                                    <Icon name="user-check" size={12} color={'#fff'} />
-                                    <Text style={{fontWeight: '600', fontSize: 14, color: '#fff', paddingLeft: 5}}> Confirm </Text>
-                                </Button>
-                                <Button style={{borderWidth: StyleSheet.hairlineWidth, borderRadius: 5, flexDirection: 'row', justifyContent: 'center', alignItems: 'center', backgroundColor: Colors.secondaryDark,padding:12}} onPress={this._denyRequest} rippleColor={Colors.primaryDark}>
-                                    <Icon name="user-times" size={12} color={'#fff'} />
-                                    <Text style={{fontWeight: '600', fontSize: 14, color: '#fff', paddingLeft: 5}}> Delete </Text>
-                                </Button>
-                        </View>
-                    )
-                }
-                if(!this.data.friends_meta.has_sent_friend_request_to_this_profile){
-                    return(
-                        <View style={{flexDirection: 'row', alignItems: 'center'}}>
-
-                            <Button style={{minWidth: 120,borderWidth: StyleSheet.hairlineWidth, borderRadius: 5, flexDirection: 'row', justifyContent: 'center', alignItems: 'center', backgroundColor: Colors.alternative1,padding:12, marginRight: 15}} onPress={this._sendFriendRequest} rippleColor={Colors.safe}>
-                                <Icon name="user-plus" size={12} color={'#fff'}/>
-                                <Text style={{fontWeight: '600', fontSize: 14, color: '#fff'}}> Send Friend Request </Text>
-                            </Button>
-                        </View>
-                    )
-                }
-                return(
-                    <View style={{flexDirection: 'row', alignItems: 'center'}}>
-
-                            <Button style={{minWidth: 120,borderWidth: StyleSheet.hairlineWidth, borderRadius: 5, flexDirection: 'row', justifyContent: 'center', alignItems: 'center', backgroundColor: Colors.error,padding:12, marginRight: 15}} onPress={this._denyRequest} rippleColor={Colors.safe}>
-                                <Icon name="user-plus" size={12} color={'#fff'}/>
-                                <Text style={{fontWeight: '600', fontSize: 14, color: '#fff'}}> Cancel Request </Text>
-                            </Button>
-                        </View>
-                )
-            }
-            return(
-                <View style={{flexDirection: 'row', alignItems: 'center'}}>
-                    <Button style={{minWidth: 120, borderWidth: StyleSheet.hairlineWidth, borderRadius: 5, flexDirection: 'row', justifyContent: 'center', alignItems: 'center', backgroundColor: Colors.secondaryDark,padding:12}} onPress={this._unFriend} rippleColor={Colors.secondaryDark}>
-                        <Icon name="user-minus" size={12} color='#fff' />
-                        <Text style={{fontWeight: '600', fontSize: 14, color: '#fff', paddingLeft: 5}}> Un-Friend </Text>
-                    </Button>
-                </View>
-            )
-        }
-        return null
-    }
-
-    _editPhoto = (type) => {
-        console.log('editing photo')
-        const options = {
-            title: 'Profile photo',
-            storageOptions: {
-                skipBackup: true,
-                path: 'images',
-            },
-        };
-
-        ImagePicker.showImagePicker(options, (response) => {
-            console.log('Response = ', response);
-
-            if (response.didCancel) {
-                console.log('User cancelled image picker');
-            }
-            else if (response.error) {
-                console.log('ImagePicker Error: ', response.error);
-            }
-            else if (response.customButton) {
-                console.log('User tapped custom button: ', response.customButton);
-            }
-            else {
-                console.log('setting source')
-                // const source = { uri: response.uri };
-
-                // You can also display the image using data:
-                const source = { uri: 'data:image/jpeg;base64,' + response.data };
-
-                if(type == 'profile'){
-                    console.log("uploading profile pic")
-                    Manager.uploadPic('/api/profile/pic', 'POST', {type: 'profile_pic', file: {
-                        uri: Platform.OS === "android" ? response.uri : response.uri.replace("file://",""),
-                        type: response.type ? response.type : 'image/jpg',
-                        name: response.fileName,
-                    }})
-                    this.setState({
-                        profilePhoto: source,
-                    });
-                }
-                else if(type == 'banner'){
-                    console.log("uploading banner pic")
-                    Manager.uploadPic('/api/profile/pic', 'POST', {type: 'banner_pic', file: {
-                        uri: Platform.OS === "android" ? response.uri : response.uri.replace("file://",""),
-                        type: response.type ? response.type : 'image/jpg',
-                        name: response.fileName,
-                    }})
-                    this.setState({
-                        bannerPhoto: source,
-                    });
-                }
-            }
-        });
+        console.log(this.state);
     }
 
     renderLightBoxImage = () => {
         return (
             <Image
-            style={styles.lightBoxImage}
-            resizeMode="contain"
-            source={this.state.profilePhoto}
+                style={styles.lightBoxImage}
+                resizeMode="contain"
+                source={{ uri: this.state.profile.basic.profile_pic }}
             />
         );
     }
 
-    render() {
-        console.log('accessLevel',this.accessLevel)
-      return (
-          <View>
-          <ImageBackground style={styles.banner} source={this.state.bannerPhoto} blurRadius={3} imageStyle={{resizeMode: 'cover'}}>
-              <SafeAreaView forceInset={{ top: 'always'}}>
-                  <View style={{flexDirection: 'row', justifyContent: 'center', alignItems: 'center'}}>
-                  <Lightbox underlayColor="white" renderContent={this.renderLightBoxImage} style={styles.lightBox}>
-                    <Image
-                        style={styles.image}
-                        resizeMode="cover"
-                        source={this.state.profilePhoto}
-                    />
-                  </Lightbox> 
-                      {
-                          this.accessLevel ?
-                          <Button style={{marginLeft: -40,marginTop: -10, padding: 10, alignSelf: 'flex-start'}} onPress={() => this._editPhoto('profile')}>
-                              <Icon name="pen" size={16} color={Colors.secondaryDark}/>
-                          </Button>
-                          :
-                          null
-                      }
-                  </View>
-                  <View style={styles.bio}>
-                      <Text style={{color: Colors.alternative, fontWeight: '600', fontSize: 18}}>{this.data.basic.salutation + ' ' + this.data.basic.f_name + ' ' + this.data.basic.l_name}</Text>
-                      <Text style={{paddingTop: 5,color: Colors.alternative, fontWeight: '600', fontSize: 14}}>{this.data.current_company ? this.data.current_company.designation + ' at ' + this.data.current_company.name: null}</Text>
-                  </View>
-              </SafeAreaView>
-              {
-                //   this.accessLevel ?
-                // //   <Button style={{padding: 10, alignSelf: 'flex-end'}} onPress={() => this._editPhoto('banner')}>
-                // //       <Icon name="pen" size={16} color={Colors.secondaryDark}/>
-                // //   </Button>
-                //   :
-                //   null
-              }
-              {this._renderFriendRequestControll()}
-          </ImageBackground>
-          </View>
-
-      );
-    }
-}
-
-
-
-
-class ProfileList extends React.Component {
-    constructor(props) {
-        super(props)
-        this.data = props.data
-        this.accessLevel = props.accessLevel
-        this.newTag = null
-        this.state = {
-            isTagModal: false,
-            updateToggle: false
-        }
-
-    }
-
-    componentDidMount() {
-        Manager.addListener('S_TAG_S', this._tagsSuccess)
-        Manager.addListener('S_TAG_E', this._tagsError)
-        Manager.addListener('EXPERIENCE_U', this._refresh)
-
-    }
-
-    componentWillUnmount() {
-        Manager.removeListener('S_TAG_S', this._tagsSuccess)
-        Manager.removeListener('S_TAG_E', this._tagsError)
-        Manager.removeListener('EXPERIENCE_U', this._refresh)
-    }
-
-    _refresh = (data) => {
-        this.data = data.data
-        this.newTag = null
-        this.setState({
-            updateToggle: false
-        })
-    }
-
-    _tagsSuccess = data => {
-        console.log("tag success data : ", data)
-        this.data.tags.push(data.data.pop())
-        this.setState(previousState => ({
-            updateToggle: !previousState.updateToggle,
-            isTagModal: false
-        }))
-    }
-
-    _tagsError = error => {
-        console.log("tag error data : ", error)
-        // this.setState(previousState => ({
-        //     updateToggle: !previousState.updateToggle,
-        //     isTagModal: false
-        // }))
-    }
-
-    _makeCall = (number) =>  {
+    _makeCall = (number) => {
         let phoneNumber = '';
         if (Platform.OS === 'android') {
             phoneNumber = `tel:${number}`
@@ -500,238 +111,185 @@ class ProfileList extends React.Component {
         Linking.openURL(phoneNumber);
     }
 
-    _renderBasicSection = (section) => {
-        const monthNames = ["January", "February", "March", "April", "May", "June",
-            "July", "August", "September", "October", "November", "December"
-        ];
-        let dob = "";
-        if(section.dob) {
-        dob = new Date(section.dob.split('T')[0])
-        dob = monthNames[dob.getMonth()] + ' ' + dob.getDate()
-        }
-        
-        return (
-            <View>
-                <View key={`pelt-${Math.random(1)}`} style={styles.item}>
-                    <Icon name="user" size={18} color={Colors.primaryDark} />
-                    <Text style={styles.itemText}>{section.salutation}</Text>
-                </View>
-                <View key={`pelt-${Math.random(1)}`} style={styles.item}>
-                    <Icon name="user" size={18} color={Colors.primaryDark} />
-                    <Text style={styles.itemText}>{section.f_name + ' ' + section.l_name}</Text>
-                </View>
-                <View key={`pelt-${Math.random(1)}`} style={styles.item}>
-                    <Icon name="smile-wink" size={18} color={Colors.primaryDark} />
-                    <Text style={styles.itemText}>{section.nick_name}</Text>
-                </View>
-                <Button key={`pelt-${Math.random(1)}`} style={styles.item} onPress={() => this._makeCall(section.phone_number)}>
-                    <Icon name="phone" size={18} color={Colors.primaryDark} />
-                    <Text style={styles.itemText}>{section.phone_number}</Text>
-                </Button>
-                <View key={`pelt-${Math.random(1)}`} style={styles.item}>
-                    <Icon name="envelope" size={18} color={Colors.primaryDark} />
-                    <Text style={styles.itemText}>{section.email}</Text>
-                </View>
-                <View key={`pelt-${Math.random(1)}`} style={styles.item}>
-                    <Icon name="calendar-day" size={18} color={Colors.primaryDark} />
-                    <Text style={styles.itemText}>{dob}</Text>
-                </View>
-                <View key={`pelt-${Math.random(1)}`} style={styles.item}>
-                    <Icon name="venus-mars" size={18} color={Colors.primaryDark} />
-                    <Text style={styles.itemText}>{section.gender}</Text>
-                </View>
-                <View key={`pelt-${Math.random(1)}`} style={styles.item}>
-                    <Icon name="id-badge" size={18} color={Colors.primaryDark} />
-                    <Text style={styles.itemText}>{section.bio}</Text>
-                </View>
-            </View>
-        )
-    }
-
-    _navigateToAddCompany = () => {
-        this.props.navigation.navigate('AddCompany')
-    }
-
-    _renderExperienceSection = (section) => {
-        console.log("section data : ", section)
-        if(section.length >= 0) {
-            // {
-            //     this.accessLevel ?
-            //     <Button style={{padding: 10}} onPress={this.props.navigate}>
-            //         <Icon name="pen" size={16} color={Colors.secondaryLight}/>
-            //     </Button>
-            //     :
-            //     null
-            // }
-            return(
-                <View>
-                    <View style={{flexDirection: 'row', justifyContent: 'flex-end', alignItems: 'center'}}>
-                        {
-                            this.accessLevel ?
-                            <Button style={{padding: 10}} onPress={()=>{this._navigateToAddCompany()}}>
-                                <Icon name="pen" size={16} color={Colors.secondaryDark}/>
-                            </Button>
-                            :
-                            null
-                        }
-                    </View>
-                    <View style={styles.sectionBody}>
-                    {
-                        section.map(item => {
-                            return(
-                                <View key={`pelt-${Math.random(1)}`} style={[styles.item, {alignItems: 'flex-start'}]}>
-                                    <Icon name="building" size={35} color={Colors.primaryDark} style={{backgroundColor: Colors.background, padding: 10}}/>
-                                    <View>
-                                        <Text style={[styles.itemText, {fontWeight: '600', fontSize: 16}]}>{item.designation}</Text>
-                                        <Text style={[styles.itemText, {paddingTop: 5}]}>{item.name}</Text>
-                                        {item.started_working_at &&  <Text style={[styles.itemText, {paddingTop: 5}]}>Since {item.started_working_at.split(' ')[0]}</Text>}
-                                    </View>
+    _renderProfile() {
+        if (this.state.profile)
+            return (
+                <ScrollView style={{ backgroundColor: Colors.background }}>
+                    <View>
+                        <SafeAreaView forceInset={{ top: 'always' }} style={{ marginTop : 20 }}>
+                            <View style={{ flexDirection: 'row', justifyContent: 'center', alignItems: 'center' }}>
+                                <Lightbox underlayColor="white"
+                                    renderContent={this.renderLightBoxImage}
+                                    style={styles.lightBox}>
+                                    <Image
+                                        style={styles.image}
+                                        resizeMode="cover"
+                                        source={{ uri: this.state.profile.basic.profile_pic }}
+                                    />
+                                </Lightbox>
+                            </View>
+                            <View style={styles.container}>
+                                <View style={styles.bio}>
+                                    <Text style={{ color: Colors.yellowDark, fontWeight: '600', fontSize: 20 }}>
+                                        {this.state.profile.basic.salutation + ' ' + this.state.profile.basic.f_name + ' ' + this.state.profile.basic.l_name}
+                                    </Text>
                                 </View>
-                            )
-                        })
-                    }
-                    </View>
-                </View>
-            )
-        }
-        return null
-    }
-
-    _showTagModal = () => {
-        this.setState({ isTagModal: true });
-    }
-
-    _renderTagsSection = (section) => {
-        console.log("section data : ", section)
-        if(section.length >= 0) {
-            //<Icon name="pen" size={16} color={Colors.secondaryLight}/>
-            return(
-                <View>
-                    <View style={{flexDirection: 'row', justifyContent: 'flex-end', alignItems: 'center'}}>
-                        {
-                            this.accessLevel ?
-                            <Button style={{padding: 10}}  onPress={this._showTagModal}>
-                                <Icon name="pen" size={16} color={Colors.secondaryDark}/>
-                            </Button>
-                            :
-                            null
-                        }
-                    </View>
-                    <View style={[styles.sectionBody, {flexDirection: 'row', flexWrap: 'wrap', padding: 10}]}>
-                    {
-                        section.map(item => {
-                            return(
-                                    <View key={`pelt-${Math.random(1)}`} style={[{margin: 5, borderRadius:20, padding:8, paddingHorizontal: 12, borderWidth: 1}]}>
-                                        <Text style={[styles.itemText, {fontWeight: '600', fontSize: 16, paddingLeft: 0}]}>{item.name}</Text>
+                                <View>
+                                    <View key={`pelt-${Math.random(1)}`} style={styles.item}>
+                                        <Icon name="smile-wink" size={18} color={Colors.primaryDark} />
+                                        <Text style={styles.itemText}>Nick Name : {this.state.profile.basic.nick_name}</Text>
                                     </View>
-                            )
-                        })
-                    }
+                                    {this.state.profile.basic.phone_number ?
+                                        <Button key={`pelt-${Math.random(1)}`} style={styles.item}
+                                            onPress={() => this._makeCall(this.state.profile.basic.phone_number)}
+                                        >
+                                            <Icon name="phone" size={18} color={Colors.primaryDark} />
+                                            <Text style={styles.itemText}>Phone Number : {this.state.profile.basic.phone_number}</Text>
+                                        </Button>
+                                        : null
+                                    }
+                                    {
+                                        this.state.profile.basic.email ?
+                                            <View key={`pelt-${Math.random(1)}`} style={styles.item}>
+                                                <Icon name="envelope" size={18} color={Colors.primaryDark} />
+                                                <Text style={styles.itemText}>Email : {this.state.profile.basic.email}</Text>
+                                            </View>
+                                            : null
+                                    }
+                                    {
+                                        this.state.profile.basic.dob ?
+                                            <View key={`pelt-${Math.random(1)}`} style={styles.item}>
+                                                <Icon name="calendar-day" size={18} color={Colors.primaryDark} />
+                                                <Text style={styles.itemText}>Date of Birth : {this.state.profile.basic.dob}</Text>
+                                            </View>
+                                            : null
+                                    }
+                                    <View key={`pelt-${Math.random(1)}`} style={styles.item}>
+                                        <Icon name="venus-mars" size={18} color={Colors.primaryDark} />
+                                        <Text style={styles.itemText}>Gender : {this.state.profile.basic.gender}</Text>
+                                    </View>
+                                    {
+                                        this.state.profile.basic.bio ?
+                                            <View key={`pelt-${Math.random(1)}`} style={styles.item}>
+                                                <Icon name="id-badge" size={18} color={Colors.primaryDark} />
+                                                <Text style={styles.itemText}>About me : {this.state.profile.basic.bio}</Text>
+                                            </View>
+                                            : null
+                                    }
+                                </View>
+
+                            </View>
+                            <View style={styles.container}>
+                                <View style={styles.bio}>
+                                    <Text style={{ color: Colors.yellowDark, fontWeight: '600', fontSize: 20 }}>
+                                        EXPERIENCE
+                                    </Text>
+                                </View>
+                                <View style={styles.sectionBody}>
+                                    {
+                                        this.state.profile.companies.length > 0 ?
+                                            this.state.profile.companies.map(item => {
+                                                return (
+                                                    <View key={`pelt-${Math.random(1)}`} style={[styles.item, { alignItems: 'flex-start' }]}>
+                                                        <Icon name="building" size={35} color={Colors.primaryDark} style={{padding: 10 }} />
+                                                        <View>
+                                                            {item.designation ?
+                                                                <Text style={[styles.itemText, { fontWeight: '600', fontSize: 16 }]}>
+                                                                    {item.designation}
+                                                                </Text>
+                                                                : null}
+                                                            <Text style={[styles.itemText, { paddingTop: 5 }]}>
+                                                                {item.name}
+                                                            </Text>
+                                                        </View>
+                                                    </View>
+                                                )
+                                            })
+                                            :
+                                            <View key={`pelt-${Math.random(1)}`} style={[styles.item, { alignItems: 'center' }]}>
+                                                <View>
+                                                    <Text style={[styles.itemText, { paddingTop: 5 }]}>
+                                                        Experience not updated
+                                                    </Text>
+                                                </View>
+                                            </View>
+                                    }
+                                </View>
+                            </View>
+                            <View style={styles.container}>
+                                <View style={styles.bio}>
+                                    <Text style={{ color: Colors.yellowDark, fontWeight: '600', fontSize: 20 }}>
+                                        EDUCATION
+                                    </Text>
+                                </View>
+                                <View style={styles.sectionBody}>
+                                    {
+                                        this.state.profile.educations.length > 0 ?
+                                        this.state.profile.educations.map(item => {
+                                            return (
+                                                <View key={`pelt-${Math.random(1)}`} style={[styles.item, { alignItems: 'flex-start' }]}>
+                                                    <Icon name="book" size={35} color={Colors.primaryDark} style={{ padding: 10 }} />
+                                                    <View>
+                                                            <Text style={[styles.itemText, { fontWeight: '600', fontSize: 16 }]}>
+                                                                {item.college_name}
+                                                            </Text>
+                                                        <Text style={[styles.itemText, { paddingTop: 5 }]}>
+                                                            {item.degree_name}
+                                                        </Text>
+                                                    </View>
+                                                </View>
+                                            )
+                                        })
+                                        :
+                                        <View key={`pelt-${Math.random(1)}`} style={[styles.item, { alignItems: 'center' }]}>
+                                            <View>
+                                                <Text style={[styles.itemText, { paddingTop: 5 }]}>
+                                                    Educational details not updated
+                                                </Text>
+                                            </View>
+                                        </View>
+                                    }
+                                </View>
+                            </View>
+                        </SafeAreaView>
                     </View>
-                </View>
-            )
-        }
-        return null
-    }
-
-    _toggleModal = () => {
-        console.log('toggling modal')
-        this.newTag = null
-        this.setState({
-            isTagModal: false
-        });
-    };
-
-    _addTag = (text) => {
-        console.log(text)
-        this.newTag = text
-    }
-
-    _submitNewTag = () => {
-        console.log("submiting tag : ", this.newTag)
-        let tags = this.data.tags.map(item => {
-            return item.name
-        })
-        tags.push(this.newTag)
-        Manager.submitTag('/api/tags', 'POST', {
-            "tags": tags.toString()
-        });
-        this.newTag = null
-    }
-
-    _navigateToPrivacy = (item) => {
-        this.props.navigation.navigate('Privacy', {data: item})
-    }
-
-    _renderPrivacySetting = (section) => {
-        console.log("section data : ", section)
-        if(this.accessLevel) {
-            return(
-                <View>
-                    <View style={{width: '100%', padding: 10}} />
-
-                    <View style={[styles.sectionBody, {flexDirection: 'row', flexWrap: 'wrap'}]}>
-                        <Button onPress={() => this._navigateToPrivacy(section)} style={{backgroundColor: Colors.surface, flexDirection: 'row', justifyContent: 'space-between', flex: 1, alignItems: 'center', padding: 15}}>
-                            <Text style={[{opacity: 1, fontSize: 18, fontWeight: '600', color: Colors.onSurface,}]}>Privacy setting</Text>
-                            <Icon name="chevron-right" size={22} color={Colors.secondaryDark}/>
-                        </Button>
-                    </View>
-                </View>
-            )
-        }
-        return null
+                </ScrollView>
+            );
+        return <Text>Unable to locate Profile</Text>
     }
 
     render() {
-        const { currentView } = this.props;
-        return(
+        return (
             <View>
-                {currentView === 'basic' && <View>
-                    <View style={{flexDirection: 'row', justifyContent: 'flex-end', alignItems: 'center'}}>
-                        {
-                            this.accessLevel ?
-                            <Button style={{padding: 10}} onPress={this.props.navigate}>
-                                <Icon name="pen" size={16} color={Colors.secondaryDark}/>
-                            </Button>
-                            :
-                            null
-                        }
+                {this.state.loading ?
+                    <View
+                        style={{
+                            justifyContent: "center",
+                            alignItems: "center",
+                            padding: 10
+                        }}
+                    >
+                        <ActivityIndicator
+                            animating={this.state.loading}
+                            size="large"
+                            color={Colors.secondaryDark}
+                        />
                     </View>
-                    <View style={styles.sectionBody}>
-                        {this._renderBasicSection(this.data.basic)}
-                    </View>
-                </View>}
-                {currentView === 'basic' && this._renderPrivacySetting(this.data.privacy)}
-                {currentView === 'background' && this._renderExperienceSection(this.data.companies)}
-                {currentView === 'tags' && this._renderTagsSection(this.data.tags)}
-                <View style={{width: '100%', padding: 10}} />
-                <View>
-                    <Modal animationType="fade" transparent={true} visible={this.state.isTagModal} onRequestClose={this._toggleModal}>
-                        <TouchableWithoutFeedback onPress={this._toggleModal} >
-                            <View style={{flex: 1, backgroundColor: '#00000070', justifyContent: 'center', alignItems:'center', color: '#FFFFFF', paddingHorizontal: 20}}>
-                                <View style={{backgroundColor: Colors.surface, width: '100%', padding: 20, borderRadius: 20}}>
-                                    <TextInput style={styles.textInput}
-                                        placeholder="Add new tag"
-                                        onChangeText={this._addTag}
-                                        allowFontScaling={false}
-
-                                    />
-                                    <Button style={styles.button} title="SUBMIT" color={Colors.alternative} onPress={this._submitNewTag}>
-                                    </Button>
-                                </View>
-                            </View>
-                        </TouchableWithoutFeedback>
-                    </Modal>
-                </View>
+                    : this._renderProfile()}
             </View>
-        )
+        );
     }
 }
 
 const styles = StyleSheet.create({
     container: {
         flex: 1,
-        backgroundColor: Colors.background,
+        margin: 10,
+        borderRadius: 10,
+        borderTopWidth: 3,
+        borderTopColor: Colors.yellowDark,
+        // height : 600,
+        backgroundColor: 'white',
     },
     tabBar: {
         flexDirection: 'row',
@@ -762,7 +320,7 @@ const styles = StyleSheet.create({
         width: 180,
         height: 180,
         backfaceVisibility: 'visible',
-        
+
     },
     lightBox: {
         width: 180,
@@ -810,7 +368,7 @@ const styles = StyleSheet.create({
         fontWeight: '400',
     },
     itemsTextLabel: {
-        flex:1,
+        flex: 1,
         fontSize: 14,
         fontWeight: 'bold',
         opacity: 0.7,
@@ -821,7 +379,7 @@ const styles = StyleSheet.create({
         right: 20,
         top: 100,
     },
-    textInput:{
+    textInput: {
         backgroundColor: Colors.background,
         padding: 10,
         margin: 10,
@@ -847,3 +405,4 @@ const styles = StyleSheet.create({
         // marginBottom: 5
     }
 });
+

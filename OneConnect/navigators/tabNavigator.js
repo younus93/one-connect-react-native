@@ -46,7 +46,7 @@ class Lable extends React.Component {
 
 
 const navigatorConfig = {
-    initialRouteName: 'SearchStack',
+    initialRouteName: 'ProfileStack',
     resetOnBlur: true,
     defaultNavigationOptions: ({ navigation }) => ({
         tabBarIcon: ({ focused, horizontal, tintColor }) => {
