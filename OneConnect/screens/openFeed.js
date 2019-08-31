@@ -11,7 +11,7 @@ import {
   TextInput,
   ActivityIndicator
 } from "react-native";
-
+import Icon from "react-native-vector-icons/FontAwesome";
 import Comments from "../custom/comments";
 import Feed from "../custom/feed";
 import ProfileImage from "../custom/profileImage";
@@ -276,9 +276,13 @@ export default class OpenFeed extends React.Component {
             <Button
               style={styles.button}
               onPress={this._postComment}
-              title="POST"
-              color={Colors.alternative}
-            />
+              color={Colors.alternative}>
+              <Icon
+                name="send-o"
+                size={20}
+                color={Colors.primaryDark}
+              />
+            </Button>
           </View>
         </Animated.View>
       </View>

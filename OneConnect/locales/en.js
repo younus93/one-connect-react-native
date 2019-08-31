@@ -15,7 +15,7 @@ export default {
     Data_Unavailable: 'Data Unavailable',
     Like: 'Like',
     Comment: 'Comment',
-    Leave_your_thoughts_here: 'Leave your thoughts here',
+    Leave_your_thoughts_here: 'Comment..',
     POST:'POST',
     Change_Password: 'Change Password',
     Signout: 'Signout',

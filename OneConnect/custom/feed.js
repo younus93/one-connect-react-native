@@ -111,16 +111,7 @@ export default class Feed extends React.Component {
     console.log("pic", this.state.pic);
     const { data } = this.props;
     let faces = this.props.data.likers;
-    faceData = [];
-    remainingFaces = this.props.data.likes - 5;
-    faces.map((like, index) => {
-      let likeData = {};
-      likeData.id = index;
-      likeData.imageUrl = like.profile_pic;
-      likeData.name = like.f_name,
-      faceData.push(likeData);
-    });
-    console.log('faceData',faceData)
+  
     return (
       <TouchableWithoutFeedback
         onPress={this._onPress}
@@ -138,7 +129,7 @@ export default class Feed extends React.Component {
                   source={{
                     uri: data.institution ? data.institution.profile_pic : null
                   }}
-                  defaultSource={require("../resources/in_2.jpg")}
+                  defaultSource={require("../resources/dummy_profile.png")}
                   resizeMode="cover"
                   onError={error => console.log(error)}
                 />
@@ -201,7 +192,7 @@ export default class Feed extends React.Component {
               </Text>
             </Button>
             <Button onPress={this._comment} style={styles.footerElement}>
-              <Icon name="comment" size={20} color={Colors.secondaryDark} />
+              <Icon name="comment" size={20} color={Colors.onPrimary} />
               <Text style={styles.footerElementText}>
                 {I18n.t("Comment")}
               </Text>
