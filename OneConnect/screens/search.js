@@ -55,7 +55,7 @@ export default class Search extends React.Component {
       showInstitution: true,
       showCourses: true,
       showBatches: true,
-      userList : '',
+      userList: '',
     };
   }
 
@@ -63,7 +63,7 @@ export default class Search extends React.Component {
     console.log("search text changed");
     this.searchText = text;
   };
-  
+
   _onEndEditing = () => {
     console.log("on end editing");
     // this.setState({
@@ -75,7 +75,7 @@ export default class Search extends React.Component {
   _onSubmitEditing = () => {
     console.log("on submit editing");
     this.setState({
-      ...this.state, loading: true, 
+      ...this.state, loading: true,
       showUser: false, showPost: false,
       showInstitution: false,
       showCourses: false,
@@ -108,7 +108,7 @@ export default class Search extends React.Component {
     let userList = this.data.filter(item => {
       const match = item.type == "users" ? true : false;
       return match;
-    });  
+    });
     userList = userList.map(item => {
       let user = {};
       console.log(item);
@@ -118,15 +118,15 @@ export default class Search extends React.Component {
       user.profile_pic = item.searchable.basic.profile_pic;
       user.tags = item.searchable.tags;
       user.friends_meta = item.searchable.friends_meta;
-      return user;  
+      return user;
     });
     this.setState({
-      userList : userList,
+      userList: userList,
       loading: false,
       showUser: true, showPost: true,
       showInstitution: true,
       showCourses: true,
-      showBatches: true  
+      showBatches: true
     });
   };
 
@@ -176,8 +176,8 @@ export default class Search extends React.Component {
                 return (
 
                   <Button
-                  onPress={() => this._navigateBatch(item)}
-                  key={`pelt-${Math.random(1)}`}
+                    onPress={() => this._navigateBatch(item)}
+                    key={`pelt-${Math.random(1)}`}
                     style={[styles.item]}
                   >
                     <View>
@@ -190,7 +190,7 @@ export default class Search extends React.Component {
                           onError={error => console.log(error)}
                         />
                       </TouchableWithoutFeedback>
-                      </View>
+                    </View>
                     <View>
                       <Text
                         style={[
@@ -263,13 +263,13 @@ export default class Search extends React.Component {
     return null;
   };
 
-  
+
   _renderUsers = () => {
-    if (this.state.userList) {    
+    if (this.state.userList) {
       console.log(this.state.userList);
-      if(this.state.userList.length > 0) {
+      if (this.state.userList.length > 0) {
         return (
-           <SearchUserList userList={this.state.userList} navigation={this.props.navigation}></SearchUserList>
+          <SearchUserList userList={this.state.userList} navigation={this.props.navigation}></SearchUserList>
         );
       }
       return null;
@@ -313,7 +313,7 @@ export default class Search extends React.Component {
                           onError={error => console.log(error)}
                         />
                       </TouchableWithoutFeedback>
-                      </View>
+                    </View>
                     <View>
                       <Text
                         style={[
@@ -374,7 +374,7 @@ export default class Search extends React.Component {
                           onError={error => console.log(error)}
                         />
                       </TouchableWithoutFeedback>
-                      </View>
+                    </View>
 
                     <View>
                       <Text
@@ -437,129 +437,86 @@ export default class Search extends React.Component {
 
   _renderFilters = () => {
     return (
-      <View style={{ marginTop : 5 }}>
+      <View style={{ marginTop: 5, alignItems: "center" }}>
         <ScrollView horizontal={true}>
-
-          <Button
-            style={styles.CircleShapeView}
-            onPress={() => {
-              this.setState(previousState => ({
-                showUser: !previousState.showUser,
-                userBackground: !previousState.showUser
-                  ? Colors.searchFilterSelected
-                  : Colors.background
-              }));
-            }}
-          >
-            <View
-              style={{ alignItems: "center", borderWidth:1,
-              borderColor:'rgba(0,0,0,0.2)',
-              alignItems:'center',
-              justifyContent:'center',
-              marginHorizontal : 5,
-              width:80,
-              height:80,
-              borderRadius:40,
-              backgroundColor : this.state.userBackground }}            
+          <View style={{ display: 'flex', flexDirection: 'column', alignItems: "center" }}>
+            <Button
+              style={styles.CircleShapeView}
+              onPress={() => {
+                this.setState(previousState => ({
+                  showUser: !previousState.showUser,
+                  userBackground: !previousState.showUser
+                    ? Colors.searchFilterSelected
+                    : Colors.onPrimary
+                }));
+              }}
             >
               <Icon
                 name="users"
                 size={22}
-                color={Colors.onSurface}
+                color={this.state.userBackground}
               />
-              <Text>{I18n.t("Users")}</Text>
-            </View>
-          </Button>
-        
-          <Button
-           style={styles.CircleShapeView}
-            onPress={() => {
-              this.setState(previousState => ({
-                showInstitution: !previousState.showInstitution,
-                institutionBackground: !previousState.showInstitution
-                  ? Colors.searchFilterSelected
-                  : Colors.background
-              }));
-            }}
-          >
-            <View
-              style={{ alignItems: "center", borderWidth:1,
-              borderColor:'rgba(0,0,0,0.2)',
-              alignItems:'center',
-              justifyContent:'center',
-              marginHorizontal : 5,
-              width:80,
-              height:80,
-              borderRadius:40,
-              backgroundColor : this.state.institutionBackground }}            
-            >
-            <Icon
-                name="archway"
-                size={22}
-                color={Colors.onSurface}
-              />
-              <Text>{I18n.t("Institutions")}</Text>
-            </View>
-          </Button>
-          <Button
-            style={styles.CircleShapeView}
-            onPress={() => {
-              this.setState(previousState => ({
-                showBatches: !previousState.showBatches,
-                batchesBackground: !previousState.showBatches
-                  ? Colors.searchFilterSelected
-                  : Colors.background
-              }));
-            }}
-          >
-             <View
-              style={{ alignItems: "center", borderWidth:1,
-              borderColor:'rgba(0,0,0,0.2)',
-              alignItems:'center',
-              justifyContent:'center',
-              marginHorizontal : 5,
-              width:80,
-              height:80,
-              borderRadius:40,
-              backgroundColor : this.state.batchesBackground }}            
-            >
-            <Icon
-                name="briefcase"
-                size={22}
-                color={Colors.onSurface}
-              />
-              <Text>{I18n.t("Batches")}</Text>
-            </View>
-          </Button>
-          <Button
-            style={styles.CircleShapeView}
-            onPress={() => {
-              this.setState(previousState => ({
-                showCourses: !previousState.showCourses,
-                coursesBackground: !previousState.showCourses
-                  ? Colors.searchFilterSelected
-                  : Colors.background
-              }));
-            }}>
-             <View
-              style={{ alignItems: "center", borderWidth:1,
-              borderColor:'rgba(0,0,0,0.2)',
-              alignItems:'center',
-              justifyContent:'center',
-              marginHorizontal : 5,
-              width:80,
-              height:80,
-              borderRadius:40,
-              backgroundColor : this.state.coursesBackground }}            
+            </Button>
+            <Text>{I18n.t("Users")}</Text>
+          </View>
+
+          <View style={{ display: 'flex', flexDirection: 'column', alignItems: "center" }}>
+            <Button
+              style={styles.CircleShapeView}
+              onPress={() => {
+                this.setState(previousState => ({
+                  showInstitution: !previousState.showInstitution,
+                  institutionBackground: !previousState.showInstitution
+                    ? Colors.searchFilterSelected
+                    : Colors.onPrimary                }));
+              }}
             >
               <Icon
-                  name="chalkboard-teacher"
-                  size={22}
-                  color={Colors.onSurface}
-                />
-              <Text>{I18n.t("Courses")}</Text>
-            </View>
-          </Button>
+                name="archway"
+                size={22}
+                color={this.state.institutionBackground}
+              />
+            </Button>
+            <Text>{I18n.t("Institutions")}</Text>
+          </View>
+          <View style={{ display: 'flex', flexDirection: 'column', alignItems: "center" }}>
+            <Button
+              style={styles.CircleShapeView}
+              onPress={() => {
+                this.setState(previousState => ({
+                  showBatches: !previousState.showBatches,
+                  batchesBackground: !previousState.showBatches
+                    ? Colors.searchFilterSelected
+                    : Colors.onPrimary                }));
+              }}
+            >
+              <Icon
+                name="briefcase"
+                size={22}
+                color={this.state.batchesBackground}
+              />
+            </Button>
+            <Text>{I18n.t("Batches")}</Text>
+          </View>
+          <View style={{ display: 'flex', flexDirection: 'column', alignItems: "center" }}>
+            <Button
+              style={styles.CircleShapeView}
+              onPress={() => {
+                this.setState(previousState => ({
+                  showCourses: !previousState.showCourses,
+                  coursesBackground: !previousState.showCourses
+                    ? Colors.searchFilterSelected
+                    : Colors.onPrimary                }));
+              }}>
+              <Icon
+                name="chalkboard-teacher"
+                size={22}
+                color={this.state.coursesBackground}
+              />
+            </Button>
+            <Text>{I18n.t("Courses")}</Text>
+
+          </View>
 
         </ScrollView>
       </View>
@@ -598,40 +555,40 @@ export default class Search extends React.Component {
               {this.state.showPost ? this._renderPosts() : null}
             </View>
           ) : (
-            <View
-              style={{
-                backgroundColor: Colors.background,
-                justifyContent: "center",
-                alignItems: "center",
-                opacity: 1,
-                width: "100%",
-                paddingTop: 20
-              }}
-            >
-              <Text
+              <View
                 style={{
-                  color: Colors.secondaryDark,
-                  fontSize: 22,
-                  fontWeight: "700",
-                  opacity: 0.4
+                  backgroundColor: Colors.background,
+                  justifyContent: "center",
+                  alignItems: "center",
+                  opacity: 1,
+                  width: "100%",
+                  paddingTop: 20
                 }}
               >
-                No result
+                <Text
+                  style={{
+                    color: Colors.secondaryDark,
+                    fontSize: 22,
+                    fontWeight: "700",
+                    opacity: 0.4
+                  }}
+                >
+                  No results
               </Text>
-            </View>
-          ) : null}
+              </View>
+            ) : null}
         </ScrollView>
-      
+
       </View>
     );
   }
 }
 
 const styles = StyleSheet.create({
-  resourceImage : {
-    height : 60,
-    width : 60,
-    resizeMode : 'contain'
+  resourceImage: {
+    height: 60,
+    width: 60,
+    resizeMode: 'contain'
   },
   container: {
     flex: 1,
@@ -640,8 +597,8 @@ const styles = StyleSheet.create({
   bodyHeader: {
     fontSize: 16,
     fontWeight: "600",
-    color: Colors.onSurface,
-    opacity: 0.4
+    color: Colors.onPrimary,
+    // opacity: 0.4
   },
   sectionBody: {
     backgroundColor: Colors.surface
@@ -726,21 +683,21 @@ const styles = StyleSheet.create({
     fontSize: 12,
     fontWeight: "300",
     flexDirection: "row",
-    flexWrap:"wrap",
-    paddingRight:10,
+    flexWrap: "wrap",
+    paddingRight: 10,
     flexShrink: 1
   },
   tag: {
     paddingLeft: 10
   },
   CircleShapeView: {
-    borderWidth:1,
-    borderColor:'rgba(0,0,0,0.2)',
-    alignItems:'center',
-    justifyContent:'center',
-    marginHorizontal : 5,
-    width:80,
-    height:80,
-    borderRadius:40,
+    borderWidth: 1,
+    borderColor: 'rgba(0,0,0,0.2)',
+    alignItems: 'center',
+    justifyContent: 'center',
+    marginHorizontal: 5,
+    width: 60,
+    height: 60,
+    borderRadius: 30,
   }
 });

@@ -208,8 +208,8 @@ const styles = StyleSheet.create({
     bodyHeader: {
         fontSize: 16,
         fontWeight: "600",
-        color: Colors.onSurface,
-        opacity: 0.4
+        color: Colors.onPrimary,
+        // opacity: 0.4
     },
     sectionBody: {
         backgroundColor: Colors.surface
