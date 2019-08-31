@@ -147,10 +147,7 @@ export default class SearchUserList extends React.Component {
                                                             .mutual_friends_count
                                                     }{" "}
                                                     {I18n.t("Mutual_friends")}
-                                                </Text>
-                                                <View style={styles.tags}>
-                                                    {item.tags.map(tag => <Text style={styles.tag} key={UUID.v4()}>{tag.name}</Text>)}
-                                                </View>
+                                                </Text>                                            
                                             </View>
                                             {item.friends_meta.has_sent_friend_request_to_this_profile ?
                                                 <View>
@@ -287,7 +284,9 @@ const styles = StyleSheet.create({
     },
     userBody: {
         backgroundColor: Colors.surface,
-        marginBottom: 10,
+        marginBottom: 0,
+        borderBottomColor : Colors.grey,
+        borderBottomWidth : 1,
         paddingBottom: 0
     },
     tags: {

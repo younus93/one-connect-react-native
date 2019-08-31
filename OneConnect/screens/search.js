@@ -117,6 +117,7 @@ export default class Search extends React.Component {
       user.l_name = item.searchable.basic.l_name;
       user.profile_pic = item.searchable.basic.profile_pic;
       user.tags = item.searchable.tags;
+      user.extra_info = item.searchable.companies.length ? `Works at ${item.searchable.companies[0].name}` : null;
       user.friends_meta = item.searchable.friends_meta;
       return user;
     });
@@ -266,7 +267,7 @@ export default class Search extends React.Component {
 
   _renderUsers = () => {
     if (this.state.userList) {
-      console.log(this.state.userList);
+      // console.log(this.state.userList);
       if (this.state.userList.length > 0) {
         return (
           <SearchUserList userList={this.state.userList} navigation={this.props.navigation}></SearchUserList>

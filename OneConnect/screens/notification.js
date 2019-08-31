@@ -19,7 +19,7 @@ import I18n from "../service/i18n";
 // import Toast, { DURATION } from "react-native-easy-toast";
 import Toast from 'react-native-simple-toast';
 import UserList from "../custom/userList";
-import { TabView, SceneMap } from 'react-native-tab-view';
+import { TabView, SceneMap, TabBar } from 'react-native-tab-view';
 import SearchUserList from "../custom/searchUserList";
 import FriendRequestList from "../custom/FriendRequests";
 
@@ -158,43 +158,6 @@ export default class Notification extends React.Component {
     this.props.navigation.navigate("OpenFeed", { item: item.searchable });
   };
 
-  _renderBatchMessages = section => {
-    console.log("batch messages : ", section);
-    if (section && section.length > 0) {
-      console.log("data availabe");
-      return (
-        <View>
-          <View style={{ paddingLeft: 10, paddingTop: 18, paddingBottom: 8 }}>
-            <Text style={styles.bodyHeader}>Posts</Text>
-          </View>
-          <View style={styles.sectionBody}>
-            {section.map(item => {
-              return (
-                <Button
-                  onPress={() => this._navigatePost(item)}
-                  key={`pelt-${Math.random(1)}`}
-                  style={[styles.item]}
-                >
-                  <View>
-                    <Text
-                      style={[
-                        styles.itemText,
-                        { fontWeight: "600", fontSize: 16 }
-                      ]}
-                    >
-                      {item.title}
-                    </Text>
-                  </View>
-                </Button>
-              );
-            })}
-          </View>
-        </View>
-      );
-    }
-    return null;
-  };
-
   _navigateMate = item => {
     console.log("pressed items :", item);
     this.props.navigation.navigate("Profile", {
@@ -202,9 +165,6 @@ export default class Notification extends React.Component {
     });
   };
 
-  
-  
-  
   FirstRoute = () => {
     console.log("First Route");
     console.log(this.state);
@@ -214,6 +174,7 @@ export default class Notification extends React.Component {
       ></SearchUserList>;
     return <></>;
   };
+
   SecondRoute = () => {
     console.log("Seond route");
     console.log(this.state);
@@ -235,6 +196,15 @@ export default class Notification extends React.Component {
         onIndexChange={index => this.setState({ index })}
         initialLayout={{ width: Dimensions.get('window').width }}
         style={styles.container}
+        renderTabBar={props =>
+          <TabBar
+            {...props}
+            indicatorStyle={{ backgroundColor: Colors.yellowDark }}
+            style={{ backgroundColor: Colors.primaryLight }}
+            labelStyle={{color:'#000000' }}
+          />
+        }
+
       />
       </ScrollView>
     );
