@@ -1,5 +1,11 @@
 import React from "react";
-import { View, Text, TouchableOpacity, ScrollView, Dimensions, Image, StyleSheet, FlatList, SectionList, SafeAreaView, TouchableWithoutFeedback, TextInput, Animated, Easing, ActivityIndicator, ImageBackground, Modal, Platform, Linking } from "react-native";
+import {
+    View, Text, TouchableOpacity, ScrollView, Dimensions, Image, StyleSheet,
+    FlatList, SectionList, SafeAreaView, TouchableWithoutFeedback,
+    TextInput, Animated, Easing, ActivityIndicator,
+    ImageBackground, Modal, Platform, Linking
+} from "react-native";
+import { Badge, Avatar } from "react-native-elements";
 import { DrawerActions } from 'react-navigation-drawer';
 import { NavigationActions } from 'react-navigation';
 import { Colors } from '../constants';
@@ -10,6 +16,7 @@ import ImagePicker from 'react-native-image-picker';
 import I18n from '../service/i18n';
 import Lightbox from 'react-native-lightbox';
 import { TabView, SceneMap } from 'react-native-tab-view';
+const UUID = require('uuid');
 
 export default class Profile extends React.Component {
 
@@ -111,22 +118,33 @@ export default class Profile extends React.Component {
         Linking.openURL(phoneNumber);
     }
 
+    _enlargeImage = () => {
+        console.log("enlarging");
+        return (
+            <Lightbox underlayColor="white">
+                <Image
+                    style={{ flex: 1, height: 200 }}
+                    resizeMode="contain"
+                    source={{ uri: this.state.profile.basic.profile_pic }}
+                />
+            </Lightbox>
+        )
+    }
+
+
     _renderProfile() {
         if (this.state.profile)
             return (
                 <ScrollView style={{ backgroundColor: Colors.background }}>
                     <View>
-                        <SafeAreaView forceInset={{ top: 'always' }} style={{ marginTop : 20 }}>
+                        <SafeAreaView forceInset={{ top: 'always' }} style={{ marginTop: 20 }}>
                             <View style={{ flexDirection: 'row', justifyContent: 'center', alignItems: 'center' }}>
-                                <Lightbox underlayColor="white"
-                                    renderContent={this.renderLightBoxImage}
-                                    style={styles.lightBox}>
-                                    <Image
-                                        style={styles.image}
-                                        resizeMode="cover"
-                                        source={{ uri: this.state.profile.basic.profile_pic }}
-                                    />
-                                </Lightbox>
+
+                                <Avatar
+                                    size="xlarge"
+                                    rounded
+                                    source={{ uri: this.state.profile.basic.profile_pic }}
+                                />
                             </View>
                             <View style={styles.container}>
                                 <View style={styles.bio}>
@@ -191,7 +209,7 @@ export default class Profile extends React.Component {
                                             this.state.profile.companies.map(item => {
                                                 return (
                                                     <View key={`pelt-${Math.random(1)}`} style={[styles.item, { alignItems: 'flex-start' }]}>
-                                                        <Icon name="building" size={35} color={Colors.primaryDark} style={{padding: 10 }} />
+                                                        <Icon name="building" size={35} color={Colors.primaryDark} style={{ padding: 10 }} />
                                                         <View>
                                                             {item.designation ?
                                                                 <Text style={[styles.itemText, { fontWeight: '600', fontSize: 16 }]}>
@@ -225,29 +243,50 @@ export default class Profile extends React.Component {
                                 <View style={styles.sectionBody}>
                                     {
                                         this.state.profile.educations.length > 0 ?
-                                        this.state.profile.educations.map(item => {
-                                            return (
-                                                <View key={`pelt-${Math.random(1)}`} style={[styles.item, { alignItems: 'flex-start' }]}>
-                                                    <Icon name="book" size={35} color={Colors.primaryDark} style={{ padding: 10 }} />
-                                                    <View>
+                                            this.state.profile.educations.map(item => {
+                                                return (
+                                                    <View key={`pelt-${Math.random(1)}`} style={[styles.item, { alignItems: 'flex-start' }]}>
+                                                        <Icon name="book" size={35} color={Colors.primaryDark} style={{ padding: 10 }} />
+                                                        <View>
                                                             <Text style={[styles.itemText, { fontWeight: '600', fontSize: 16 }]}>
                                                                 {item.college_name}
                                                             </Text>
-                                                        <Text style={[styles.itemText, { paddingTop: 5 }]}>
-                                                            {item.degree_name}
-                                                        </Text>
+                                                            <Text style={[styles.itemText, { paddingTop: 5 }]}>
+                                                                {item.degree_name}
+                                                            </Text>
+                                                        </View>
                                                     </View>
+                                                )
+                                            })
+                                            :
+                                            <View key={`pelt-${Math.random(1)}`} style={[styles.item, { alignItems: 'center' }]}>
+                                                <View>
+                                                    <Text style={[styles.itemText, { paddingTop: 5 }]}>
+                                                        Educational details not updated
+                                                </Text>
                                                 </View>
+                                            </View>
+                                    }
+                                </View>
+                            </View>
+                            <View style={styles.container}>
+                                <View style={styles.bio}>
+                                    <Text style={{ color: Colors.yellowDark, fontWeight: '600', fontSize: 20 }}>
+                                        TAGS
+                                    </Text>
+                                </View>
+                                <View style={[styles.sectionBody, { paddingBottom: 20 }]}>
+                                    {
+                                        this.state.profile.tags.length > 0 ?
+                                            this.state.profile.tags.map(tag =>
+                                                <Badge value={tag.name} containerStyle={{ paddingHorizontal: 5 }} />
                                             )
-                                        })
-                                        :
-                                        <View key={`pelt-${Math.random(1)}`} style={[styles.item, { alignItems: 'center' }]}>
+                                            :
                                             <View>
                                                 <Text style={[styles.itemText, { paddingTop: 5 }]}>
-                                                    Educational details not updated
+                                                    Tags not updated.
                                                 </Text>
                                             </View>
-                                        </View>
                                     }
                                 </View>
                             </View>
@@ -320,7 +359,6 @@ const styles = StyleSheet.create({
         width: 180,
         height: 180,
         backfaceVisibility: 'visible',
-
     },
     lightBox: {
         width: 180,
