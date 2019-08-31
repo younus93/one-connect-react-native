@@ -1,14 +1,20 @@
 import React from "react";
-import { View, Text, ScrollView, Image, StyleSheet, FlatList, SectionList, SafeAreaView, TouchableWithoutFeedback, TextInput, Animated, Easing, ActivityIndicator,ImageBackground, Modal, Platform} from "react-native";
-import {Colors} from '../constants';
+import {
+    View, Text, ScrollView, Image, StyleSheet, FlatList, SectionList,
+    SafeAreaView, TouchableWithoutFeedback, TextInput, Animated, Easing,
+    ActivityIndicator, ImageBackground, Modal, Platform, Picker
+} from "react-native";
+import { Input } from "react-native-elements";
+import { Colors } from '../constants';
 import Manager from '../service/dataManager';
 import Button from '../custom/button';
 import Icon from 'react-native-vector-icons/FontAwesome5';
+import Entypo from 'react-native-vector-icons/Entypo';
 import DateTimePicker from "react-native-modal-datetime-picker";
 import ErrorHandler from '../custom/errorHandler';
 
 export default class AddCompany extends React.Component {
-    constructor(props){
+    constructor(props) {
         super(props)
         this.formData = {}
         this.industryType = null
@@ -45,10 +51,10 @@ export default class AddCompany extends React.Component {
         Manager.removeListener('INDUSTRY_E', this._industryError)
     }
 
-    _toggleError = (state=null) => {
+    _toggleError = (state = null) => {
         console.log('toggling error')
         this.setState(previousState => ({
-            error: state ? state: !previousState.error,
+            error: state ? state : !previousState.error,
             errorText: null,
             modalBackground: null
         }))
@@ -63,6 +69,10 @@ export default class AddCompany extends React.Component {
             modalBackground: Colors.safeDark
         })
         Manager.emitEvent('EXPERIENCE_U', data)
+        setTimeout(()=>{
+            console.log("Entered timer");
+            this.props.navigation.navigate('Profile','/api/profile');
+        },2000);
     }
 
     _companyError = error => {
@@ -86,7 +96,7 @@ export default class AddCompany extends React.Component {
 
     _storeInfo = (text, type) => {
         console.log('type : ', type)
-        switch(type) {
+        switch (type) {
             case 'name':
                 this.formData['name'] = text;
                 break;
@@ -150,95 +160,73 @@ export default class AddCompany extends React.Component {
         this.setState({ isIndustryTypeVisible: true });
     }
 
-    _renderForm = () =>{
-        return(
+    _renderForm = () => {
+        return (
             <View>
-                <TextInput style={styles.textInput}
-                    placeholder="Name"
+                <Input
+                    label="Name"
                     onChangeText={(text) => this._storeInfo(text, 'name')}
-                    allowFontScaling={false}
                     returnKeyType='next'
-                    textContentType='name'
-
+                    style={{ marginVertical: 3 }}
+                    leftIcon={
+                        <Icon
+                            name='building'
+                            size={24}
+                            color='black'
+                            style={{ marginRight: 10 }}
+                        />
+                    }
                 />
-                <TouchableWithoutFeedback onPress={this._showIndustryType} >
-                    <View style={styles.textInput}>
-                        <Text style={styles.itemText}>{this.state.industry_type}</Text>
-                    </View>
-                </TouchableWithoutFeedback>
-                <TextInput style={styles.textInput}
-                    placeholder="Address"
-                    onChangeText={(text) => this._storeInfo(text, 'address')}
-                    allowFontScaling={false}
-                    returnKeyType='next'
-                    textContentType='streetAddressLine1'
-
-                />
-                <TextInput style={styles.textInput}
-                    placeholder="Country"
-                    onChangeText={(text) => this._storeInfo(text, 'country')}
-                    allowFontScaling={false}
-                    returnKeyType='next'
-                    textContentType='countryName'
-                />
-                <TextInput style={styles.textInput}
-                    placeholder="Phone number"
-                    onChangeText={(text) => this._storeInfo(text, 'phone_number')}
-                    allowFontScaling={false}
-                    returnKeyType='next'
-                    textContentType='telephoneNumber'
-                    keyboardType='number-pad'
-
-                />
-                <TextInput style={styles.textInput}
-                    placeholder="Email"
+                <Input
+                    label="Email"
                     onChangeText={(text) => this._storeInfo(text, 'email')}
-                    allowFontScaling={false}
                     returnKeyType='next'
-                    textContentType='emailAddress'
-                    keyboardType='email-address'
+                    style={{ marginVertical: 3 }}
+                    leftIcon={
+                        <Entypo
+                            name='email'
+                            size={24}
+                            color='black'
+                            style={{ marginRight: 10 }}
+                        />
+                    }
                 />
-                <TextInput style={styles.textInput}
-                    placeholder="Website"
-                    onChangeText={(text) => this._storeInfo(text, 'website')}
-                    allowFontScaling={false}
+                <Input
+                    label="Phone Number"
+                    keyboardType={'numeric'}
+                    onChangeText={(text) => this._storeInfo(text, 'phone_number')}
                     returnKeyType='next'
-                    textContentType='none'
-
+                    style={{ marginVertical: 3 }}
+                    leftIcon={
+                        <Icon
+                            name='phone'
+                            size={24}
+                            color='black'
+                            style={{ marginRight: 10 }}
+                        />
+                    }
                 />
-                <TextInput style={styles.textInput}
-                    placeholder="Bio"
-                    onChangeText={(text) => this._storeInfo(text, 'bio')}
-                    allowFontScaling={false}
-                    returnKeyType='next'
-                    textContentType='none'
-                    multiline={true}
-                />
-                <TextInput style={styles.textInput}
-                    placeholder="Designation"
+                <Input
+                    label="Designation"
                     onChangeText={(text) => this._storeInfo(text, 'designation')}
-                    allowFontScaling={false}
-                    returnKeyType='done'
-                    textContentType='jobTitle'
-
+                    returnKeyType='next'
+                    style={{ marginVertical: 3 }}
+                    leftIcon={
+                        <Icon
+                            name='user-tag'
+                            size={24}
+                            color='black'
+                            style={{ marginRight: 10 }}
+                        />
+                    }
                 />
-                <TouchableWithoutFeedback onPress={() => this._showDateTimePicker('started_working_at')} >
-                    <View style={styles.textInput}>
-                        <Text style={styles.itemText}>{this.state.started_working_at}</Text>
-                    </View>
-                </TouchableWithoutFeedback>
-                <TouchableWithoutFeedback onPress={() => this._showDateTimePicker('ended_working_at')} >
-                    <View style={styles.textInput}>
-                        <Text style={styles.itemText}>{this.state.ended_working_at}</Text>
-                    </View>
-                </TouchableWithoutFeedback>
             </View>
         )
     }
 
     _submit = () => {
         console.log('submitting : ', this.formData)
-        if(this.formData['name'] && this.formData['designation']) {
+        if (this.formData['name'] && this.formData['designation']) {
             this.setState({
                 loading: true
             })
@@ -271,43 +259,44 @@ export default class AddCompany extends React.Component {
     };
 
     render() {
-        return(
+        return (
             <ErrorHandler backgroundColor={this.state.modalBackground} error={this.state.error} errorText={this.state.errorText} callback={this._toggleError}>
-            <ScrollView style={styles.container}>
-                {this._renderForm()}
-                <View style={{margin: 10, marginTop: 20, marginBottom: 40}}>
-                    <Button onPress={()=>{this._submit()}} style={styles.button} title="SUBMIT" color={Colors.alternative}>
-                    </Button>
-                </View>
-                <DateTimePicker
-                    isVisible={this.state.isDateTimePickerVisible}
-                    onConfirm={this._handleDatePicked}
-                    onCancel={this._hideDateTimePicker}
-                />
-                <View>
-                    <Modal animationType="slide" visible={this.state.isIndustryTypeVisible} onRequestClose={this._toggleModal}>
-                        <IndustryModal data={this.industryType} callback={this._handleIndustryType}/>
+                <ScrollView style={styles.container}>
+                    {this._renderForm()}
+                    <View style={{ margin: 10, marginTop: 20, marginBottom: 40 }}>
+                        <Button onPress={() => { this._submit() }} style={styles.button} title="SUBMIT" color={Colors.alternative}>
+                        </Button>
+                    </View>
+                    <DateTimePicker
+                        isVisible={this.state.isDateTimePickerVisible}
+                        onConfirm={this._handleDatePicked}
+                        onCancel={this._hideDateTimePicker}
+                    />
+                    <View>
+                        <Modal animationType="slide" visible={this.state.isIndustryTypeVisible} onRequestClose={this._toggleModal}>
+                            <IndustryModal data={this.industryType} callback={this._handleIndustryType} />
 
-                    </Modal>
-                </View>
-                {
-                    this.state.loading ?
-                        <View style={{position:'absolute',
-                            top: 0,
-                            left: 0,
-                            height: '100%',
-                            width: '100%',
-                            backgroundColor:'black',
-                            justifyContent: 'center',
-                            alignItems: 'center',
-                            opacity: 0.7
-                        }}
-                        >
-                            <ActivityIndicator animating={this.state.loading} size="large" color={Colors.secondaryDark} />
-                        </View>
-                    : null
-                }
-            </ScrollView>
+                        </Modal>
+                    </View>
+                    {
+                        this.state.loading ?
+                            <View style={{
+                                position: 'absolute',
+                                top: 0,
+                                left: 0,
+                                height: '100%',
+                                width: '100%',
+                                backgroundColor: 'black',
+                                justifyContent: 'center',
+                                alignItems: 'center',
+                                opacity: 0.7
+                            }}
+                            >
+                                <ActivityIndicator animating={this.state.loading} size="large" color={Colors.secondaryDark} />
+                            </View>
+                            : null
+                    }
+                </ScrollView>
             </ErrorHandler>
         )
     }
@@ -327,40 +316,40 @@ class IndustryModal extends React.Component {
     _keyExtractor = (item, index) => `nsfd-${Math.random(1)}`;
 
     _searchFilter = (text) => {
-        if(!text){
+        if (!text) {
             console.log("no txt")
-            this.setState({data: this.data})
+            this.setState({ data: this.data })
         }
         else {
             console.log("search text is :", text)
-            let regex = new RegExp('^'+text, "i");
+            let regex = new RegExp('^' + text, "i");
             const searchedData = this.data.filter(item => {
                 const match = regex.test(item)
                 return match
             })
             console.log("searched list : ", searchedData)
-            this.setState({data: searchedData})
+            this.setState({ data: searchedData })
         }
     };
 
     _listHeader = () => {
-        return(
+        return (
             <View style={styles.search}>
-                <TextInput style={styles.searchText} placeholder="Search list" onChangeText={this._searchFilter}/>
+                <TextInput style={styles.searchText} placeholder="Search list" onChangeText={this._searchFilter} />
             </View>
         )
     }
 
     _itemSeparator = (props) => {
-        return(
-            <View style={{backgroundColor:Colors.background, marginVertical: 5}} />
+        return (
+            <View style={{ backgroundColor: Colors.background, marginVertical: 5 }} />
         )
     }
 
     _renderEmptyList = () => {
-        const {loading} = this.state
-        if(!loading){
-            return(
+        const { loading } = this.state
+        if (!loading) {
+            return (
                 <View style={{
                     backgroundColor: Colors.background,
                     justifyContent: 'center',
@@ -369,7 +358,7 @@ class IndustryModal extends React.Component {
                     height: '100%',
                     width: '100%',
                 }}>
-                    <Text style={{color: Colors.secondaryDark, fontSize: 22,fontWeight: '700', opacity: 0.4}}>Data not available.</Text>
+                    <Text style={{ color: Colors.secondaryDark, fontSize: 22, fontWeight: '700', opacity: 0.4 }}>Data not available.</Text>
                 </View>
             )
         }
@@ -377,15 +366,15 @@ class IndustryModal extends React.Component {
     }
 
     _listFooter = () => {
-        const {loading} = this.state
-        if(!loading) {
-            return(
-                <View style={{backgroundColor:Colors.background, marginVertical: 5, padding: 10, justifyContent:"center", alignItems: "center"}}><Text style={{color: Colors.secondaryDark, fontWeight: '500', opacity: 0.4}}>End of list.</Text></View>
+        const { loading } = this.state
+        if (!loading) {
+            return (
+                <View style={{ backgroundColor: Colors.background, marginVertical: 5, padding: 10, justifyContent: "center", alignItems: "center" }}><Text style={{ color: Colors.secondaryDark, fontWeight: '500', opacity: 0.4 }}>End of list.</Text></View>
             )
         }
         else {
-            return(
-                <View style={{backgroundColor:Colors.background, marginVertical: 5, padding: 10, justifyContent:"center", alignItems: "center"}}>
+            return (
+                <View style={{ backgroundColor: Colors.background, marginVertical: 5, padding: 10, justifyContent: "center", alignItems: "center" }}>
                     <ActivityIndicator animating={this.state.loading} size="large" color={Colors.secondaryDark} />
                 </View>
             )
@@ -396,8 +385,8 @@ class IndustryModal extends React.Component {
         this.props.callback(industry)
     }
 
-    _renderIndustryList = ({item}) => {
-        return(
+    _renderIndustryList = ({ item }) => {
+        return (
             <TouchableWithoutFeedback onPress={() => this._select(item)} >
                 <View style={styles.industryItem}>
                     <Text style={styles.industryText}>{item}</Text>
@@ -407,17 +396,17 @@ class IndustryModal extends React.Component {
     }
 
     render() {
-        return(
+        return (
             <FlatList
-              data={this.state.data}
-              keyExtractor={this._keyExtractor}
-              renderItem={this._renderIndustryList}
-              ItemSeparatorComponent={this._itemSeparator}
-              ListEmptyComponent={this._renderEmptyList}
-              ListFooterComponent={this._listFooter}
-              ListHeaderComponent={this._listHeader}
-              style={styles.listStyle}
-          />
+                data={this.state.data}
+                keyExtractor={this._keyExtractor}
+                renderItem={this._renderIndustryList}
+                ItemSeparatorComponent={this._itemSeparator}
+                ListEmptyComponent={this._renderEmptyList}
+                ListFooterComponent={this._listFooter}
+                ListHeaderComponent={this._listHeader}
+                style={styles.listStyle}
+            />
         )
     }
 }
@@ -425,9 +414,15 @@ class IndustryModal extends React.Component {
 const styles = StyleSheet.create({
     container: {
         flex: 1,
-        backgroundColor: Colors.surface,
+        margin: 10,
+        padding: 10,
+        borderRadius: 10,
+        borderTopWidth: 3,
+        borderTopColor: Colors.yellowDark,
+        // height : 600,
+        backgroundColor: 'white',
     },
-    textInput:{
+    textInput: {
         backgroundColor: Colors.background,
         padding: 10,
         margin: 10,
@@ -442,7 +437,7 @@ const styles = StyleSheet.create({
         borderRadius: 30,
         paddingVertical: 15,
     },
-    itemText:{
+    itemText: {
         fontSize: 12,
         opacity: 0.7
     },

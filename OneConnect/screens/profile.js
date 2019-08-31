@@ -17,6 +17,8 @@ import ImagePicker from 'react-native-image-picker';
 import I18n from '../service/i18n';
 import Lightbox from 'react-native-lightbox';
 import { TabView, SceneMap } from 'react-native-tab-view';
+import Toast from 'react-native-simple-toast';
+
 const UUID = require('uuid');
 
 export default class Profile extends React.Component {
@@ -61,6 +63,7 @@ export default class Profile extends React.Component {
         Manager.addListener('PROFILE_E', this._profileError)
         Manager.addListener('PIC_S', this._profilePicSuccess)
         Manager.addListener('LANG_U', this._updateLanguage)
+        Manager.addListener('D_COMPANY_S', this._removeCompanySuccess)
         Manager.profile(this.url, 'GET')
         this.props.navigation.setParams({ backButton: this._backButtonPressed });
         this.props.navigation.setParams({ hamPressed: this._hamPressed });
@@ -95,6 +98,19 @@ export default class Profile extends React.Component {
             errorText: null
         })
         console.log(this.state);
+    }
+
+    _removeCompanySuccess = (data) => {
+        console.log("Remove Company Success", data);
+        this.data = data.data;
+        this.setState({
+            loading: false,
+            error: false,
+            profile: data.data,
+            errorText: null
+        })
+        console.log(this.state);
+        Toast.showWithGravity("Company Sync successfull!", Toast.SHORT, Toast.TOP)
     }
 
     renderLightBoxImage = () => {
@@ -204,6 +220,15 @@ export default class Profile extends React.Component {
         return dob; Î
     }
 
+    _navigateToAddCompany = () => {
+        this.props.navigation.navigate('AddCompany')
+    }
+
+    _removeCompany = (company) => {
+        console.log(company);
+        Manager.removeCompany("/api/companies/delete", "POST", company);
+    }
+
     _renderProfile() {
         if (this.state.profile)
             return (
@@ -227,9 +252,13 @@ export default class Profile extends React.Component {
                                                 + this.state.profile.basic.f_name + ' '
                                                 + this.state.profile.basic.l_name}
                                         </Text>
-                                        <Button onPress={this._navigateToSettings}>
-                                            <Icon name="edit" color={Colors.yellowDark} style={{ fontSize: 16, marginLeft: 10 }}></Icon>
-                                        </Button>
+                                        {
+                                            this.state.profile.editable ?
+                                                <Button onPress={this._navigateToSettings}>
+                                                    <Icon name="edit" color={Colors.yellowDark} style={{ fontSize: 16, marginLeft: 10, marginTop : 5 }}></Icon>
+                                                </Button>
+                                                : null
+                                        }
                                     </View>
                                 </View>
                                 <View>
@@ -291,9 +320,18 @@ export default class Profile extends React.Component {
                             </View>
                             <View style={styles.container}>
                                 <View style={styles.bio}>
-                                    <Text style={{ color: Colors.yellowDark, fontWeight: '600', fontSize: 20 }}>
-                                        EXPERIENCE
+                                    <View style={{ flexDirection: 'row' }}>
+                                        <Text style={{ color: Colors.yellowDark, fontWeight: '600', fontSize: 20 }}>
+                                            EXPERIENCE
                                     </Text>
+                                        {
+                                            this.state.profile.editable ?
+                                                <Button onPress={this._navigateToAddCompany}>
+                                                    <Icon name="plus-circle" color={Colors.yellowDark} style={{ fontSize: 16, marginLeft: 10,  marginTop : 3 }}></Icon>
+                                                </Button>
+                                                : null
+                                        }
+                                    </View>
                                 </View>
                                 <View style={styles.sectionBody}>
                                     {
@@ -302,7 +340,7 @@ export default class Profile extends React.Component {
                                                 return (
                                                     <View key={`pelt-${Math.random(1)}`} style={[styles.item, { alignItems: 'flex-start' }]}>
                                                         <Icon name="building" size={35} color={Colors.primaryDark} style={{ padding: 10 }} />
-                                                        <View>
+                                                        <View style={{ flex: 1 }}>
                                                             {item.designation ?
                                                                 <Text style={[styles.itemText, { fontWeight: '600', fontSize: 16 }]}>
                                                                     {item.designation}
@@ -312,6 +350,9 @@ export default class Profile extends React.Component {
                                                                 {item.name}
                                                             </Text>
                                                         </View>
+                                                        <Button onPress={() => this._removeCompany(item)}>
+                                                            <Icon name="trash" size={18} color={Colors.primaryDark} style={{ padding: 10 }} />
+                                                        </Button>
                                                     </View>
                                                 )
                                             })

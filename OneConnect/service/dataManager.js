@@ -270,6 +270,16 @@ class dataManager {
         })
     }
 
+    removeCompany = (uri, method, data=null) => {
+        Call(uri, method, data, this.token)
+        .then(response => {
+            this.eventEmitter.emit('D_COMPANY_S', response)
+        })
+        .catch(error => {
+            this.eventEmitter.emit('D_COMPANY_E', error)
+        })
+    }
+
     industryType = (uri, method, data=null) => {
         Call(uri, method, data, this.token)
         .then(response => {
