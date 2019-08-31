@@ -49,9 +49,9 @@ export default class SearchUserList extends React.Component {
         Manager.removeListener("F_REQUEST_S", this._friendRequestSuccess);
     }
 
-    _navigateUser = item => {
-        console.log(this.props);
-        this.props.navigation.navigate("Profile", { url: item.url });
+    _navigateUser = url => {
+        console.log("navigating to ", url);
+        this.props.navigation.navigate("Profile", { url: url, title: 'View profile'});
     };
 
     _sendFriendRequest = id => {
@@ -112,7 +112,7 @@ export default class SearchUserList extends React.Component {
                                 <View style={styles.userBody}>
                                     <View>
                                         <Button
-                                            onPress={() => this._navigateUser(item)}
+                                            onPress={() => this._navigateUser(item.url)}
                                             key={`pelt-${Math.random(1)}`}
                                             style={[styles.item]}
                                         >
@@ -136,18 +136,18 @@ export default class SearchUserList extends React.Component {
                                                 >
                                                     {item.f_name} {item.l_name}
                                                 </Text>
-                                                { item.extra_info ?  
-                                                <Text style={styles.mutualFriendsCount}>
-                                                    {item.extra_info}                                                            
-                                                </Text>
-                                                : null }
+                                                {item.extra_info ?
+                                                    <Text style={styles.mutualFriendsCount}>
+                                                        {item.extra_info}
+                                                    </Text>
+                                                    : null}
                                                 <Text style={styles.mutualFriendsCount}>
                                                     {
                                                         item.friends_meta
                                                             .mutual_friends_count
                                                     }{" "}
                                                     {I18n.t("Mutual_friends")}
-                                                </Text>                                            
+                                                </Text>
                                             </View>
                                             {item.friends_meta.has_sent_friend_request_to_this_profile ?
                                                 <View>
@@ -166,19 +166,19 @@ export default class SearchUserList extends React.Component {
                                                 </View>
                                                 :
                                                 <View>
-                                                <Button
-                                                    onPress={() => this._sendFriendRequest(item.id)}
-                                                    key={`pelt-${Math.random(1)}`}
-                                                    style={[styles.item]}
-                                                >
-                                                    <Icon
-                                                        name="user-plus"
-                                                        size={22}
-                                                        color={Colors.yellowDark}
-                                                        style={{ padding: 10 }}
-                                                    />
-                                                </Button>
-                                            </View>
+                                                    <Button
+                                                        onPress={() => this._sendFriendRequest(item.id)}
+                                                        key={`pelt-${Math.random(1)}`}
+                                                        style={[styles.item]}
+                                                    >
+                                                        <Icon
+                                                            name="user-plus"
+                                                            size={22}
+                                                            color={Colors.yellowDark}
+                                                            style={{ padding: 10 }}
+                                                        />
+                                                    </Button>
+                                                </View>
                                             }
 
                                         </Button>
@@ -285,8 +285,8 @@ const styles = StyleSheet.create({
     userBody: {
         backgroundColor: Colors.surface,
         marginBottom: 0,
-        borderBottomColor : Colors.grey,
-        borderBottomWidth : 1,
+        borderBottomColor: Colors.grey,
+        borderBottomWidth: 1,
         paddingBottom: 0
     },
     tags: {

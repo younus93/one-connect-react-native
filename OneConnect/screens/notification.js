@@ -116,6 +116,7 @@ export default class Notification extends React.Component {
         user.profile_pic = item.searchable.basic.profile_pic;
         user.tags = item.searchable.tags;
         user.friends_meta = item.searchable.friends_meta;
+        user.url = item.url;
         user.extra_info = item.birthdayString;
         return user;
       }),
@@ -158,12 +159,12 @@ export default class Notification extends React.Component {
     this.props.navigation.navigate("OpenFeed", { item: item.searchable });
   };
 
-  _navigateMate = item => {
-    console.log("pressed items :", item);
-    this.props.navigation.navigate("Profile", {
-      url: item
-    });
-  };
+  // _navigateMate = item => {
+  //   console.log("pressed items :", item);
+  //   this.props.navigation.navigate("Profile", {
+  //     url: item
+  //   });
+  // };
 
   FirstRoute = () => {
     console.log("First Route");

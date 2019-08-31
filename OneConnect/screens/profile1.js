@@ -545,7 +545,8 @@ class ProfileList extends React.Component {
                     <Text style={styles.itemText}>{section.bio}</Text>
                 </View>
             </View>
-        )
+       
+       )
     }
 
     _navigateToAddCompany = () => {

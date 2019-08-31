@@ -43,16 +43,15 @@ export default class Profile extends React.Component {
         this.props.navigation.setParams({ title: I18n.t('Profile') });
         this.url = props.navigation.getParam('url', '/api/profile')
         this.accessLevel = props.navigation.getParam('accessLevel', 0)
-        // console.log("profile url is : ", this.url, this.accessLevel, this.accessLevel==1)
         this.props.navigation.setParams({ accessLevel: this.accessLevel });
 
         this.state = {
             updateNeeded: false,
+            profile : {},
             loading: true,
             error: false,
             errorText: null,
         }
-        console.log(props);
     }
 
     componentDidMount() {
@@ -144,6 +143,7 @@ export default class Profile extends React.Component {
                                     size="xlarge"
                                     rounded
                                     source={{ uri: this.state.profile.basic.profile_pic }}
+                                    showEditButton = {this.state.profile.editable}
                                 />
                             </View>
                             <View style={styles.container}>
