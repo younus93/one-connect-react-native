@@ -35,6 +35,7 @@ const Call = (uri, method, data=null, token=null, type='formData') => {
         }
     }
     console.log("with... ", payload)
+    console.log("with token", token);
     console.log("url ", url)
 
     return (

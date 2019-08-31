@@ -174,12 +174,12 @@ export default class Friends extends React.Component {
           <Text
             style={{
               color: Colors.secondaryDark,
-              fontSize: 22,
+              fontSize: 18,
               fontWeight: "700",
               opacity: 0.4
             }}
           >
-            {I18n.t("Data_Unavailable")}
+            No more friends! 
           </Text>
         </View>
       );
@@ -207,7 +207,7 @@ export default class Friends extends React.Component {
               opacity: 0.4
             }}
           >
-            End of list.
+            No more friends!.
           </Text>
         </View>
       );
@@ -237,7 +237,7 @@ export default class Friends extends React.Component {
       <View style={styles.search}>
         <TextInput
           style={styles.searchText}
-          placeholder="Search list"
+          placeholder="Search Friends"
           onChangeText={this._searchFilter}
         />
       </View>
@@ -286,7 +286,7 @@ export default class Friends extends React.Component {
         renderItem={this._renderMateList}
         ItemSeparatorComponent={this._itemSeparator}
         ListEmptyComponent={this._renderEmptyList}
-        ListFooterComponent={this._listFooter}
+        // ListFooterComponent={this._listFooter}
         ListHeaderComponent={this._listHeader}
         style={styles.listStyle}
       />

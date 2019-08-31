@@ -119,9 +119,9 @@ export default class Batch extends React.Component {
                         <View stle={{flex:1, paddingRight: 5}}>
                             <Text style={styles.batchCourse}>{item.name}</Text>
                         </View>
-                        <View style={[{borderRadius: 16, borderWidth: StyleSheet.hairlineWidth, borderColor: stateColor.borderColor, paddingVertical: 3, flex: 0.4}]}>
+                        {/* <View style={[{borderRadius: 16, borderWidth: StyleSheet.hairlineWidth, borderColor: stateColor.borderColor, paddingVertical: 3, flex: 0.4}]}>
                             <Text style={[styles.batchState, stateColor]}>{state}</Text>
-                        </View>
+                        </View> */}
                     </View>
             </Button>
         )
@@ -150,7 +150,11 @@ export default class Batch extends React.Component {
         const {loading} = this.state
         if(!loading) {
             return(
-                <View style={{backgroundColor:Colors.background, marginVertical: 5, padding: 10, justifyContent:"center", alignItems: "center"}}><Text style={{color: Colors.secondaryDark, fontWeight: '500', opacity: 0.4}}>End of list.</Text></View>
+                <View style={{backgroundColor:Colors.background, marginVertical: 5, padding: 10, justifyContent:"center", alignItems: "center"}}>
+                    <Text style={{color: Colors.secondaryDark, fontWeight: '500', opacity: 0.4}}>
+                        No more batches to show!
+                    </Text>
+                </View>
             )
         }
         else {
@@ -195,7 +199,6 @@ export default class Batch extends React.Component {
             this.setState({data: searchedData})
         }
     };
-
 
     render() {
       return (

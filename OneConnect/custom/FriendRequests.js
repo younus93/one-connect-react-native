@@ -102,6 +102,7 @@ export default class FriendRequestList extends React.Component {
                         <View>
                           <Image
                             style={styles.image}
+                            defaultSource={require("../resources/dummy_profile.png")}
                             source={{ uri: item.sender.profile_pic }}
                             resizeMode="cover"
                             onError={error => console.log(error)}

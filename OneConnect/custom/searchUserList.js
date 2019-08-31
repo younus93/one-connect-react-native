@@ -169,20 +169,21 @@ export default class SearchUserList extends React.Component {
                                                 </View>
                                                 :
                                                 <View>
-                                                    <Button
-                                                        onPress={() => this._sendFriendRequest(item.id)}
-                                                        key={`pelt-${Math.random(1)}`}
-                                                        style={[styles.item]}
-                                                    >
-                                                        <Icon
-                                                            name="user-plus"
-                                                            size={22}
-                                                            color={Colors.yellowDark}
-                                                            style={{ padding: 10 }}
-                                                        />
-                                                    </Button>
-                                                </View>
+                                                <Button
+                                                    onPress={() => this._sendFriendRequest(item.id)}
+                                                    key={`pelt-${Math.random(1)}`}
+                                                    style={[styles.item]}
+                                                >
+                                                    <Icon
+                                                        name="user-plus"
+                                                        size={22}
+                                                        color={Colors.yellowDark}
+                                                        style={{ padding: 10 }}
+                                                    />
+                                                </Button>
+                                            </View>
                                             }
+
                                         </Button>
                                     </View>
                                     <View style={styles.separator} />

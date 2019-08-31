@@ -13,6 +13,7 @@ import {
   Alert,
   ImageBackground
 } from "react-native";
+import AsyncStorage from '@react-native-community/async-storage';
 import Icon from "react-native-vector-icons/FontAwesome5";
 import { Colors } from "../constants";
 import Manager from "../service/dataManager";
@@ -65,7 +66,8 @@ export default class LoginScreen extends Component<Props> {
 
   _loginSuccess = data => {
     console.log("login successfull : ", data);
-    Manager.setToken(data.data.token, data.data.user.basic.profile_pic,data.data.user.basic.id);
+    Manager.setToken(data.data.token, data.data.user.basic.profile_pic,data.data.user.basic.id, data.data.user);
+    // AsyncStorage.setItem('user',data.data.user);
     Animated.timing(this.opacity, {
       toValue: 0,
       duration: 10

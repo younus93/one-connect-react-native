@@ -87,8 +87,6 @@ export default class BatchItem extends React.Component {
         // this.props.navigation.navigate("Institution", {item: item.institution})
     }
 
-
-
     _renderFeeds = ({item}) => {
         return(
             <Feed
@@ -119,7 +117,7 @@ export default class BatchItem extends React.Component {
                     height: '100%',
                     width: '100%',
                 }}>
-                    <Text style={{color: Colors.secondaryDark, fontSize: 22,fontWeight: '700', opacity: 0.4}}>{I18n.t('Data_Unavailable')}</Text>
+                    <Text style={{color: Colors.secondaryDark, fontSize: 22,fontWeight: '700', opacity: 0.4}}>{I18n.t('No_Posts')}</Text>
                 </View>
             )
         }
@@ -130,7 +128,11 @@ export default class BatchItem extends React.Component {
         const {loading} = this.state
         if(!loading && this.data) {
             return(
-                <View style={{backgroundColor:Colors.background, padding: 10, justifyContent:"center", alignItems: "center"}}><Text style={{color: Colors.secondaryDark, fontWeight: '500', opacity: 0.4}}>End of list.</Text></View>
+                <View style={{backgroundColor:Colors.background, padding: 10, justifyContent:"center", alignItems: "center"}}>
+                    <Text style={{color: Colors.secondaryDark, fontWeight: '500', opacity: 0.4}}>
+                        End of list.
+                    </Text>
+                </View>
             )
         }
         else {
@@ -192,7 +194,10 @@ export default class BatchItem extends React.Component {
                     />
                 </ScrollView>
 
-                <Button style={styles.button} onPress={() => this.props.navigation.navigate('BatchMates', {'item': this.item.batchmates})} title={I18n.t('Batchmates')} color={Colors.alternative}>
+                <Button style={styles.button} 
+                    onPress={() => this.props.navigation.navigate('BatchMates', {'item': this.item.batchmates})} 
+                    title={I18n.t('Batchmates')} 
+                    color={Colors.alternative}>
                 </Button>
             </View>
         )

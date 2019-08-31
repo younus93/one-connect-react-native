@@ -10,6 +10,7 @@ class dataManager {
         this.eventEmitter = new EventEmitter()
         this.token = null;
         this.profile_pic_url = null;
+        this.user = null;
         this.locale = 'th';
     }
 
@@ -29,13 +30,16 @@ class dataManager {
         this.eventEmitter.emit(eventName, data)
     }
 
-    setToken = (token, profilePic,id) => {
+    setToken = (token, profilePic,id, user) => {
+        console.log("User sent ",user, token, profilePic, id);
         this.token = token;
-        this.profilePicUrl = profilePic
+        this.profilePicUrl = profilePic;
+        this.user = user; 
         console.log('setToken',id)
         AsyncStorage.multiGet(['@appKey', '@locale','@id'])
         .then(res => {
-             console.log('setToken',res)
+            console.log('setToken inside async storage',res)
+            console.log("async storage", token, profilePic, id, user);
             if(!res[0][1]){
                 AsyncStorage.multiSet([['@appKey', token], ['@profilePic', profilePic],['@id',id+""]])
                 .then(response => {console.log('setToken',id);console.log("token saved")})
