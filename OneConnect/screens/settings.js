@@ -17,11 +17,12 @@ import {
   ImageBackground,
   Modal
 } from "react-native";
-
+import { Input } from "react-native-elements";
 import { Colors } from "../constants";
 import Manager from "../service/dataManager";
 import Button from "../custom/button";
 import Icon from "react-native-vector-icons/FontAwesome5";
+import Entypo from "react-native-vector-icons/Entypo";
 import DateTimePicker from "react-native-modal-datetime-picker";
 import ErrorHandler from "../custom/errorHandler";
 import I18n from "../service/i18n";
@@ -33,11 +34,13 @@ export default class Settings extends React.Component {
     this.opacity = new Animated.Value(0);
     this.editable = null;
     this.state = {
+      user: this.data,
       loading: false,
       error: false,
       errorText: null,
       modalBackground: null
     };
+    console.log("state of setting : ", this.state);
   }
 
   componentDidMount() {
@@ -57,11 +60,15 @@ export default class Settings extends React.Component {
     this.data = data.data;
     this.editable = null;
     this.setState({
+      user: data.data,
       loading: false,
       error: true,
       errorText: "Setting saved successfully",
       modalBackground: Colors.safeDark
     });
+    setTimeout(() => {
+      this.props.navigation.navigate('Profile', '/api/profile');
+    }, 2000);
   };
 
   _profileError = error => {
@@ -129,13 +136,13 @@ export default class Settings extends React.Component {
         <ScrollView>
           <View style={styles.container}>
             <ScrollView alwaysBounceVertical={false} bounces={false}>
-              <ImageView
+              {/* <ImageView
                 data={this.data}
                 callback={this._toggleSaveButtonState}
-              />
+              /> */}
               <View style={{ justifyContent: "space-between" }}>
                 <ProfileList
-                  data={this.data}
+                  data={this.state.user}
                   navigate={this.props.navigation.navigate}
                   callback={this._editField}
                 />
@@ -255,6 +262,7 @@ class ProfileList extends React.Component {
       gender: data.basic.gender,
       isGenderPickerVisible: false
     };
+    console.log("State of profile : ", this.state);
   }
 
   _onPressItem = (index, section) => {
@@ -316,6 +324,9 @@ class ProfileList extends React.Component {
       case "nick_name":
         this.editable.nick_name = text;
         break;
+      case "website":
+        this.editable.website = text;
+        break;
     }
     console.log("editable is : ", this.editable);
     this.props.callback(this.editable);
@@ -333,142 +344,150 @@ class ProfileList extends React.Component {
     const AnimatedTextInput = Animated.createAnimatedComponent(TextInput);
     return (
       <View key={`prle-${Math.random(1)}`}>
-        <TouchableWithoutFeedback onPress={() => this._onPressItem(0, section)}>
-          <View style={styles.item}>
-            <Icon name="user" size={18} color={Colors.primaryDark} />
-            <AnimatedTextInput
-              style={[
-                styles.itemText,
-                { borderBottomWidth: this._borderBottomWidth[0] }
-              ]}
-              onChangeText={text => this._editField("salutation", text)}
-              defaultValue={section.salutation}
-              value={this.editable.salutation}
-              onFocus={e => this._onFocus(e, 0, section)}
-              onBlur={e => this._onBlur(e, 0)}
+        <Input
+          label="Salutation"
+          defaultValue={this.state.user.basic.salutation}
+          onChangeText={text => this._editField("salutation", text)}
+          onFocus={e => this._onFocus(e, 0, section)}
+          onBlur={e => this._onBlur(e, 0)}
+          style={{ marginVertical: 3 }}
+          leftIcon={
+            <Icon
+              name='user-tag'
+              size={24}
+              color='black'
+              style={{ marginRight: 10 }}
             />
-          </View>
-        </TouchableWithoutFeedback>
-        <TouchableWithoutFeedback onPress={() => this._onPressItem(0, section)}>
-          <View style={styles.item}>
-            <Icon name="user" size={18} color={Colors.primaryDark} />
-            <AnimatedTextInput
-              style={[
-                styles.itemText,
-                { borderBottomWidth: this._borderBottomWidth[0] }
-              ]}
-              onChangeText={text => this._editField("f_name", text)}
-              defaultValue={section.f_name}
-              value={this.editable.f_name}
-              onFocus={e => this._onFocus(e, 0, section)}
-              onBlur={e => this._onBlur(e, 0)}
+          }
+        />
+        <Input
+          label="First Name"
+          defaultValue={this.state.user.basic.f_name}
+          onChangeText={text => this._editField("f_name", text)}
+          onFocus={e => this._onFocus(e, 0, section)}
+          onBlur={e => this._onBlur(e, 0)}
+          style={{ marginVertical: 3 }}
+          leftIcon={
+            <Icon
+              name='address-card'
+              size={24}
+              color='black'
+              style={{ marginRight: 10 }}
             />
-          </View>
-        </TouchableWithoutFeedback>
-
-        <TouchableWithoutFeedback onPress={() => this._onPressItem(1, section)}>
-          <View style={styles.item}>
-            <Icon name="user" size={18} color={Colors.primaryDark} />
-            <AnimatedTextInput
-              style={[
-                styles.itemText,
-                { borderBottomWidth: this._borderBottomWidth[1] }
-              ]}
-              onChangeText={text => this._editField("l_name", text)}
-              defaultValue={section.l_name}
-              value={this.editable.l_name}
-              onFocus={e => this._onFocus(e, 1, section)}
-              onBlur={e => this._onBlur(e, 1)}
+          }
+        />
+        <Input
+          label="Last Name"
+          defaultValue={this.state.user.basic.l_name}
+          onChangeText={text => this._editField("l_name", text)}
+          onFocus={e => this._onFocus(e, 0, section)}
+          onBlur={e => this._onBlur(e, 0)}
+          style={{ marginVertical: 3 }}
+          leftIcon={
+            <Icon
+              name='address-card'
+              size={24}
+              color='black'
+              style={{ marginRight: 10 }}
             />
-          </View>
-        </TouchableWithoutFeedback>
-        <TouchableWithoutFeedback onPress={() => this._onPressItem(0, section)}>
-          <View style={styles.item}>
-            <Icon name="smile-wink" size={18} color={Colors.primaryDark} />
-            <AnimatedTextInput
-              style={[
-                styles.itemText,
-                { borderBottomWidth: this._borderBottomWidth[0] }
-              ]}
-              onChangeText={text => this._editField("nick_name", text)}
-              defaultValue={section.nick_name}
-              value={this.editable.nick_name}
-              onFocus={e => this._onFocus(e, 0, section)}
-              onBlur={e => this._onBlur(e, 0)}
+          }
+        />
+        <Input
+          label="Email"
+          defaultValue={this.state.user.basic.email}
+          onChangeText={text => this._editField("email", text)}
+          onFocus={e => this._onFocus(e, 0, section)}
+          onBlur={e => this._onBlur(e, 0)}
+          style={{ marginVertical: 3 }}
+          leftIcon={
+            <Entypo
+              name='email'
+              size={24}
+              color='black'
+              style={{ marginRight: 10 }}
             />
-          </View>
-        </TouchableWithoutFeedback>
-        <TouchableWithoutFeedback onPress={() => this._onPressItem(2, section)}>
-          <View style={styles.item}>
-            <Icon name="phone" size={18} color={Colors.primaryDark} />
-            <AnimatedTextInput
-              style={[
-                styles.itemText,
-                { borderBottomWidth: this._borderBottomWidth[2] }
-              ]}
-              onChangeText={text => this._editField("phone", text)}
-              defaultValue={section.phone_number}
-              value={this.editable.phone_number}
-              onFocus={e => this._onFocus(e, 2, section)}
-              onBlur={e => this._onBlur(e, 2)}
-              textContentType="telephoneNumber"
-              keyboardType="number-pad"
+          }
+        />
+        <Input
+          label="Phone Number"
+          defaultValue={this.state.user.basic.phone_number}
+          onChangeText={text => this._editField("phone_number", text)}
+          onFocus={e => this._onFocus(e, 0, section)}
+          onBlur={e => this._onBlur(e, 0)}
+          style={{ marginVertical: 3 }}
+          leftIcon={
+            <Icon
+              name='phone'
+              size={24}
+              color='black'
+              style={{ marginRight: 10 }}
             />
-          </View>
-        </TouchableWithoutFeedback>
-
-        <TouchableWithoutFeedback onPress={() => this._onPressItem(3, section)}>
-          <View style={styles.item}>
-            <Icon name="envelope" size={18} color={Colors.primaryDark} />
-            <AnimatedTextInput
-              style={[
-                styles.itemText,
-                { borderBottomWidth: this._borderBottomWidth[3] }
-              ]}
-              onChangeText={text => this._editField("email", text)}
-              defaultValue={section.email}
-              value={this.editable.email}
-              onFocus={e => this._onFocus(e, 3, section)}
-              onBlur={e => this._onBlur(e, 3)}
+          }
+        />
+        <Input
+          label="Nick Name"
+          defaultValue={this.state.user.basic.nick_name}
+          onChangeText={text => this._editField("nick_name", text)}
+          onFocus={e => this._onFocus(e, 0, section)}
+          onBlur={e => this._onBlur(e, 0)}
+          style={{ marginVertical: 3 }}
+          leftIcon={
+            <Icon
+              name='smile'
+              size={24}
+              color='black'
+              style={{ marginRight: 10 }}
             />
-          </View>
-        </TouchableWithoutFeedback>
-
-        <TouchableWithoutFeedback onPress={() => this._onPressItem(4, section)}>
-          <View style={styles.item}>
-            <Icon name="id-badge" size={18} color={Colors.primaryDark} />
-            <AnimatedTextInput
-              style={[
-                styles.itemText,
-                { borderBottomWidth: this._borderBottomWidth[4] }
-              ]}
-              onChangeText={text => this._editField("bio", text)}
-              defaultValue={section.bio}
-              value={this.editable.bio}
-              onFocus={e => this._onFocus(e, 4, section)}
-              onBlur={e => this._onBlur(e, 4)}
-              multiline={true}
+          }
+        />
+        <Input
+          label="Date of Birth"
+          defaultValue={this.state.dob}
+          onChangeText={text => this._editField("dob", text)}
+          onFocus={this._showDateTimePicker}
+          onBlur={e => this._onBlur(e, 0)}
+          style={{ marginVertical: 3 }}
+          leftIcon={
+            <Icon
+              name='calendar-alt'
+              size={24}
+              color='black'
+              style={{ marginRight: 10 }}
             />
-          </View>
-        </TouchableWithoutFeedback>
-
-        <TouchableWithoutFeedback onPress={this._showDateTimePicker}>
-          <View style={styles.item}>
-            <Icon name="calendar-day" size={18} color={Colors.primaryDark} />
-            <Text style={[styles.itemText, { lineHeight: 50 }]}>
-              {this.state.dob}
-            </Text>
-          </View>
-        </TouchableWithoutFeedback>
-
-        <TouchableWithoutFeedback onPress={this._showGenderPicker}>
-          <View style={styles.item}>
-            <Icon name="venus-mars" size={18} color={Colors.primaryDark} />
-            <Text style={[styles.itemText, { lineHeight: 50 }]}>
-              {this.state.gender}
-            </Text>
-          </View>
-        </TouchableWithoutFeedback>
+          }
+        />
+        <Input
+          label="Gender"
+          defaultValue={this.state.gender}
+          onChangeText={text => this._editField("gender", text)}
+          onFocus={this._showGenderPicker}
+          onBlur={e => this._onBlur(e, 0)}
+          style={{ marginVertical: 3 }}
+          leftIcon={
+            <Icon
+              name='male'
+              size={24}
+              color='black'
+              style={{ marginRight: 10 }}
+            />
+          }
+        />
+        <Input
+          label="Website"
+          defaultValue={this.state.user.basic.website}
+          onChangeText={text => this._editField("website", text)}
+          onFocus={e => this._onFocus(e, 0, section)}
+          onBlur={e => this._onBlur(e, 0)}
+          style={{ marginVertical: 3 }}
+          leftIcon={
+            <Entypo
+              name='network'
+              size={24}
+              color='black'
+              style={{ marginRight: 10 }}
+            />
+          }
+        />
       </View>
     );
   };
@@ -591,7 +610,12 @@ class ProfileList extends React.Component {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    backgroundColor: Colors.background
+    margin: 10,
+    borderRadius: 10,
+    borderTopWidth: 3,
+    borderTopColor: Colors.yellowDark,
+    // height : 600,
+    backgroundColor: 'white',
   },
   banner: {
     // width: '100%',
@@ -619,7 +643,7 @@ const styles = StyleSheet.create({
     fontSize: 16,
     fontWeight: "600",
     color: Colors.onSurface,
-    opacity: 0.4
+    // opacity: 0.4
   },
   sectionText: {
     fontWeight: "bold",

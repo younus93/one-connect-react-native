@@ -5,13 +5,14 @@ import {
     TextInput, Animated, Easing, ActivityIndicator,
     ImageBackground, Modal, Platform, Linking
 } from "react-native";
-import { Badge, Avatar } from "react-native-elements";
+import { Badge, Avatar, colors } from "react-native-elements";
 import { DrawerActions } from 'react-navigation-drawer';
 import { NavigationActions } from 'react-navigation';
 import { Colors } from '../constants';
 import Manager from '../service/dataManager';
 import Button from '../custom/button';
 import Icon from 'react-native-vector-icons/FontAwesome5';
+import Entypo from 'react-native-vector-icons/Entypo';
 import ImagePicker from 'react-native-image-picker';
 import I18n from '../service/i18n';
 import Lightbox from 'react-native-lightbox';
@@ -47,7 +48,7 @@ export default class Profile extends React.Component {
 
         this.state = {
             updateNeeded: false,
-            profile : {},
+            profile: {},
             loading: true,
             error: false,
             errorText: null,
@@ -58,6 +59,7 @@ export default class Profile extends React.Component {
         console.log("profile mounted")
         Manager.addListener('PROFILE_S', this._profileSuccess)
         Manager.addListener('PROFILE_E', this._profileError)
+        Manager.addListener('PIC_S', this._profilePicSuccess)
         Manager.addListener('LANG_U', this._updateLanguage)
         Manager.profile(this.url, 'GET')
         this.props.navigation.setParams({ backButton: this._backButtonPressed });
@@ -130,6 +132,77 @@ export default class Profile extends React.Component {
         )
     }
 
+    _editPhoto = () => {
+        console.log('editing photo')
+        const options = {
+            title: 'Profile photo',
+            storageOptions: {
+                skipBackup: true,
+                path: 'images',
+            },
+        };
+
+        ImagePicker.showImagePicker(options, (response) => {
+            console.log('Response = ', response);
+
+            if (response.didCancel) {
+                console.log('User cancelled image picker');
+            }
+            else if (response.error) {
+                console.log('ImagePicker Error: ', response.error);
+            }
+            else if (response.customButton) {
+                console.log('User tapped custom button: ', response.customButton);
+            }
+            else {
+                console.log('setting source')
+                // const source = { uri: response.uri };
+                // You can also display the image using data:
+                const source = { uri: 'data:image/jpeg;base64,' + response.data };
+                console.log("uploading profile pic")
+                Manager.uploadPic('/api/profile/pic', 'POST', {
+                    type: 'profile_pic', file: {
+                        uri: Platform.OS === "android" ? response.uri : response.uri.replace("file://", ""),
+                        type: response.type ? response.type : 'image/jpg',
+                        name: response.fileName,
+                    }
+                })
+            }
+        });
+    }
+
+    _needsUpdate = () => {
+        console.log("profile needs update")
+        this.setState({
+            loading: true,
+            error: false,
+            errorText: null
+        })
+    }
+
+    _navigateToSettings = () => {
+        console.log("navigateing to settings")
+        this.props.navigation.navigate('Settings', { data: this.state.profile, callback: this._needsUpdate })
+    }
+
+    _profilePicSuccess = (data) => {
+        console.log("Profile pic is success", data);
+        this.setState({
+            profile: data.data
+        });
+    }
+
+    _getDOB(value) {
+        const monthNames = ["January", "February", "March", "April", "May", "June",
+            "July", "August", "September", "October", "November", "December"
+        ];
+        let dob = "";
+        if (value) {
+            dob = new Date(value.split('T')[0])
+            dob = monthNames[dob.getMonth()] + ' ' + dob.getDate()
+        }
+        return dob; Î
+    }
 
     _renderProfile() {
         if (this.state.profile)
@@ -138,19 +211,26 @@ export default class Profile extends React.Component {
                     <View>
                         <SafeAreaView forceInset={{ top: 'always' }} style={{ marginTop: 20 }}>
                             <View style={{ flexDirection: 'row', justifyContent: 'center', alignItems: 'center' }}>
-
                                 <Avatar
                                     size="xlarge"
                                     rounded
                                     source={{ uri: this.state.profile.basic.profile_pic }}
-                                    showEditButton = {this.state.profile.editable}
+                                    showEditButton={this.state.profile.editable}
+                                    onEditPress={this._editPhoto}
                                 />
                             </View>
                             <View style={styles.container}>
                                 <View style={styles.bio}>
-                                    <Text style={{ color: Colors.yellowDark, fontWeight: '600', fontSize: 20 }}>
-                                        {this.state.profile.basic.salutation + ' ' + this.state.profile.basic.f_name + ' ' + this.state.profile.basic.l_name}
-                                    </Text>
+                                    <View style={{ flexDirection: 'row' }}>
+                                        <Text style={{ color: Colors.yellowDark, fontWeight: '600', fontSize: 20 }}>
+                                            {this.state.profile.basic.salutation + ' '
+                                                + this.state.profile.basic.f_name + ' '
+                                                + this.state.profile.basic.l_name}
+                                        </Text>
+                                        <Button onPress={this._navigateToSettings}>
+                                            <Icon name="edit" color={Colors.yellowDark} style={{ fontSize: 16, marginLeft: 10 }}></Icon>
+                                        </Button>
+                                    </View>
                                 </View>
                                 <View>
                                     <View key={`pelt-${Math.random(1)}`} style={styles.item}>
@@ -175,10 +255,22 @@ export default class Profile extends React.Component {
                                             : null
                                     }
                                     {
+                                        this.state.profile.basic.website ?
+                                            <View key={`pelt-${Math.random(1)}`} style={styles.item}>
+                                                <Entypo
+                                                    name='network'
+                                                    size={18}
+                                                    color={Colors.primaryDark}
+                                                />
+                                                <Text style={styles.itemText}>Website : {this.state.profile.basic.website}</Text>
+                                            </View>
+                                            : null
+                                    }
+                                    {
                                         this.state.profile.basic.dob ?
                                             <View key={`pelt-${Math.random(1)}`} style={styles.item}>
                                                 <Icon name="calendar-day" size={18} color={Colors.primaryDark} />
-                                                <Text style={styles.itemText}>Date of Birth : {this.state.profile.basic.dob}</Text>
+                                                <Text style={styles.itemText}>Date of Birth : {this._getDOB(this.state.profile.basic.dob)}</Text>
                                             </View>
                                             : null
                                     }
