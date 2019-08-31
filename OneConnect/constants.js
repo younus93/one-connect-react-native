@@ -84,5 +84,6 @@ export const Colors = {
     SendRequest : '#00600f',
     searchFilterSelected : '#f1b31b',
     yellowDark : '#f1b31b',
+    greenDark : '#355c01',
     grey : '#DCDCDC' 
 }

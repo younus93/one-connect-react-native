@@ -164,6 +164,10 @@ export default class Profile extends React.Component {
         Linking.openURL(phoneNumber);
     }
 
+    _makeEmail = (email) => {
+        Linking.openURL('mailto:'+email);
+    }
+
     _enlargeImage = () => {
         console.log("enlarging");
         return (
@@ -285,9 +289,9 @@ export default class Profile extends React.Component {
         this.newTag = null
     }
 
-    _deleteTag = (tag) =>{
+    _deleteTag = (tag) => {
         console.log("Tag to be removed", tag);
-        Manager.deleteTag('/api/tags/delete','POST', tag);
+        Manager.deleteTag('/api/tags/delete', 'POST', tag);
     }
 
     _tagsRemoveSuccess = data => {
@@ -355,10 +359,12 @@ export default class Profile extends React.Component {
                                     }
                                     {
                                         this.state.profile.basic.email ?
-                                            <View key={`pelt-${Math.random(1)}`} style={styles.item}>
-                                                <Icon name="envelope" size={18} color={Colors.primaryDark} />
+                                            <Button key={`pelt-${Math.random(1)}`} style={styles.item}
+                                                onPress={() => this._makeEmail(this.state.profile.basic.email)}
+                                            >
+                                                <Entypo name="email" size={18} color={Colors.primaryDark} />
                                                 <Text style={styles.itemText}>Email : {this.state.profile.basic.email}</Text>
-                                            </View>
+                                            </Button>
                                             : null
                                     }
                                     {
@@ -538,15 +544,19 @@ export default class Profile extends React.Component {
                                     </View>
                                     {
                                         this.state.profile.tags.length > 0 ?
-                                        this.state.profile.tags.map((l, i) => (
-                                            <ListItem
-                                                // leftAvatar={{ source: { uri: l.avatar_url } }}
-                                                title={l.name}
-                                                rightIcon={
-                                                    <Button onPress={() => this._deleteTag(l)}><Icon name="trash"></Icon></Button>
-                                                }
-                                            />
-                                        ))
+                                            this.state.profile.tags.map((l, i) => (
+                                                <ListItem
+                                                    // leftAvatar={{ source: { uri: l.avatar_url } }}
+                                                    title={l.name}
+                                                    rightIcon={
+                                                        this.state.profile.editable ?
+                                                            <Button onPress={() => this._deleteTag(l)}>
+                                                                <Icon name="trash"></Icon>
+                                                            </Button>
+                                                            : null
+                                                    }
+                                                />
+                                            ))
                                             :
                                             <View>
                                                 <Text style={[styles.itemText, { paddingTop: 5 }]}>

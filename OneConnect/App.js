@@ -5,6 +5,7 @@ import { createAppContainer, createSwitchNavigator } from "react-navigation";
 
 import Drawer from "./navigators/drawerNavigator";
 import LoginScreen from "./screens/login";
+// import SignUpScreen from "./screens/signup";
 import AuthLoading from "./screens/authLoading";
 import ForgotPassword from "./screens/forgotPassword";
 import { mapping, light as lightTheme } from "@eva-design/eva";
@@ -33,13 +34,15 @@ const RootNavigator = createSwitchNavigator(
     Login: {
       screen: LoginScreen
     },
+    // SignUp : {
+    //   screen: SignUp
+    // },
     Drawer: {
       screen: Drawer
     },
     ForgotPassword: {
         screen: ForgotPassword
     }
-    
   },
   navigatorConfig
 );

@@ -13,11 +13,9 @@ import {
   Alert,
   ImageBackground
 } from "react-native";
-import { Button as RNButton } from 'react-native-elements';
-
 import AsyncStorage from '@react-native-community/async-storage';
 import Icon from "react-native-vector-icons/FontAwesome5";
-// import GradientButton from 'react-native-gradient-buttons';
+import GradientButton from 'react-native-gradient-buttons';
 
 import { Colors } from "../constants";
 import Manager from "../service/dataManager";
@@ -32,7 +30,7 @@ const DismissKeyboard = ({ children }) => (
 );
 
 type Props = {};
-export default class LoginScreen extends Component<Props> {
+export default class SignUpScreen extends Component<Props> {
   constructor(props) {
     super(props);
 
@@ -50,14 +48,14 @@ export default class LoginScreen extends Component<Props> {
 
   componentDidMount() {
     console.log("component did mount login");
-    Manager.addListener("LOGIN_S", this._loginSuccess);
-    Manager.addListener("LOGIN_E", this._loginError);
+    Manager.addListener("SIGNUP_S", this._signupSuccess);
+    Manager.addListener("SIGNUP_E", this._signupError);
   }
 
   componentWillUnmount() {
     console.log("component will unmount login");
-    Manager.removeListener("LOGIN_S", this._loginSuccess);
-    Manager.removeListener("LOGIN_E", this._loginError);
+    Manager.removeListener("LOGIN_S", this._signupSuccess);
+    Manager.removeListener("LOGIN_E", this._signupError);
   }
 
   _toggleError = (state = null) => {
@@ -68,7 +66,7 @@ export default class LoginScreen extends Component<Props> {
     }));
   };
 
-  _loginSuccess = data => {
+  _signupSuccess = data => {
     console.log("login successfull : ", data);
     Manager.setToken(data.data.token, data.data.user.basic.profile_pic, data.data.user.basic.id, data.data.user);
     // AsyncStorage.setItem('user',data.data.user);
@@ -84,7 +82,7 @@ export default class LoginScreen extends Component<Props> {
     });
   };
 
-  _loginError = error => {
+  _signupError = error => {
     this.setState({
       loading: false,
       error: true,
@@ -121,15 +119,10 @@ export default class LoginScreen extends Component<Props> {
       if (!this.state.error) {
         console.log("empty");
         let e = new Error("Username/password field empty");
-        this._loginError(e);
+        this._signupError(e);
       }
     }
   };
-
-  _signUpButton = () => {
-    this.props.navigation.navigate('SignUp');
-  }
-
   _forgetPassword = () => {
     console.log('forgot password');
     this.props.navigation.navigate("ForgotPassword");
@@ -144,7 +137,7 @@ export default class LoginScreen extends Component<Props> {
         callback={this._toggleError}
       >
         <DismissKeyboard>
-          <View style={styles.container}>
+          <View style={[styles.container]}>
             <View style={styles.header}>
               <ImageBackground
                 style={styles.image}
@@ -155,6 +148,9 @@ export default class LoginScreen extends Component<Props> {
             <View style={[styles.containerBox]}>
               <View>
                 <Text style={styles.welcome}>Welcome!</Text>
+              </View>
+              <View>
+                <Text style={styles.signIn}>Please sign in to continue</Text>
               </View>
               <View>
                 <TextInput
@@ -170,26 +166,33 @@ export default class LoginScreen extends Component<Props> {
                   allowFontScaling={false}
                   secureTextEntry
                 />
-
-                <View style={styles.buttonContainer}>
-                  <Button
-                    onPress={this._forgetPassword}
-                    style={styles.forgotPasswordButton}
-                    color={Colors.alternative}
-                  >
-                    <Text style={styles.forgotPasswordText}>
-                      Forgot password?
-                  </Text>
-                  </Button>
-                </View>
-
-                <RNButton buttonStyle={{ backgroundColor: Colors.yellowDark, borderRadius: 20 }}
-                  onPress={this._loginButton} title="Login" />
-
-                <RNButton buttonStyle={{ backgroundColor: Colors.greenDark, borderRadius: 20, marginTop : 10 }}
-                  onPress={this._signUpButton} title="Sign Up" />
-
               </View>
+              <View style={styles.buttonContainer}>
+                <Button
+                  onPress={this._forgetPassword}
+                  style={styles.forgotPasswordButton}
+                  color={Colors.alternative}
+                >
+                  <Text style={styles.forgotPasswordText}>
+                    Forgot password?
+                  </Text>
+                </Button>
+              </View>
+              <GradientButton
+                style={{ marginVertical: 8 }}
+                text="Login"
+                textStyle={{ fontSize: 20 }}
+                gradientBegin="#ffec8d"
+                gradientEnd="#f1b31b"
+                gradientDirection="diagonal"
+                height={60}
+                width={300}
+                radius={15}
+                impact
+                impactStyle='Light'
+                onPressAction={() => this._loginButton}
+              />
+
               <View style={{ margin: 10, marginTop: 50 }}>
                 <Text style={styles.textTerm}>
                   By proceeding you agree to the Terms of Services and Privacy
@@ -220,7 +223,7 @@ export default class LoginScreen extends Component<Props> {
             ) : null}
           </View>
         </DismissKeyboard>
-      </ErrorHandler >
+      </ErrorHandler>
     );
   }
 }
@@ -228,11 +231,12 @@ export default class LoginScreen extends Component<Props> {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    backgroundColor: Colors.surface
+    backgroundColor: Colors.background
   },
   containerBox: {
     flex: 1,
     padding: 10,
+    paddingTop: 50,
     backgroundColor: Colors.surface,
     justifyContent: "center"
   },
@@ -258,7 +262,6 @@ const styles = StyleSheet.create({
   },
   forgotPasswordButton: {
     marginLeft: 10,
-    paddingBottom: 10,
     width: "40%",
   },
   forgotPasswordText: {
@@ -274,7 +277,7 @@ const styles = StyleSheet.create({
     marginBottom: 10
   },
   header: {
-    backgroundColor: Colors.surface,
+    backgroundColor: Colors.primary,
     opacity: 0.8,
     height: "40%",
     alignItems: "center",
@@ -295,8 +298,7 @@ const styles = StyleSheet.create({
   },
   image: {
     width: "100%",
-    height: "70%",
-    marginTop : 50,
+    height: "100%",
     justifyContent: "center",
     backgroundColor: Colors.surface
   }
