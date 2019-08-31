@@ -250,6 +250,16 @@ class dataManager {
         })
     }
 
+    deleteTag = (uri, method, data=null) => {
+        Call(uri, method, data, this.token)
+        .then(response => {
+            this.eventEmitter.emit('S_TAG_REMOVE_S', response)
+        })
+        .catch(error => {
+            this.eventEmitter.emit('S_TAG_E', error)
+        })
+    }
+
     uploadPic = (uri, method, data=null) => {
         Call(uri, method, data, this.token)
         .then(response => {

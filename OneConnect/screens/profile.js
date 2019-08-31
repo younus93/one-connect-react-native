@@ -5,7 +5,9 @@ import {
     TextInput, Animated, Easing, ActivityIndicator,
     ImageBackground, Modal, Platform, Linking
 } from "react-native";
-import { Badge, Avatar, colors } from "react-native-elements";
+import TagInput from "react-native-tag-input";
+import { Badge, Avatar, ListItem, Icon as RNEIcon } from "react-native-elements";
+import { SwipeListView } from 'react-native-swipe-list-view';
 import { DrawerActions } from 'react-navigation-drawer';
 import { NavigationActions } from 'react-navigation';
 import { Colors } from '../constants';
@@ -50,6 +52,7 @@ export default class Profile extends React.Component {
 
         this.state = {
             updateNeeded: false,
+            isTagModal: false,
             profile: {},
             loading: true,
             error: false,
@@ -65,6 +68,8 @@ export default class Profile extends React.Component {
         Manager.addListener('LANG_U', this._updateLanguage)
         Manager.addListener('D_COMPANY_S', this._removeCompanySuccess)
         Manager.addListener('D_EDUCATION_S', this._removeEducationSuccess)
+        Manager.addListener('S_TAG_S', this._tagsSuccess)
+        Manager.addListener('S_TAG_REMOVE_S', this._tagsRemoveSuccess)
         Manager.profile(this.url, 'GET')
         this.props.navigation.setParams({ backButton: this._backButtonPressed });
         this.props.navigation.setParams({ hamPressed: this._hamPressed });
@@ -125,6 +130,16 @@ export default class Profile extends React.Component {
         })
         console.log(this.state);
         Toast.showWithGravity("Education Detail removed!", Toast.SHORT, Toast.TOP)
+    }
+
+    _tagsSuccess = data => {
+        console.log("tag success data : ", data)
+        this.setState({
+            // isTagModal: false,
+            profile: data.data,
+        })
+        Toast.showWithGravity("Tags added!", Toast.SHORT, Toast.TOP)
+        this._toggleModal();
     }
 
     renderLightBoxImage = () => {
@@ -253,6 +268,45 @@ export default class Profile extends React.Component {
         Manager.removeEducation(`/api/educations/${education.id}/delete`, "POST");
     }
 
+    _addTag = (text) => {
+        console.log(text)
+        this.newTag = text
+    }
+
+    _submitNewTag = () => {
+        console.log("submiting tag : ", this.newTag)
+        let tags = this.state.profile.tags.map(item => {
+            return item.name
+        })
+        tags.push(this.newTag.split(','))
+        Manager.submitTag('/api/tags', 'POST', {
+            "tags": tags.toString()
+        });
+        this.newTag = null
+    }
+
+    _deleteTag = (tag) =>{
+        console.log("Tag to be removed", tag);
+        Manager.deleteTag('/api/tags/delete','POST', tag);
+    }
+
+    _tagsRemoveSuccess = data => {
+        console.log("Tag remove success with data", data);
+        this.setState({
+            // isTagModal: false,
+            profile: data.data,
+        })
+        Toast.showWithGravity("Tag Removed!", Toast.SHORT, Toast.TOP)
+    }
+
+
+    _toggleModal = () => {
+        let state = !this.state.isTagModal;
+        this.setState({
+            isTagModal: state,
+        });
+    };
+
     _renderProfile() {
         if (this.state.profile)
             return (
@@ -347,7 +401,7 @@ export default class Profile extends React.Component {
                                     <View style={{ flexDirection: 'row' }}>
                                         <Text style={{ color: Colors.yellowDark, fontWeight: '600', fontSize: 20 }}>
                                             EXPERIENCE
-                                    </Text>
+                                        </Text>
                                         {
                                             this.state.profile.editable ?
                                                 <Button onPress={this._navigateToAddCompany}>
@@ -417,7 +471,7 @@ export default class Profile extends React.Component {
                                                 return (
                                                     <View key={`pelt-${Math.random(1)}`} style={[styles.item, { alignItems: 'flex-start' }]}>
                                                         <Icon name="book" size={35} color={Colors.primaryDark} style={{ padding: 10 }} />
-                                                        <View style={{ flex:1 }}>
+                                                        <View style={{ flex: 1 }}>
                                                             <Text style={[styles.itemText, { fontWeight: '600', fontSize: 16 }]}>
                                                                 {item.college_name}
                                                             </Text>
@@ -448,16 +502,51 @@ export default class Profile extends React.Component {
                             </View>
                             <View style={styles.container}>
                                 <View style={styles.bio}>
-                                    <Text style={{ color: Colors.yellowDark, fontWeight: '600', fontSize: 20 }}>
-                                        TAGS
-                                    </Text>
+                                    <View style={{ flexDirection: 'row' }}>
+                                        <Text style={{ color: Colors.yellowDark, fontWeight: '600', fontSize: 20 }}>
+                                            TAGS
+                                        </Text>
+                                        {
+                                            this.state.profile.editable ?
+                                                <Button onPress={this._toggleModal}>
+                                                    <Icon name="plus-circle" color={Colors.yellowDark} style={{ fontSize: 16, marginLeft: 10, marginTop: 3 }}></Icon>
+                                                </Button>
+                                                : null
+                                        }
+                                    </View>
                                 </View>
                                 <View style={[styles.sectionBody, { paddingBottom: 20 }]}>
+                                    <View>
+                                        <Modal animationType="fade" transparent={true}
+                                            visible={this.state.isTagModal}
+                                            onRequestClose={this._toggleModal}>
+                                            <TouchableWithoutFeedback onPress={this._toggleModal} >
+                                                <View style={{ flex: 1, backgroundColor: '#00000070', justifyContent: 'center', alignItems: 'center', color: '#FFFFFF', paddingHorizontal: 20 }}>
+                                                    <View style={{ backgroundColor: Colors.surface, width: '100%', padding: 20, borderRadius: 20 }}>
+                                                        <Text>Enter tags separated by comma</Text>
+                                                        <TextInput style={styles.textInput}
+                                                            placeholder="Add new tag"
+                                                            onChangeText={this._addTag}
+                                                            allowFontScaling={false}
+                                                        />
+                                                        <Button style={styles.button} title="SUBMIT" color={Colors.alternative} onPress={this._submitNewTag}>
+                                                        </Button>
+                                                    </View>
+                                                </View>
+                                            </TouchableWithoutFeedback>
+                                        </Modal>
+                                    </View>
                                     {
                                         this.state.profile.tags.length > 0 ?
-                                            this.state.profile.tags.map(tag =>
-                                                <Badge value={tag.name} containerStyle={{ paddingHorizontal: 5 }} />
-                                            )
+                                        this.state.profile.tags.map((l, i) => (
+                                            <ListItem
+                                                // leftAvatar={{ source: { uri: l.avatar_url } }}
+                                                title={l.name}
+                                                rightIcon={
+                                                    <Button onPress={() => this._deleteTag(l)}><Icon name="trash"></Icon></Button>
+                                                }
+                                            />
+                                        ))
                                             :
                                             <View>
                                                 <Text style={[styles.itemText, { paddingTop: 5 }]}>
@@ -473,6 +562,7 @@ export default class Profile extends React.Component {
             );
         return <Text>Unable to locate Profile</Text>
     }
+
 
     render() {
         return (
