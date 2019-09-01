@@ -1,7 +1,7 @@
 import React from 'react';
 import { Text, View, Button, StyleSheet } from 'react-native';
 import { createDrawerNavigator } from 'react-navigation';
-
+import {Colors} from '../constants';
 // Routes
 import Tab from './tabNavigator';
 import AuthLoading from '../screens/authLoading';
@@ -15,7 +15,7 @@ const navigatorConfig = {
     initialRouteName: 'Tab',
     contentComponent: CustomDrawerContentComponent,
     contentOptions: {
-        activeTintColor: '#e91e63',
+        activeTintColor: Colors.yellowDark,
         itemsContainerStyle: {
             marginVertical: 0,
         },

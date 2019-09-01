@@ -153,7 +153,7 @@ const styles = StyleSheet.create({
     crossButton:{
         fontSize: 14,
         fontWeight: '700',
-        color: Colors.secondaryLight
+        color: Colors.white
     },
     errorTextContainer: {
         flex: 1,

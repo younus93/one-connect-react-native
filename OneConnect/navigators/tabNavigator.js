@@ -54,7 +54,7 @@ const navigatorConfig = {
             let IconComponent = Icon;
             let iconName;
             if (routeName === 'FeedStack') {
-                iconName = `rss-square`;
+                iconName = `home`;
                 // Sometimes we want to add badges to some icons.
                 // You can check the implementation below.
                 // IconComponent = HomeIconWithBadge;
@@ -73,7 +73,7 @@ const navigatorConfig = {
             }
 
             // You can return any component that you like here!
-            return <IconComponent name={iconName} size={20} color={tintColor} solid={true}/>;
+            return <IconComponent name={iconName} size={24} color={tintColor} solid={true}/>;
         },
         tabBarLabel: ({ focused, horizontal, tintColor }) => {
             const { routeName } = navigation.state;
@@ -101,14 +101,14 @@ const navigatorConfig = {
                 lableName = I18n.t('Friends');
             }
 
-            return <Lable lable={lableName} title={titleName}/>
+            // return <Lable lable={lableName} title={titleName}/>
         }
     }),
     tabBarOptions: {
-        activeTintColor: Colors.secondaryDark,
-        inactiveTintColor: Colors.primaryDark,
+        activeTintColor: Colors.yellowDark,
+        inactiveTintColor: Colors.greyDark,
         style: {
-            backgroundColor: Colors.primaryLight
+            backgroundColor: Colors.white
         },
         labelStyle: {
             fontSize: 14

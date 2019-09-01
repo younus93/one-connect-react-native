@@ -80,7 +80,7 @@ export default class CustomDrawerContentComponent extends React.Component {
                     <Button onPress={this.navigateToScreen('NewsFeed')}>
                         <View style={styles.item}>
                             <View style={styles.icon}>
-                                <Icon name="rss-square" size={iconSize} color={Colors.primaryDark} />
+                                <Icon name="home" size={iconSize} color={Colors.primaryDark} />
                             </View>
                             <View style={styles.textBody}>
                                 <Text style={styles.bodyTextstyle}>{I18n.t('Newsfeed')}</Text>

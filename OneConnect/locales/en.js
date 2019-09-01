@@ -12,7 +12,7 @@ export default {
     Friends: 'Friends',
     No_Friends_yet: 'No Friends yet',
     No_Posts: 'No Posts',
-    Data_Unavailable: 'Data Unavailable',
+    Data_Unavailable: 'No posts to show!',
     Like: 'Like',
     Comment: 'Comment',
     Leave_your_thoughts_here: 'Comment..',

@@ -325,9 +325,9 @@ export default class Profile extends React.Component {
             return (
                 <View style={{ margin: 30, paddingHorizontal: 50 }}>
                     <RNButton titleStyle={{ color: "black" }}
-                        buttonStyle={{ backgroundColor: Colors.yellowDark }} 
-                        title="Unfriend" 
-                        onPress={ ()=>{this._unfriend(this.state.profile.basic.id)} }
+                        buttonStyle={{ backgroundColor: Colors.yellowDark }}
+                        title="Unfriend"
+                        onPress={() => { this._unfriend(this.state.profile.basic.id) }}
                     />
                 </View>
             );
@@ -337,7 +337,7 @@ export default class Profile extends React.Component {
                 <RNButton titleStyle={{ color: "black" }}
                     buttonStyle={{ backgroundColor: Colors.yellowDark }}
                     title="Unsend Request"
-                    onPress={ ()=>{ this._unsend(this.state.profile.basic.id) } }
+                    onPress={() => { this._unsend(this.state.profile.basic.id) }}
                 />
             </View>
         if (this.state.profile.friends_meta.has_friend_request_from_this_profile)
@@ -345,22 +345,22 @@ export default class Profile extends React.Component {
                 <RNButton titleStyle={{ color: "black" }}
                     buttonStyle={{ backgroundColor: Colors.yellowDark, width: 150 }}
                     title="Accept"
-                    onPress={ ()=>{this._accept(this.state.profile.basic.id)} }
+                    onPress={() => { this._accept(this.state.profile.basic.id) }}
                 />
                 <RNButton titleStyle={{ color: "black" }}
                     buttonStyle={{ backgroundColor: Colors.grey, marginLeft: 10, width: 150 }}
                     title="Deny"
-                    onPress={ ()=>{this._deny(this.state.profile.basic.id)} }
+                    onPress={() => { this._deny(this.state.profile.basic.id) }}
                 />
             </View>
         return <View style={{ margin: 30, paddingHorizontal: 50 }}>
             <RNButton titleStyle={{ color: "black" }}
                 buttonStyle={{ backgroundColor: Colors.yellowDark }}
                 title="Send Request"
-                onPress={ ()=>{ this._send(this.state.profile.basic.id) } }
+                onPress={() => { this._send(this.state.profile.basic.id) }}
             />
         </View>
-    
+
     }
 
     _accept = id => {
@@ -376,7 +376,7 @@ export default class Profile extends React.Component {
             professional_id: id
         });
     };
- 
+
 
     _deny = id => {
         console.log("Deny");
@@ -389,13 +389,13 @@ export default class Profile extends React.Component {
     _unfriend = id => {
         Manager.friendRequest("/api/friend-request/unfriend", "POST", {
             professional_id: id
-        }); 
+        });
     }
 
     _unsend = id => {
         Manager.friendRequest("/api/friend-request/unfriend", "POST", {
             professional_id: id
-        });  
+        });
     }
 
     _friendRequestSuccess = response => {
@@ -404,7 +404,7 @@ export default class Profile extends React.Component {
         this.setState({ ...this.state, profile: response.profile });
         console.log(this.state);
         Toast.showWithGravity(response.message, Toast.SHORT, Toast.TOP)
-      }
+    }
 
     _renderProfile() {
         if (this.state.profile)
@@ -627,11 +627,21 @@ export default class Profile extends React.Component {
                                                     <View style={{ backgroundColor: Colors.surface, width: '100%', padding: 20, borderRadius: 20 }}>
                                                         <Text>Enter tags separated by comma</Text>
                                                         <TextInput style={styles.textInput}
+                                                            multiline
                                                             placeholder="Add new tag"
                                                             onChangeText={this._addTag}
                                                             allowFontScaling={false}
                                                         />
                                                         <Button style={styles.button} title="SUBMIT" color={Colors.alternative} onPress={this._submitNewTag}>
+                                                        </Button>
+                                                        <Button style={{
+                                                            backgroundColor: Colors.yellowDark,
+                                                            justifyContent: 'center',
+                                                            alignItems: 'center',
+                                                            borderRadius: 30,
+                                                            paddingVertical: 15,
+                                                            marginVertical: 10,
+                                                        }} title="CLOSE" color={Colors.onPrimary} onPress={this._toggleModal}>
                                                         </Button>
                                                     </View>
                                                 </View>
