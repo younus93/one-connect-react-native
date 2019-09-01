@@ -80,7 +80,13 @@ export default class Profile extends React.Component {
         console.log("profile unmouted")
         Manager.removeListener('PROFILE_S', this._profileSuccess)
         Manager.removeListener('PROFILE_E', this._profileError)
+        Manager.removeListener('PIC_S', this._profilePicSuccess)
         Manager.removeListener('LANG_U', this._updateLanguage)
+        Manager.removeListener('D_COMPANY_S', this._removeCompanySuccess)
+        Manager.removeListener('D_EDUCATION_S', this._removeEducationSuccess)
+        Manager.removeListener('S_TAG_S', this._tagsSuccess)
+        Manager.removeListener('S_TAG_REMOVE_S', this._tagsRemoveSuccess)
+        Manager.removeListener("F_REQUEST_S", this._friendRequestSuccess);
     }
 
     _hamPressed = () => {
@@ -354,6 +360,7 @@ export default class Profile extends React.Component {
                 onPress={ ()=>{ this._send(this.state.profile.basic.id) } }
             />
         </View>
+    
     }
 
     _accept = id => {

@@ -12,7 +12,7 @@ import {
 } from "react-native";
 
 import Toast from 'react-native-simple-toast';
-
+import { Button as RNButton } from 'react-native-elements';
 import { NavigationActions } from "react-navigation";
 import { Colors } from "../constants";
 import Icon from "react-native-vector-icons/FontAwesome5";
@@ -52,10 +52,10 @@ export default class SearchUserList extends React.Component {
     _navigateUser = item => {
         console.log("navigating to");
         console.log(item);
-        this.props.navigation.navigate("Profile", { url: `/api/professionals/${item.id}`, title: 'View profile'});
+        this.props.navigation.navigate("Profile", { url: `/api/professionals/${item.id}`, title: 'View profile' });
     };
 
-    _sendFriendRequest = id => {
+    _send = id => {
         console.log("sending friend request");
         this.requestType = "S";
         Manager.friendRequest("/api/friend-request/send", "POST", {
@@ -66,8 +66,9 @@ export default class SearchUserList extends React.Component {
 
     _friendRequestSuccess = response => {
         console.log("Friend Request");
+        console.log(response);
         let userList = this.state.userList.filter(item => {
-            if (item.id == response.profile.id) {
+            if (item.id == response.profile.basic.id) {
                 if (this.requestType == "S")
                     item.friends_meta.has_sent_friend_request_to_this_profile = true;
                 else
@@ -76,6 +77,7 @@ export default class SearchUserList extends React.Component {
             return item;
         });
         this.setState({ ...this.state, userList: userList });
+        console.log(this.state);
         Toast.showWithGravity(response.message, Toast.SHORT, Toast.TOP)
     }
 
@@ -89,14 +91,61 @@ export default class SearchUserList extends React.Component {
     };
 
     _unfriendRequestSuccess = response => {
+        console.log(response);
         let userList = this.state.userList.filter(item => {
-            if (item.searchable.basic.id == response.profile.id) {
-                item.searchable.friends_meta.has_sent_friend_request_to_this_profile = true;
+            if (item.id == response.profile.basic.id) {
+                item.friends_meta.has_sent_friend_request_to_this_profile = true;
             }
             return item;
         });
         this.setState({ ...this.state, userList: userList });
         Toast.show(response.message);
+    }
+
+    _renderFriendshipButtons = item => {
+        console.log("rendering buttons for : ", item);
+        if (item.friends_meta.is_friends) {
+            return (
+                <View>
+                    <RNButton titleStyle={{ color: "black" }}
+                        buttonStyle={{ backgroundColor: Colors.surface, borderWidth: 1, borderColor: Colors.grey, borderRadius: 15 }}
+                        icon={<Icon name="user-friends" size={18} color={Colors.yellowDark}></Icon>}
+                        onPress={() => { this._unFriend(item.id) }}
+                    />
+                </View>
+            );
+        }
+        if (item.friends_meta.has_sent_friend_request_to_this_profile)
+            return <View>
+                <RNButton titleStyle={{ color: "black" }}
+                    buttonStyle={{ backgroundColor: Colors.surface, borderWidth: 1, borderColor: Colors.grey, borderRadius: 15 }}
+                    icon={<Icon name="user-minus" size={18} color={Colors.yellowDark}></Icon>}
+                    onPress={() => { this._unFriend(item.id) }}
+                />
+            </View>
+        if (item.friends_meta.has_friend_request_from_this_profile) {
+            return null;
+            return <View style={{ flexDirection: 'row', justifyContent: 'center' }}>
+                <RNButton titleStyle={{ color: "black" }}
+                    buttonStyle={{ backgroundColor: Colors.yellowDark, width: 150 }}
+                    title="Accept"
+                    onPress={() => { this._accept(item.id) }}
+                />
+                <RNButton titleStyle={{ color: "black" }}
+                    buttonStyle={{ backgroundColor: Colors.grey, marginLeft: 10, width: 150 }}
+                    title="Deny"
+                    onPress={() => { this._deny(item.id) }}
+                />
+            </View>
+        }
+        return <View>
+            <RNButton titleStyle={{ color: "black" }}
+                buttonStyle={{ backgroundColor: Colors.surface, borderWidth: 1, borderColor: Colors.grey, borderRadius: 15 }}
+                icon={<Icon name="user-plus" size={18} color={Colors.yellowDark}></Icon>}
+                onPress={() => { this._send(item.id) }}
+            />
+        </View>
+
     }
 
 
@@ -151,38 +200,7 @@ export default class SearchUserList extends React.Component {
                                                     {I18n.t("Mutual_friends")}
                                                 </Text>
                                             </View>
-                                            {item.friends_meta.has_sent_friend_request_to_this_profile ?
-                                                <View>
-                                                    <Button
-                                                        onPress={() => this._unFriend(item.id)}
-                                                        key={`pelt-${Math.random(1)}`}
-                                                        style={[styles.item]}
-                                                    >
-                                                        <Icon
-                                                            name="user-minus"
-                                                            size={22}
-                                                            color={Colors.yellowDark}
-                                                            style={{ padding: 10 }}
-                                                        />
-                                                    </Button>
-                                                </View>
-                                                :
-                                                <View>
-                                                    <Button
-                                                        onPress={() => this._sendFriendRequest(item.id)}
-                                                        key={`pelt-${Math.random(1)}`}
-                                                        style={[styles.item]}
-                                                    >
-                                                        <Icon
-                                                            name="user-plus"
-                                                            size={22}
-                                                            color={Colors.yellowDark}
-                                                            style={{ padding: 10 }}
-                                                        />
-                                                    </Button>
-                                                </View>
-                                            }
-
+                                            {this._renderFriendshipButtons(item)}
                                         </Button>
                                     </View>
                                     <View style={styles.separator} />
