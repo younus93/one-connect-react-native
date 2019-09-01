@@ -49,9 +49,10 @@ export default class SearchUserList extends React.Component {
         Manager.removeListener("F_REQUEST_S", this._friendRequestSuccess);
     }
 
-    _navigateUser = url => {
-        console.log("navigating to ", url);
-        this.props.navigation.navigate("Profile", { url: url, title: 'View profile'});
+    _navigateUser = item => {
+        console.log("navigating to");
+        console.log(item);
+        this.props.navigation.navigate("Profile", { url: `/api/professionals/${item.id}`, title: 'View profile'});
     };
 
     _sendFriendRequest = id => {
@@ -108,11 +109,12 @@ export default class SearchUserList extends React.Component {
                 <View style={styles.userSectionBody}>
                     {!this.state.loading &&
                         this.state.userList.map(item => {
+                            console.log("item are", item);
                             return (
                                 <View style={styles.userBody}>
                                     <View>
                                         <Button
-                                            onPress={() => this._navigateUser(item.url)}
+                                            onPress={() => this._navigateUser(item)}
                                             key={`pelt-${Math.random(1)}`}
                                             style={[styles.item]}
                                         >

@@ -12,7 +12,7 @@ import {
 } from "react-native";
 
 import Toast from 'react-native-simple-toast';
-
+import { Button as RNButton } from 'react-native-elements';
 import { NavigationActions } from "react-navigation";
 import { Colors } from "../constants";
 import Icon from "react-native-vector-icons/FontAwesome5";
@@ -44,6 +44,7 @@ export default class FriendRequestList extends React.Component {
   }
 
   componentWillUnmount() {
+    console.log("Friend Requests is unmounted");
     Manager.removeListener("F_REQUEST_S", this._friendRequestSuccess);
   }
 
@@ -66,19 +67,22 @@ export default class FriendRequestList extends React.Component {
   };
 
   _friendRequestSuccess = response => {
-    console.log("Friend Request from notification");
+    console.log("Friend Request from notification", response);
     let incomingFriendships = this.state.incomingFriendships.map(item => {
-      if (item.sender.id == response.profile.id) {
+      console.log(item.sender.id, response.profile.basic.id);
+      if (item.sender.id == response.profile.basic.id) {
         item.sender.acceptedRequest = response.message;
       }
       return item;
     });
-    this.setState({ ...this.state, incomingFriendships: incomingFriendships });
+    console.log("incoming friendships", incomingFriendships);
+    this.setState({ incomingFriendships: incomingFriendships });
     console.log(this.state);
     Toast.showWithGravity(response.message, Toast.SHORT, Toast.TOP)
   }
 
   _navigateUser = url => {
+    url = `/api/professionals/${url}`;
     console.log("navigating to ", url);
     this.props.navigation.navigate("Profile", { url: url, title: 'View profile' });
   };
@@ -100,7 +104,7 @@ export default class FriendRequestList extends React.Component {
                 style={styles.friendReqBody}
               >
                 <Button
-                  onPress={() => this._navigateUser(item.sender.resource_url)}
+                  onPress={() => this._navigateUser(item.sender.id)}
                   style={styles.item}
                 >
                   <View>
@@ -128,37 +132,21 @@ export default class FriendRequestList extends React.Component {
                       ))}
                     </View>
                     {!item.sender.acceptedRequest ?
-                      <View style={styles.buttons}>
-                        <Button
+                      <View style={{ flexDirection : "row", marginTop : 10 }}>
+                        <RNButton
                           onPress={() => this._accept(item.sender.id)}
                           key={`pelt-accept-${Math.random(1)}`}
-                          style={[
-                            styles.acceptButton,
-                            { backgroundColor: Colors.yellowDark }
-                          ]}
-                        >
-                          <Text style={{ textAlign: "center", padding: 10, color: Colors.onPrimary }}>
-                            Confirm
-                            </Text>
-                        </Button>
-                        <Button
+                          buttonStyle={{ backgroundColor: Colors.yellowDark, width : 95, marginLeft : 10 }}
+                          title="Accept"
+                          titleStyle={{ color: 'black' }}
+                        />
+                        <RNButton
                           onPress={() => this._deny(item.sender.id)}
                           key={`pelt-deny-de${Math.random(1)}`}
-                          style={[
-                            styles.acceptButton,
-                            { backgroundColor: "#dfe3ee" }
-                          ]}
-                        >
-                          <Text
-                            style={{
-                              padding: 10,
-                              paddingRight: 15,
-                              color: Colors.onPrimary
-                            }}
-                          >
-                            Deny
-                              </Text>
-                        </Button>
+                          buttonStyle={{ backgroundColor : Colors.grey, width : 95, marginLeft : 10 }}
+                          title="Deny"
+                          titleStyle={{ color : 'black' }}
+                        />
                       </View>
                       : <Text style={styles.mutualFriendsCount}>{item.sender.acceptedRequest}</Text>}
                   </View>

@@ -6,7 +6,7 @@ import {
     ImageBackground, Modal, Platform, Linking
 } from "react-native";
 import TagInput from "react-native-tag-input";
-import { Badge, Avatar, ListItem, Icon as RNEIcon } from "react-native-elements";
+import { Badge, Avatar, ListItem, Icon as RNEIcon, Button as RNButton } from "react-native-elements";
 import { SwipeListView } from 'react-native-swipe-list-view';
 import { DrawerActions } from 'react-navigation-drawer';
 import { NavigationActions } from 'react-navigation';
@@ -70,6 +70,7 @@ export default class Profile extends React.Component {
         Manager.addListener('D_EDUCATION_S', this._removeEducationSuccess)
         Manager.addListener('S_TAG_S', this._tagsSuccess)
         Manager.addListener('S_TAG_REMOVE_S', this._tagsRemoveSuccess)
+        Manager.addListener("F_REQUEST_S", this._friendRequestSuccess);
         Manager.profile(this.url, 'GET')
         this.props.navigation.setParams({ backButton: this._backButtonPressed });
         this.props.navigation.setParams({ hamPressed: this._hamPressed });
@@ -165,7 +166,7 @@ export default class Profile extends React.Component {
     }
 
     _makeEmail = (email) => {
-        Linking.openURL('mailto:'+email);
+        Linking.openURL('mailto:' + email);
     }
 
     _enlargeImage = () => {
@@ -311,6 +312,93 @@ export default class Profile extends React.Component {
         });
     };
 
+    _renderFriendMeta() {
+        if (this.state.profile.editable)
+            return null;
+        if (this.state.profile.friends_meta.is_friends) {
+            return (
+                <View style={{ margin: 30, paddingHorizontal: 50 }}>
+                    <RNButton titleStyle={{ color: "black" }}
+                        buttonStyle={{ backgroundColor: Colors.yellowDark }} 
+                        title="Unfriend" 
+                        onPress={ ()=>{this._unfriend(this.state.profile.basic.id)} }
+                    />
+                </View>
+            );
+        }
+        if (this.state.profile.friends_meta.has_sent_friend_request_to_this_profile)
+            return <View style={{ margin: 30, paddingHorizontal: 50 }}>
+                <RNButton titleStyle={{ color: "black" }}
+                    buttonStyle={{ backgroundColor: Colors.yellowDark }}
+                    title="Unsend Request"
+                    onPress={ ()=>{ this._unsend(this.state.profile.basic.id) } }
+                />
+            </View>
+        if (this.state.profile.friends_meta.has_friend_request_from_this_profile)
+            return <View style={{ margin: 10, paddingHorizontal: 50, flexDirection: 'row', justifyContent: 'center' }}>
+                <RNButton titleStyle={{ color: "black" }}
+                    buttonStyle={{ backgroundColor: Colors.yellowDark, width: 150 }}
+                    title="Accept"
+                    onPress={ ()=>{this._accept(this.state.profile.basic.id)} }
+                />
+                <RNButton titleStyle={{ color: "black" }}
+                    buttonStyle={{ backgroundColor: Colors.grey, marginLeft: 10, width: 150 }}
+                    title="Deny"
+                    onPress={ ()=>{this._deny(this.state.profile.basic.id)} }
+                />
+            </View>
+        return <View style={{ margin: 30, paddingHorizontal: 50 }}>
+            <RNButton titleStyle={{ color: "black" }}
+                buttonStyle={{ backgroundColor: Colors.yellowDark }}
+                title="Send Request"
+                onPress={ ()=>{ this._send(this.state.profile.basic.id) } }
+            />
+        </View>
+    }
+
+    _accept = id => {
+        this.requestType == "A";
+        Manager.friendRequest("/api/friend-request/accept", "POST", {
+            professional_id: id
+        });
+    };
+
+    _send = id => {
+        this.requestType == "A";
+        Manager.friendRequest("/api/friend-request/send", "POST", {
+            professional_id: id
+        });
+    };
+ 
+
+    _deny = id => {
+        console.log("Deny");
+        this.requestType = "D";
+        Manager.friendRequest("/api/friend-request/deny", "POST", {
+            professional_id: id
+        });
+    };
+
+    _unfriend = id => {
+        Manager.friendRequest("/api/friend-request/unfriend", "POST", {
+            professional_id: id
+        }); 
+    }
+
+    _unsend = id => {
+        Manager.friendRequest("/api/friend-request/unfriend", "POST", {
+            professional_id: id
+        });  
+    }
+
+    _friendRequestSuccess = response => {
+        console.log("Friend Request from notification");
+        console.log(response);
+        this.setState({ ...this.state, profile: response.profile });
+        console.log(this.state);
+        Toast.showWithGravity(response.message, Toast.SHORT, Toast.TOP)
+      }
+
     _renderProfile() {
         if (this.state.profile)
             return (
@@ -326,6 +414,7 @@ export default class Profile extends React.Component {
                                     onEditPress={this._editPhoto}
                                 />
                             </View>
+                            {this._renderFriendMeta()}
                             <View style={styles.container}>
                                 <View style={styles.bio}>
                                     <View style={{ flexDirection: 'row' }}>
