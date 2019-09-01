@@ -241,6 +241,11 @@ export default class Profile extends React.Component {
         this.props.navigation.navigate('Settings', { data: this.state.profile, callback: this._needsUpdate })
     }
 
+    _navigateToPrivacy = () => {
+        console.log("navigateing to privacy")
+        this.props.navigation.navigate('Privacy', { data: this.state.profile.privacy, callback: this._needsUpdate }) 
+    }
+
     _profilePicSuccess = (data) => {
         console.log("Profile pic is success", data);
         this.setState({
@@ -672,6 +677,17 @@ export default class Profile extends React.Component {
                                     }
                                 </View>
                             </View>
+                            {
+                                this.state.profile.editable ? 
+                                <RNButton
+                                    containerStyle={{ margin :10 }}
+                                    buttonStyle={{ backgroundColor : Colors.yellowDark}}
+                                    title="Privacy Settings"
+                                    onPress={this._navigateToPrivacy}
+                                />
+                                : null
+                            }
+
                         </SafeAreaView>
                     </View>
                 </ScrollView>

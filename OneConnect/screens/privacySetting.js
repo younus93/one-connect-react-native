@@ -79,6 +79,15 @@ export default class Privacy extends React.Component {
         })
     }
 
+    _getItem = item => {
+        item = item.charAt(0).toUpperCase() + item.slice(1).replace('_', " ");
+        if(item == 'Dob')
+            return "Date of Birth";
+        if(item == 'Bio')
+            return "About Me";
+        return item;
+    }
+
     _renderSetting = () => {
         const {data} = this.state
         return(
@@ -86,7 +95,9 @@ export default class Privacy extends React.Component {
                 return(
                     <View key={`pelt-${Math.random(1)}`}>
                         <View style={{flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center', paddingRight: 10}}>
-                            <Text style={styles.header}>{item.charAt(0).toUpperCase() + item.slice(1).replace('_', " ")}</Text>
+                            <Text style={styles.header}>
+                                {this._getItem(item)}
+                            </Text>
                         </View>
                         <View style={styles.sectionBody}>
                         {
