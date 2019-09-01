@@ -50,7 +50,7 @@ export default class Notification extends React.Component {
     this.type = ["Birthdays", "Friend requests"];
     this.data = null;
     this.state = {
-      birthdays : [],
+      birthdays: [],
       loading: true,
       updateToggle: false,
       index: 0,
@@ -173,43 +173,47 @@ export default class Notification extends React.Component {
       return <SearchUserList userList={this.state.birthdays}
         navigation={this.props.navigation}
       ></SearchUserList>;
-    return <></>;
+    return <View style={styles.item}>
+      <Text style={styles.itemText}>No birthdays to show</Text>
+    </View>;
   };
 
   SecondRoute = () => {
     console.log("Seond route");
     console.log(this.state);
     if (this.state.incomingFriendships.length > 0)
-      return <FriendRequestList incomingFriendships={this.state.incomingFriendships} navigation={this.props.navigation}></FriendRequestList> 
-    return <></>;
+      return <FriendRequestList incomingFriendships={this.state.incomingFriendships} navigation={this.props.navigation}></FriendRequestList>
+    return <View style={styles.item}>
+      <Text style={styles.itemText}>No friend requests!</Text>
+    </View>;
   };
 
   render() {
-    if(!this.state.loading)
-    return (
-      <ScrollView>
-      <TabView
-        navigationState={this.state}
-        renderScene={SceneMap({
-          first: this.FirstRoute,
-          second: this.SecondRoute,
-        })}
-        onIndexChange={index => this.setState({ index })}
-        initialLayout={{ width: Dimensions.get('window').width }}
-        style={styles.container}
-        renderTabBar={props =>
-          <TabBar
-            {...props}
-            indicatorStyle={{ backgroundColor: Colors.yellowDark }}
-            style={{ backgroundColor: Colors.primaryLight }}
-            labelStyle={{color:'#000000' }}
-          />
-        }
+    if (!this.state.loading)
+      return (
+        <ScrollView>
+          <TabView
+            navigationState={this.state}
+            renderScene={SceneMap({
+              first: this.FirstRoute,
+              second: this.SecondRoute,
+            })}
+            onIndexChange={index => this.setState({ index })}
+            initialLayout={{ width: Dimensions.get('window').width }}
+            style={styles.container}
+            renderTabBar={props =>
+              <TabBar
+                {...props}
+                indicatorStyle={{ backgroundColor: Colors.yellowDark }}
+                style={{ backgroundColor: Colors.primaryLight }}
+                labelStyle={{ color: '#000000' }}
+              />
+            }
 
-      />
-      </ScrollView>
-    );
-    return(
+          />
+        </ScrollView>
+      );
+    return (
       <View
         style={{
           justifyContent: "center",
@@ -233,7 +237,7 @@ const styles = StyleSheet.create({
   },
   container: {
     flex: 1,
-    backgroundColor: Colors.background
+    backgroundColor: Colors.surface
   },
   bodyHeader: {
     fontSize: 16,
@@ -313,7 +317,7 @@ const styles = StyleSheet.create({
   buttons: {
     justifyContent: "space-between",
     flexDirection: "row",
-    textAlign : 'center',
+    textAlign: 'center',
     marginTop: 5,
     width: "70%"
   },
@@ -325,9 +329,9 @@ const styles = StyleSheet.create({
   },
   acceptButton: {
     justifyContent: "space-between",
-    textAlign : "center",
+    textAlign: "center",
     flexDirection: "row",
-    width : '50%',
+    width: '50%',
     marginLeft: 10,
     marginTop: 10,
     borderRadius: 10

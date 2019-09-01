@@ -13,10 +13,10 @@ import {
   Alert,
   ImageBackground
 } from "react-native";
-import { Button as RNButton } from 'react-native-elements';
+import { Input, Button as RNButton } from 'react-native-elements';
 
 import AsyncStorage from '@react-native-community/async-storage';
-import Icon from "react-native-vector-icons/FontAwesome5";
+import Icon from "react-native-vector-icons/Entypo";
 // import GradientButton from 'react-native-gradient-buttons';
 
 import { Colors } from "../constants";
@@ -157,20 +157,24 @@ export default class LoginScreen extends Component<Props> {
                 <Text style={styles.welcome}>Welcome!</Text>
               </View>
               <View>
-                <TextInput
-                  style={styles.textInput}
-                  placeholder="Email"
+              <Input
+                  placeholder='Email'
+                  shake={true}
+                  leftIcon={<Icon name="email"></Icon>}
+                  leftIconContainerStyle={{ marginRight : 10 }}
                   onChangeText={this._userNameChange}
-                  allowFontScaling={false}
+                  containerStyle={{ paddingBottom: 10, marginVertical: 10 }}
                 />
-                <TextInput
-                  style={styles.textInput}
-                  placeholder="Password"
+                <Input
+                  placeholder='Password'
+                  shake={true}
+                  leftIcon={<Icon name="lock"></Icon>}
+                  leftIconContainerStyle={{ marginRight : 10 }}
                   onChangeText={this._passwordChange}
-                  allowFontScaling={false}
                   secureTextEntry
+                  containerStyle={{ paddingBottom: 10, marginVertical: 10 }}
                 />
-
+                
                 <View style={styles.buttonContainer}>
                   <Button
                     onPress={this._forgetPassword}
