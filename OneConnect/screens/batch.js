@@ -152,7 +152,7 @@ export default class Batch extends React.Component {
             return(
                 <View style={{backgroundColor:Colors.background, marginVertical: 5, padding: 10, justifyContent:"center", alignItems: "center"}}>
                     <Text style={{color: Colors.secondaryDark, fontWeight: '500', opacity: 0.4}}>
-                        No more batches to show!
+                        { I18n.t('No_more_batches_to_show') }
                     </Text>
                 </View>
             )
@@ -169,7 +169,7 @@ export default class Batch extends React.Component {
     _listHeader = () => {
         return(
             <View style={styles.search}>
-                <TextInput style={styles.searchText} placeholder="Search list" onChangeText={this._searchFilter}/>
+                <TextInput style={styles.searchText} placeholder={ I18n.t('Search') } onChangeText={this._searchFilter}/>
             </View>
         )
     }

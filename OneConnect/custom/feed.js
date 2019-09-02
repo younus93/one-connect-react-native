@@ -24,7 +24,7 @@ export default class Feed extends React.Component {
     this.state = {
       totalLikes: props.data.likes,
       likeIconActive: props.data.is_liked,
-      likeActivefont: Colors.secondaryLight,
+      likeActivefont: Colors.red,
       commentsCount: props.data.comments_count,
       pic: props.data.pic
     };
@@ -39,7 +39,7 @@ export default class Feed extends React.Component {
       this.setState({
         totalLikes: nextProps.data.likes,
         likeIconActive: nextProps.data.is_liked,
-        likeActivefont: Colors.secondaryLight,
+        likeActivefont: Colors.red,
         commentsCount: nextProps.data.comments_count,
         pic: nextProps.data.pic
       });
@@ -71,7 +71,7 @@ export default class Feed extends React.Component {
           return {
             totalLikes: previousState.totalLikes + 1,
             likeIconActive: !previousState.likeIconActive,
-            likeActiveFont: Colors.secondaryDark
+            likeActiveFont: Colors.red
           };
         } else {
           this.props.data.likes -= 1;
@@ -93,14 +93,14 @@ export default class Feed extends React.Component {
 
   _likeText = () => {
     if(this.state.likeIconActive)
-      return "You and " + (this.state.totalLikes - 1) + " others liked it!";
+      return I18n.t('You_and')+ " " + (this.state.totalLikes - 1) + I18n.t('Liked_it');
     if(this.props.data.likers.length > 0)
-      return this.props.data.likers[0].f_name +" and " + (this.state.totalLikes - 1) + " others liked it!";
+      return this.props.data.likers[0].f_name +" " + I18n.t('and') + " "  + (this.state.totalLikes - 1)+ " " + I18n.t('Liked_it');
     return "No Likes yet";
   }
   
   _commentText = () => {
-    return this.state.commentsCount + " comments";
+    return this.state.commentsCount+ " " + I18n.t('Comment');
   }
   
   _profile = () => {
@@ -179,7 +179,7 @@ export default class Feed extends React.Component {
               <Icon
                 name="heart"
                 size={20}
-                color={Colors.secondaryDark}
+                color={Colors.red}
                 solid={this.state.likeIconActive}
               />
               <Text
@@ -285,7 +285,7 @@ const styles = StyleSheet.create({
     borderRadius: 20,
     width: 60,
     height: 60,
-    aspectRatio : 1,
+    aspectRatio : 1.25,
     resizeMode : 'contain'
   },
   shadow: {

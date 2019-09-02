@@ -24,7 +24,7 @@ export default class BatchMates extends React.Component {
     super(props);
     // this.url = props.navigation.getParam('url')
     this.data = props.navigation.getParam("item");
-    console.log('props in batchmates',props.navigation.getParam("item"))
+    console.log('props in batchmates', props.navigation.getParam("item"))
     this.state = {
       data: this.data,
       loading: false,
@@ -73,7 +73,7 @@ export default class BatchMates extends React.Component {
 
   _navigateMate = item => {
     console.log("pressed item :", item);
-    this.props.navigation.navigate("Profile", { url: item[0].resource_url});
+    this.props.navigation.navigate("Profile", { url: item[0].resource_url });
   };
 
   _renderMateList = ({ item }) => {
@@ -98,6 +98,13 @@ export default class BatchMates extends React.Component {
             <Text style={styles.name}>
               {item[0].f_name + " " + item[0].l_name}
             </Text>
+            {
+              item[0].companies.length > 0 ?
+                <Text style={styles.mutualFriendsCount}>
+                  { item[0].companies[0].name }
+                </Text>
+                : null
+            }
             <Text style={styles.mutualFriendsCount}>
               {item[0].friends_meta.mutual_friends_count}{" "}
               {I18n.t("Mutual_friends")}
@@ -195,7 +202,7 @@ export default class BatchMates extends React.Component {
       <View style={styles.search}>
         <TextInput
           style={styles.searchText}
-          placeholder="Search list"
+          placeholder={ I18n.t('Search') }
           onChangeText={this._searchFilter}
         />
       </View>
@@ -204,7 +211,7 @@ export default class BatchMates extends React.Component {
 
   _itemSeparator = props => {
     return (
-      <View style={{ backgroundColor: Colors.background, marginVertical: 5 }} />
+      <View style={{ borderBottomColor : Colors.grey, borderBottomWidth : 1 }} />
     );
   };
 
@@ -219,16 +226,16 @@ export default class BatchMates extends React.Component {
       // const {data} = this.data;
       let regex = new RegExp("^" + text, "i");
       const searchedData = this.data.filter(item => {
-        console.log('search batchmates',item[0])
+        console.log('search batchmates', item[0])
         let match = regex.test(item[0].f_name) || regex.test(item[0].l_name);
         let tagMatch = false;
         item[0].tags.map(tag => {
-          if(regex.test(tag.name)) {
-            tagMatch=true
+          if (regex.test(tag.name)) {
+            tagMatch = true
           }
         })
         match = tagMatch || match
-        console.log('search return match',match)
+        console.log('search return match', match)
         return match;
       });
       console.log("searched list : ", searchedData);
@@ -293,8 +300,8 @@ const styles = StyleSheet.create({
   mate: {
     flexDirection: "row",
     //justifyContent: 'space-between',
+    margin:10,
     alignItems: "center",
-    padding: 10
   },
   name: {
     fontSize: 17,

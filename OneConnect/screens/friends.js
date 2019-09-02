@@ -88,7 +88,7 @@ export default class Friends extends React.Component {
       loading: true,
       error: false,
       errorText: null,
-      data:null
+      data: null
     };
     Manager.friends(this.url, "GET");
   };
@@ -100,7 +100,7 @@ export default class Friends extends React.Component {
       loading: false,
       error: false,
       errorText: null,
-      data:this.data
+      data: this.data
     });
   };
 
@@ -139,18 +139,17 @@ export default class Friends extends React.Component {
           </View>
           <View style={styles.profileContainer}>
             <Text style={styles.name}>{item.f_name + " " + item.l_name}</Text>
-
+            {
+              item.companies.length > 0 ?
+                <Text style={styles.mutualFriendsCount}>
+                  {item.companies[0].name}
+                </Text>
+                : null
+            }
             <Text style={styles.mutualFriendsCount}>
               {item.friends_meta.mutual_friends_count}{" "}
               {I18n.t("Mutual_friends")}
             </Text>
-            <View style={styles.tags}>
-              {item.tags.map(tag => (
-                <Text style={styles.tag} key={UUID.v4()}>
-                  {tag.name}
-                </Text>
-              ))}
-            </View>
           </View>
         </View>
       </Button>
@@ -179,7 +178,7 @@ export default class Friends extends React.Component {
               opacity: 0.4
             }}
           >
-            No more friends! 
+            { I18n.t('No_Friends_yet') }
           </Text>
         </View>
       );
@@ -237,7 +236,7 @@ export default class Friends extends React.Component {
       <View style={styles.search}>
         <TextInput
           style={styles.searchText}
-          placeholder="Search Friends"
+          placeholder={I18n.t('Search')}
           onChangeText={this._searchFilter}
         />
       </View>
@@ -246,7 +245,7 @@ export default class Friends extends React.Component {
 
   _itemSeparator = props => {
     return (
-      <View style={{ backgroundColor: Colors.background, marginVertical: 5 }} />
+      <View style={{ borderBottomWidth: 1, borderBottomColor: Colors.grey }} />
     );
   };
 
@@ -261,16 +260,16 @@ export default class Friends extends React.Component {
       // const {data} = this.data;
       let regex = new RegExp("^" + text, "i");
       const searchedData = this.data.filter(item => {
-        console.log('search friend',item)
+        console.log('search friend', item)
         let match = regex.test(item.f_name) || regex.test(item.l_name);
         let tagMatch = false;
         item.tags.map(tag => {
-          if(regex.test(tag.name)) {
-            tagMatch=true
+          if (regex.test(tag.name)) {
+            tagMatch = true
           }
         })
         match = tagMatch || match
-        console.log('search return match',match)
+        console.log('search return match', match)
         return match;
       });
       console.log("searched list : ", searchedData);
@@ -358,13 +357,13 @@ const styles = StyleSheet.create({
     fontSize: 12,
     fontWeight: "300",
     flexDirection: "row",
-    flexWrap:"wrap",
-    paddingRight:10,
+    flexWrap: "wrap",
+    paddingRight: 10,
   },
   tag: {
     paddingLeft: 10
-  },  
-  profileContainer:{
-    flexShrink:1
+  },
+  profileContainer: {
+    flexShrink: 1
   }
 });

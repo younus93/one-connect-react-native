@@ -11,7 +11,8 @@ import {
   ActivityIndicator,
   Animated,
   Alert,
-  ImageBackground
+  ImageBackground,
+  Linking
 } from "react-native";
 import { Input, Button as RNButton } from 'react-native-elements';
 
@@ -126,9 +127,9 @@ export default class LoginScreen extends Component<Props> {
     }
   };
 
-  // _signUpButton = () => {
-  //   this.props.navigation.navigate('SignUp');
-  // }
+  _signUpButton = () => {
+    Linking.openURL('http://beebuckapp.com/sign-up');
+  }
 
   _forgetPassword = () => {
     console.log('forgot password');
@@ -190,8 +191,8 @@ export default class LoginScreen extends Component<Props> {
                 <RNButton buttonStyle={{ backgroundColor: Colors.yellowDark, borderRadius: 20 }}
                   onPress={this._loginButton} title="Login" />
 
-                {/* <RNButton buttonStyle={{ backgroundColor: Colors.greenDark, borderRadius: 20, marginTop : 10 }}
-                  onPress={this._signUpButton} title="Sign Up" /> */}
+                <RNButton buttonStyle={{ backgroundColor: Colors.greenDark, borderRadius: 20, marginTop : 10 }}
+                  onPress={this._signUpButton} title="Sign Up" />
 
               </View>
               <View style={{ margin: 10, marginTop: 50 }}>

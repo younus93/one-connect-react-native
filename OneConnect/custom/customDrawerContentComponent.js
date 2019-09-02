@@ -69,7 +69,7 @@ export default class CustomDrawerContentComponent extends React.Component {
                                 padding: 20,
                                 alignItems: 'center',}}>
                                 <View style={styles.textBody}>
-                                    <Text style={styles.bodyTextstyle}>View Profile</Text>
+                                    <Text style={styles.bodyTextstyle}>{ I18n.t('View_Profile') }</Text>
                                 </View>
                             </View>
                         </Button> 
@@ -145,13 +145,13 @@ export default class CustomDrawerContentComponent extends React.Component {
 
                     <View style={styles.item}>
                         <View>
-                            <Text style={styles.bodyTextstyle}>En</Text>
+                            <Text style={styles.bodyTextstyle}>English</Text>
                         </View>
                         <View>
                             <Switch value={this.state.switchValue} onValueChange={this._toggleSwitch} trackColor={{ false: 'orange' }} />
                         </View>
                         <View>
-                            <Text style={styles.bodyTextstyle}>Th</Text>
+                            <Text style={styles.bodyTextstyle}>ภาษาไทย</Text>
                         </View>
                     </View>
 

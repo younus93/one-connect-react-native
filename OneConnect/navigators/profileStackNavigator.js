@@ -12,6 +12,7 @@ import ChangePassword from '../screens/changePassword';
 import Privacy from '../screens/privacySetting';
 import Icon from 'react-native-vector-icons/FontAwesome5';
 import {Colors} from '../constants'
+import I18n from "../service/i18n";
 
 const navigatorConfig = {
     initialRouteName: 'Profile',
@@ -37,25 +38,25 @@ const ProfileStack = createStackNavigator({
     Settings: {
         screen: Settings,
         navigationOptions: () => ({
-            title: `SETTINGS`,
+            title: I18n.t('Settings'),
         }),
     },
     ChangePassword: {
         screen: ChangePassword,
         navigationOptions: () => ({
-            title: `CHANGE PASSWORD`,
+            title: I18n.t('Change_Password'),
         }),
     },
     AddEducation: {
         screen: AddEducation,
         navigationOptions: () => ({
-            title: `Add Educational Details`,
+            title:  I18n.t('Add_Education_Details'),
         }),
     },
     AddCompany: {
         screen: AddCompany,
         navigationOptions: () => ({
-            title: `Add Company Details`,
+            title:  I18n.t('Add_Company_Details'),
         }),
     },
     Privacy: {

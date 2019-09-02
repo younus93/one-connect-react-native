@@ -55,8 +55,8 @@ export default class Notification extends React.Component {
       updateToggle: false,
       index: 0,
       routes: [
-        { key: 'first', title: 'Birthdays' },
-        { key: 'second', title: 'Friend Requests' },
+        { key: 'first', title: I18n.t('Friend_Requests') },
+        { key: 'second', title: I18n.t('Birthdays') },
       ],
     };
   }
@@ -174,7 +174,7 @@ export default class Notification extends React.Component {
         navigation={this.props.navigation}
       ></SearchUserList>;
     return <View style={styles.item}>
-      <Text style={styles.itemText}>No birthdays to show</Text>
+      <Text style={styles.itemText}>{ I18n.t('No_birthday_alerts') }</Text>
     </View>;
   };
 
@@ -182,9 +182,11 @@ export default class Notification extends React.Component {
     console.log("Seond route");
     console.log(this.state);
     if (this.state.incomingFriendships.length > 0)
-      return <FriendRequestList incomingFriendships={this.state.incomingFriendships} navigation={this.props.navigation}></FriendRequestList>
+      return <FriendRequestList incomingFriendships={this.state.incomingFriendships} 
+          navigation={this.props.navigation}> 
+      </FriendRequestList>
     return <View style={styles.item}>
-      <Text style={styles.itemText}>No friend requests!</Text>
+      <Text style={styles.itemText}>{ I18n.t('No_friend_requests') }</Text>
     </View>;
   };
 
@@ -195,8 +197,8 @@ export default class Notification extends React.Component {
           <TabView
             navigationState={this.state}
             renderScene={SceneMap({
-              first: this.FirstRoute,
-              second: this.SecondRoute,
+              first: this.SecondRoute,
+              second: this.FirstRoute,
             })}
             onIndexChange={index => this.setState({ index })}
             initialLayout={{ width: Dimensions.get('window').width }}

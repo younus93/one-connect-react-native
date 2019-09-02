@@ -3,7 +3,7 @@ import { View, Text, StyleSheet, FlatList, TouchableWithoutFeedback, ActivityInd
 import MapView from 'react-native-maps';
 import { Callout } from 'react-native-maps';
 import { Marker } from 'react-native-maps';
-import {Colors} from '../constants';
+import { Colors } from '../constants';
 import Manager from '../service/dataManager';
 import Button from '../custom/button';
 import Feed from '../custom/feed';
@@ -11,13 +11,13 @@ import I18n from '../service/i18n';
 
 
 export default class BatchItem extends React.Component {
-    static navigationOptions = ({navigation}) => ({
+    static navigationOptions = ({ navigation }) => ({
         title: navigation.getParam('title'),
     })
 
     constructor(props) {
         super(props)
-        this.props.navigation.setParams({ title: I18n.t('Batches')});
+        this.props.navigation.setParams({ title: I18n.t('Batches') });
         this.item = {}
         this.url = this.props.navigation.getParam('url')
         console.log('batch item : ', this.item)
@@ -43,14 +43,15 @@ export default class BatchItem extends React.Component {
         Manager.removeListener('LANG_U', this._updateLanguage)
     }
     _updateLanguage = () => {
-        this.props.navigation.setParams({ title: I18n.t('Batches')});
+        this.props.navigation.setParams({ title: I18n.t('Batches') });
         this.setState(previousState => ({
             updateToggle: !previousState.updateToggle
         }))
     }
 
     _batchItemSuccess = (data) => {
-        console.log("batch data is : ", data)
+        console.log("batch data is : ", data);
+        // console.log(data.data.batchmates[0]);
         this.item = data.data
         this.setState({
             loading: false,
@@ -67,19 +68,19 @@ export default class BatchItem extends React.Component {
         })
     }
 
-    _toggleError = (state=null) => {
+    _toggleError = (state = null) => {
         this.setState(previousState => ({
-            error: state ? state: !previousState.error
+            error: state ? state : !previousState.error
         }))
     }
 
     _openFeed = (item) => {
-        this.props.navigation.navigate("OpenFeed", {comment: false, item: item})
+        this.props.navigation.navigate("OpenFeed", { comment: false, item: item })
     }
 
 
     _comment = (item) => {
-        this.props.navigation.navigate("OpenFeed", {comment: true, item: item})
+        this.props.navigation.navigate("OpenFeed", { comment: true, item: item })
     }
 
     _institute = (item) => {
@@ -87,8 +88,8 @@ export default class BatchItem extends React.Component {
         // this.props.navigation.navigate("Institution", {item: item.institution})
     }
 
-    _renderFeeds = ({item}) => {
-        return(
+    _renderFeeds = ({ item }) => {
+        return (
             <Feed
                 data={item}
                 callback={() => this._openFeed(item)}
@@ -100,15 +101,15 @@ export default class BatchItem extends React.Component {
     }
 
     _itemSeparator = (props) => {
-        return(
-            <View style={{backgroundColor:Colors.background, paddingVertical: 10}} />
+        return (
+            <View style={{ backgroundColor: Colors.background, paddingVertical: 10 }} />
         )
     }
 
     _renderEmptyList = () => {
-        const {loading} = this.state
-        if(!loading){
-            return(
+        const { loading } = this.state
+        if (!loading) {
+            return (
                 <View style={{
                     backgroundColor: Colors.background,
                     justifyContent: 'center',
@@ -117,7 +118,9 @@ export default class BatchItem extends React.Component {
                     height: '100%',
                     width: '100%',
                 }}>
-                    <Text style={{color: Colors.secondaryDark, fontSize: 22,fontWeight: '700', opacity: 0.4}}>{I18n.t('No_Posts')}</Text>
+                    <Text style={{ color: Colors.secondaryDark, fontSize: 22, fontWeight: '700', opacity: 0.4 }}>
+                        {I18n.t('No_posts_to_display')}
+                    </Text>
                 </View>
             )
         }
@@ -125,19 +128,19 @@ export default class BatchItem extends React.Component {
     }
 
     _listFooter = () => {
-        const {loading} = this.state
-        if(!loading && this.data) {
-            return(
-                <View style={{backgroundColor:Colors.background, padding: 10, justifyContent:"center", alignItems: "center"}}>
-                    <Text style={{color: Colors.secondaryDark, fontWeight: '500', opacity: 0.4}}>
+        const { loading } = this.state
+        if (!loading && this.data) {
+            return (
+                <View style={{ backgroundColor: Colors.background, padding: 10, justifyContent: "center", alignItems: "center" }}>
+                    <Text style={{ color: Colors.secondaryDark, fontWeight: '500', opacity: 0.4 }}>
                         End of list.
                     </Text>
                 </View>
             )
         }
         else {
-            return(
-                <View style={{backgroundColor:Colors.background, padding: 10, justifyContent:"center", alignItems: "center"}}>
+            return (
+                <View style={{ backgroundColor: Colors.background, padding: 10, justifyContent: "center", alignItems: "center" }}>
                     <ActivityIndicator animating={this.state.loading} size="large" color={Colors.secondaryDark} />
                 </View>
             )
@@ -149,23 +152,23 @@ export default class BatchItem extends React.Component {
 
 
     render() {
-        if(this.state.loading){
-            return(
-                <View style={[styles.container, {justifyContent:'center', alignItems: 'center'}]}>
+        if (this.state.loading) {
+            return (
+                <View style={[styles.container, { justifyContent: 'center', alignItems: 'center' }]}>
                     <ActivityIndicator animating={this.state.loading} size="large" color={Colors.secondaryLight} />
                 </View>
             )
         }
 
-        return(
+        return (
             <View style={styles.container}>
                 <ScrollView alwaysBounceVertical={false} bounces={false}>
                     <View style={styles.banner}>
                         <Image style={styles.image}
-                        source={{uri: this.item.institution ? this.item.institution.profile_pic: null}}
-                        resizeMode='cover'
-                        defaultSource={require('../resources/in_2.jpg')}
-                        onError={(error) => console.log(eror)}
+                            source={{ uri: this.item.institution ? this.item.institution.profile_pic : null }}
+                            resizeMode='cover'
+                            defaultSource={require('../resources/in_2.jpg')}
+                            onError={(error) => console.log(eror)}
                         />
                         <View style={styles.bio}>
                             <Text style={styles.bannerText}>{this.item.institution ? this.item.institution.name : 'None'}</Text>
@@ -173,30 +176,36 @@ export default class BatchItem extends React.Component {
                             <Text style={styles.bannerText}>{this.item.name}</Text>
                         </View>
                         <View style={styles.tabs}>
-                            <Button onPress={() => this.props.navigation.navigate('BatchMates', {'item': this.item.batchmates})} style={{justifyContent: 'center', alignItems: 'center'}}>
-                                <Text style={[styles.bannerText, {fontSize: 16}]}>{this.item.batchmates_count}</Text>
-                                <Text style={[styles.bannerText, {fontSize: 16}]}>Professionals</Text>
+                            <Button onPress={() => this.props.navigation.navigate('BatchMates', { 'item': this.item.batchmates })}
+                                style={{ justifyContent: 'center', alignItems: 'center' }}
+                            >
+                                <Text style={[styles.bannerText, { fontSize: 16 }]}>{this.item.batchmates_count}</Text>
+                                <Text style={[styles.bannerText, { fontSize: 16 }]}>
+                                    {I18n.t('Professionals')}
+                                </Text>
                             </Button>
-                            <View style={{justifyContent: 'center', alignItems: 'center'}}>
-                                <Text style={[styles.bannerText, {fontSize: 16}]}>{this.item.batch_reminders_count}</Text>
-                                <Text style={[styles.bannerText, {fontSize: 16}]}>Announcements</Text>
+                            <View style={{ justifyContent: 'center', alignItems: 'center' }}>
+                                <Text style={[styles.bannerText, { fontSize: 16 }]}>{this.item.batch_reminders_count}</Text>
+                                <Text style={[styles.bannerText, { fontSize: 16 }]}>
+                                    {I18n.t('Posts')}
+                                </Text>
                             </View>
                         </View>
                     </View>
                     <FlatList
-                    data={this.item.posts}
-                    keyExtractor={this._keyExtractor}
-                    renderItem={this._renderFeeds}
-                    ItemSeparatorComponent={this._itemSeparator}
-                    ListEmptyComponent={this._renderEmptyList}
-                    ListFooterComponent={this._listFooter}
-                    style={{backgroundColor: Colors.background}}
+                        data={this.item.posts}
+                        keyExtractor={this._keyExtractor}
+                        renderItem={this._renderFeeds}
+                        ItemSeparatorComponent={this._itemSeparator}
+                        ListEmptyComponent={this._renderEmptyList}
+                        ListFooterComponent={this._listFooter}
+                        style={{ backgroundColor: Colors.background }}
                     />
                 </ScrollView>
 
-                <Button style={styles.button} 
-                    onPress={() => this.props.navigation.navigate('BatchMates', {'item': this.item.batchmates})} 
-                    title={I18n.t('Batchmates')} 
+                <Button style={styles.button}
+                    onPress={() => this.props.navigation.navigate('BatchMates', { 'item': this.item.batchmates })}
+                    title={I18n.t('Batchmates')}
                     color={Colors.alternative}>
                 </Button>
             </View>

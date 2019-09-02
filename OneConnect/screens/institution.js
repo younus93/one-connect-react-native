@@ -30,6 +30,7 @@ export default class Institution extends React.Component {
     this.props.navigation.setParams({ title: I18n.t("Institutions") });
     this.item = this.props.navigation.getParam("item");
     this.state = {
+      profile_pic : this.item.profile_pic,
       loading: true,
       error: false,
       errorText: null
@@ -55,6 +56,7 @@ export default class Institution extends React.Component {
     this.data = data.data;
     this.latlong = this.data.latitude_longitude.split(",");
     this.setState({
+      profile_pic : this.data.profile_pic,
       loading: false,
       error: false,
       error: null
@@ -101,6 +103,7 @@ export default class Institution extends React.Component {
             data={item}
             callback={() => this._openFeed(item)}
             commentCallback={() => this._comment(item)}
+            instituteCallback={() => {}}
             touchable
           />
         );
@@ -124,7 +127,7 @@ export default class Institution extends React.Component {
             opacity: 0.4
           }}
         >
-          No posts availabe
+          { I18n.t('No_posts_to_display') }
         </Text>
       </View>
     );
@@ -164,7 +167,7 @@ export default class Institution extends React.Component {
           <Image
             style={{ width: 180, height: 180, borderRadius: 75 }}
             resizeMode="contain"
-            source={{ uri: this.item.profile_pic }}
+            source={{ uri: this.state.profile_pic }}
           />
           <View style={styles.imageTextContainer}>
             <Text style={styles.imageText}>{this.data.name}</Text>

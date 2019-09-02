@@ -243,7 +243,7 @@ export default class Profile extends React.Component {
 
     _navigateToPrivacy = () => {
         console.log("navigateing to privacy")
-        this.props.navigation.navigate('Privacy', { data: this.state.profile.privacy, callback: this._needsUpdate }) 
+        this.props.navigation.navigate('Privacy', { data: this.state.profile.privacy, callback: this._needsUpdate })
     }
 
     _profilePicSuccess = (data) => {
@@ -331,7 +331,7 @@ export default class Profile extends React.Component {
                 <View style={{ margin: 30, paddingHorizontal: 50 }}>
                     <RNButton titleStyle={{ color: "black" }}
                         buttonStyle={{ backgroundColor: Colors.yellowDark }}
-                        title="Unfriend"
+                        title={ I18n.t('Unfriend') }
                         onPress={() => { this._unfriend(this.state.profile.basic.id) }}
                     />
                 </View>
@@ -341,7 +341,7 @@ export default class Profile extends React.Component {
             return <View style={{ margin: 30, paddingHorizontal: 50 }}>
                 <RNButton titleStyle={{ color: "black" }}
                     buttonStyle={{ backgroundColor: Colors.yellowDark }}
-                    title="Unsend Request"
+                    title={ I18n.t('Unsend') }
                     onPress={() => { this._unsend(this.state.profile.basic.id) }}
                 />
             </View>
@@ -349,19 +349,19 @@ export default class Profile extends React.Component {
             return <View style={{ margin: 10, paddingHorizontal: 50, flexDirection: 'row', justifyContent: 'center' }}>
                 <RNButton titleStyle={{ color: "black" }}
                     buttonStyle={{ backgroundColor: Colors.yellowDark, width: 150 }}
-                    title="Accept"
+                    title={ I18n.t('Accept') }
                     onPress={() => { this._accept(this.state.profile.basic.id) }}
                 />
                 <RNButton titleStyle={{ color: "black" }}
                     buttonStyle={{ backgroundColor: Colors.grey, marginLeft: 10, width: 150 }}
-                    title="Deny"
+                    title={ I18n.t('Reject') }
                     onPress={() => { this._deny(this.state.profile.basic.id) }}
                 />
             </View>
         return <View style={{ margin: 30, paddingHorizontal: 50 }}>
             <RNButton titleStyle={{ color: "black" }}
                 buttonStyle={{ backgroundColor: Colors.yellowDark }}
-                title="Send Request"
+                title={ I18n.t('Send_Request') }
                 onPress={() => { this._send(this.state.profile.basic.id) }}
             />
         </View>
@@ -447,14 +447,14 @@ export default class Profile extends React.Component {
                                 <View>
                                     <View key={`pelt-${Math.random(1)}`} style={styles.item}>
                                         <Icon name="smile-wink" size={18} color={Colors.primaryDark} />
-                                        <Text style={styles.itemText}>Nick Name : {this.state.profile.basic.nick_name}</Text>
+                                        <Text style={styles.itemText}>{I18n.t('Nick_Name')} : {this.state.profile.basic.nick_name}</Text>
                                     </View>
                                     {this.state.profile.basic.phone_number ?
                                         <Button key={`pelt-${Math.random(1)}`} style={styles.item}
                                             onPress={() => this._makeCall(this.state.profile.basic.phone_number)}
                                         >
                                             <Icon name="phone" size={18} color={Colors.primaryDark} />
-                                            <Text style={styles.itemText}>Phone Number : {this.state.profile.basic.phone_number}</Text>
+                                            <Text style={styles.itemText}>{I18n.t('Phone_Number')} : {this.state.profile.basic.phone_number}</Text>
                                         </Button>
                                         : null
                                     }
@@ -464,7 +464,7 @@ export default class Profile extends React.Component {
                                                 onPress={() => this._makeEmail(this.state.profile.basic.email)}
                                             >
                                                 <Entypo name="email" size={18} color={Colors.primaryDark} />
-                                                <Text style={styles.itemText}>Email : {this.state.profile.basic.email}</Text>
+                                                <Text style={styles.itemText}>{I18n.t('Email')} : {this.state.profile.basic.email}</Text>
                                             </Button>
                                             : null
                                     }
@@ -476,7 +476,7 @@ export default class Profile extends React.Component {
                                                     size={18}
                                                     color={Colors.primaryDark}
                                                 />
-                                                <Text style={styles.itemText}>Website : {this.state.profile.basic.website}</Text>
+                                                <Text style={styles.itemText}>{I18n.t('Website')} : {this.state.profile.basic.website}</Text>
                                             </View>
                                             : null
                                     }
@@ -484,19 +484,19 @@ export default class Profile extends React.Component {
                                         this.state.profile.basic.dob ?
                                             <View key={`pelt-${Math.random(1)}`} style={styles.item}>
                                                 <Icon name="calendar-day" size={18} color={Colors.primaryDark} />
-                                                <Text style={styles.itemText}>Date of Birth : {this._getDOB(this.state.profile.basic.dob)}</Text>
+                                                <Text style={styles.itemText}>{I18n.t('Date_of_Birth')} : {this._getDOB(this.state.profile.basic.dob)}</Text>
                                             </View>
                                             : null
                                     }
                                     <View key={`pelt-${Math.random(1)}`} style={styles.item}>
                                         <Icon name="venus-mars" size={18} color={Colors.primaryDark} />
-                                        <Text style={styles.itemText}>Gender : {this.state.profile.basic.gender}</Text>
+                                        <Text style={styles.itemText}>{I18n.t('Gender')} : {this.state.profile.basic.gender}</Text>
                                     </View>
                                     {
                                         this.state.profile.basic.bio ?
                                             <View key={`pelt-${Math.random(1)}`} style={styles.item}>
                                                 <Icon name="id-badge" size={18} color={Colors.primaryDark} />
-                                                <Text style={styles.itemText}>About me : {this.state.profile.basic.bio}</Text>
+                                                <Text style={styles.itemText}>{I18n.t('About_me')} : {this.state.profile.basic.bio}</Text>
                                             </View>
                                             : null
                                     }
@@ -507,7 +507,7 @@ export default class Profile extends React.Component {
                                 <View style={styles.bio}>
                                     <View style={{ flexDirection: 'row' }}>
                                         <Text style={{ color: Colors.yellowDark, fontWeight: '600', fontSize: 20 }}>
-                                            EXPERIENCE
+                                            {I18n.t('Experience')}
                                         </Text>
                                         {
                                             this.state.profile.editable ?
@@ -549,7 +549,7 @@ export default class Profile extends React.Component {
                                             <View key={`pelt-${Math.random(1)}`} style={[styles.item, { alignItems: 'center' }]}>
                                                 <View>
                                                     <Text style={[styles.itemText, { paddingTop: 5 }]}>
-                                                        Experience not updated
+                                                        { I18n.t('Experience_not_updated') } 
                                                     </Text>
                                                 </View>
                                             </View>
@@ -560,8 +560,8 @@ export default class Profile extends React.Component {
                                 <View style={styles.bio}>
                                     <View style={{ flexDirection: 'row' }}>
                                         <Text style={{ color: Colors.yellowDark, fontWeight: '600', fontSize: 20 }}>
-                                            EDUCATION
-                                    </Text>
+                                            {I18n.t('Education')}
+                                        </Text>
                                         {
                                             this.state.profile.editable ?
                                                 <Button onPress={this._navigateToEducation}>
@@ -600,7 +600,7 @@ export default class Profile extends React.Component {
                                             <View key={`pelt-${Math.random(1)}`} style={[styles.item, { alignItems: 'center' }]}>
                                                 <View>
                                                     <Text style={[styles.itemText, { paddingTop: 5 }]}>
-                                                        Educational details not updated
+                                                    { I18n.t('Education_details_not_updated') } 
                                                 </Text>
                                                 </View>
                                             </View>
@@ -611,7 +611,7 @@ export default class Profile extends React.Component {
                                 <View style={styles.bio}>
                                     <View style={{ flexDirection: 'row' }}>
                                         <Text style={{ color: Colors.yellowDark, fontWeight: '600', fontSize: 20 }}>
-                                            TAGS
+                                            {I18n.t('Tags')}
                                         </Text>
                                         {
                                             this.state.profile.editable ?
@@ -630,14 +630,17 @@ export default class Profile extends React.Component {
                                             <TouchableWithoutFeedback onPress={this._toggleModal} >
                                                 <View style={{ flex: 1, backgroundColor: '#00000070', justifyContent: 'center', alignItems: 'center', color: '#FFFFFF', paddingHorizontal: 20 }}>
                                                     <View style={{ backgroundColor: Colors.surface, width: '100%', padding: 20, borderRadius: 20 }}>
-                                                        <Text>Enter tags separated by comma</Text>
+                                                        <Text>{ I18n.t('Enter_Tags_Comma') }</Text>
                                                         <TextInput style={styles.textInput}
                                                             multiline
                                                             placeholder="Add new tag"
                                                             onChangeText={this._addTag}
                                                             allowFontScaling={false}
                                                         />
-                                                        <Button style={styles.button} title="SUBMIT" color={Colors.alternative} onPress={this._submitNewTag}>
+                                                        <Button style={styles.button} 
+                                                        title={ I18n.t('Save') }
+                                                        color={Colors.alternative}
+                                                        onPress={this._submitNewTag}>
                                                         </Button>
                                                         <Button style={{
                                                             backgroundColor: Colors.yellowDark,
@@ -646,7 +649,7 @@ export default class Profile extends React.Component {
                                                             borderRadius: 30,
                                                             paddingVertical: 15,
                                                             marginVertical: 10,
-                                                        }} title="CLOSE" color={Colors.onPrimary} onPress={this._toggleModal}>
+                                                        }} title={I18n.t('Close')} color={Colors.onPrimary} onPress={this._toggleModal}>
                                                         </Button>
                                                     </View>
                                                 </View>
@@ -671,21 +674,21 @@ export default class Profile extends React.Component {
                                             :
                                             <View>
                                                 <Text style={[styles.itemText, { paddingTop: 5 }]}>
-                                                    Tags not updated.
+                                                    { I18n.t('Tags_not_updated') }
                                                 </Text>
                                             </View>
                                     }
                                 </View>
                             </View>
                             {
-                                this.state.profile.editable ? 
-                                <RNButton
-                                    containerStyle={{ margin :10 }}
-                                    buttonStyle={{ backgroundColor : Colors.yellowDark}}
-                                    title="Privacy Settings"
-                                    onPress={this._navigateToPrivacy}
-                                />
-                                : null
+                                this.state.profile.editable ?
+                                    <RNButton
+                                        containerStyle={{ margin: 10 }}
+                                        buttonStyle={{ backgroundColor: Colors.yellowDark }}
+                                        title={ I18n.t('Privacy_Setting') }
+                                        onPress={this._navigateToPrivacy}
+                                    />
+                                    : null
                             }
 
                         </SafeAreaView>

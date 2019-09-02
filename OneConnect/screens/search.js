@@ -21,6 +21,7 @@ import Icon from "react-native-vector-icons/FontAwesome5";
 import SerachUserList from "../custom/searchUserList";
 import I18n from "../service/i18n";
 import SearchUserList from "../custom/searchUserList";
+
 // import SearchUserList from "../custom/searchUserList";
 const UUID = require('uuid');
 export default class Search extends React.Component {
@@ -117,7 +118,7 @@ export default class Search extends React.Component {
       user.l_name = item.searchable.basic.l_name;
       user.profile_pic = item.searchable.basic.profile_pic;
       user.tags = item.searchable.tags;
-      user.extra_info = item.searchable.companies.length ? `Works at ${item.searchable.companies[0].name}` : null;
+      user.extra_info = item.searchable.companies.length ? `${item.searchable.companies[0].name}` : null;
       user.friends_meta = item.searchable.friends_meta;
       return user;
     });
@@ -202,7 +203,7 @@ export default class Search extends React.Component {
                         {item.title}
                       </Text>
                       <Text style={styles.itemText}>
-                        Institution : {item.searchable.institution.name}
+                        {I18n.t('Institution')} : {item.searchable.institution.name}
                       </Text>
                     </View>
                   </Button>
@@ -325,7 +326,7 @@ export default class Search extends React.Component {
                         {item.title}
                       </Text>
                       <Text style={styles.itemText}>
-                        Institution : {item.searchable.institution.name}
+                        {I18n.t('Institution')} : {item.searchable.institution.name}
                       </Text>
                     </View>
                   </Button>
@@ -414,7 +415,7 @@ export default class Search extends React.Component {
           <View style={styles.search}>
             <TextInput
               style={styles.textInput}
-              placeholder="Search"
+              placeholder={ I18n.t('Search') }
               allowFontScaling={false}
               onChangeText={this._searchTextChange}
               onSubmitEditing={this._onSubmitEditing}
@@ -469,7 +470,8 @@ export default class Search extends React.Component {
                   showInstitution: !previousState.showInstitution,
                   institutionBackground: !previousState.showInstitution
                     ? Colors.searchFilterSelected
-                    : Colors.onPrimary                }));
+                    : Colors.onPrimary
+                }));
               }}
             >
               <Icon
@@ -488,7 +490,8 @@ export default class Search extends React.Component {
                   showBatches: !previousState.showBatches,
                   batchesBackground: !previousState.showBatches
                     ? Colors.searchFilterSelected
-                    : Colors.onPrimary                }));
+                    : Colors.onPrimary
+                }));
               }}
             >
               <Icon
@@ -507,7 +510,8 @@ export default class Search extends React.Component {
                   showCourses: !previousState.showCourses,
                   coursesBackground: !previousState.showCourses
                     ? Colors.searchFilterSelected
-                    : Colors.onPrimary                }));
+                    : Colors.onPrimary
+                }));
               }}>
               <Icon
                 name="chalkboard-teacher"

@@ -88,4 +88,5 @@ export const Colors = {
     grey : '#DCDCDC',
     greyDark : '#A9A9A9',
     white: '#FFFFFF', 
+    red : '#FF0000'
 }

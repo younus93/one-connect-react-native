@@ -12,6 +12,7 @@ import Icon from 'react-native-vector-icons/FontAwesome5';
 import Entypo from 'react-native-vector-icons/Entypo';
 import DateTimePicker from "react-native-modal-datetime-picker";
 import ErrorHandler from '../custom/errorHandler';
+import I18n from "../service/i18n";
 
 export default class AddCompany extends React.Component {
     constructor(props) {
@@ -69,10 +70,10 @@ export default class AddCompany extends React.Component {
             modalBackground: Colors.safeDark
         })
         Manager.emitEvent('EXPERIENCE_U', data)
-        setTimeout(()=>{
+        setTimeout(() => {
             console.log("Entered timer");
-            this.props.navigation.navigate('Profile','/api/profile');
-        },2000);
+            this.props.navigation.navigate('Profile', '/api/profile');
+        }, 2000);
     }
 
     _companyError = error => {
@@ -164,9 +165,9 @@ export default class AddCompany extends React.Component {
         return (
             <View>
                 <Input
-                    label="Name"
+                    label={I18n.t('Name')}
                     onChangeText={(text) => this._storeInfo(text, 'name')}
-                    returnKeyType='next'
+                    returnKeyType={'next'}
                     style={{ marginVertical: 3 }}
                     leftIcon={
                         <Icon
@@ -178,7 +179,7 @@ export default class AddCompany extends React.Component {
                     }
                 />
                 <Input
-                    label="Email"
+                    label={I18n.t('Email')}
                     onChangeText={(text) => this._storeInfo(text, 'email')}
                     returnKeyType='next'
                     style={{ marginVertical: 3 }}
@@ -192,7 +193,7 @@ export default class AddCompany extends React.Component {
                     }
                 />
                 <Input
-                    label="Phone Number"
+                    label={I18n.t('Phone_Number')}
                     keyboardType={'numeric'}
                     onChangeText={(text) => this._storeInfo(text, 'phone_number')}
                     returnKeyType='next'
@@ -207,7 +208,7 @@ export default class AddCompany extends React.Component {
                     }
                 />
                 <Input
-                    label="Designation"
+                    label={I18n.t('Designation')}
                     onChangeText={(text) => this._storeInfo(text, 'designation')}
                     returnKeyType='next'
                     style={{ marginVertical: 3 }}
@@ -264,7 +265,9 @@ export default class AddCompany extends React.Component {
                 <ScrollView style={styles.container}>
                     {this._renderForm()}
                     <View style={{ margin: 10, marginTop: 20, marginBottom: 40 }}>
-                        <Button onPress={() => { this._submit() }} style={styles.button} title="SUBMIT" color={Colors.alternative}>
+                        <Button onPress={() => { this._submit() }}
+                            style={styles.button} title={ I18n.t('Save') }
+                            color={Colors.alternative}>
                         </Button>
                     </View>
                     <DateTimePicker

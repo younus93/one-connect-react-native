@@ -13,6 +13,7 @@ import Icon from 'react-native-vector-icons/FontAwesome5';
 import Entypo from 'react-native-vector-icons/Entypo';
 import DateTimePicker from "react-native-modal-datetime-picker";
 import ErrorHandler from '../custom/errorHandler';
+import I18n from "../service/i18n";
 
 export default class AddEducation extends React.Component {
     constructor(props) {
@@ -70,7 +71,7 @@ export default class AddEducation extends React.Component {
         return (
             <View>
                 <Input
-                    label="College Name"
+                    label={ I18n.t('College_Name') }
                     onChangeText={(text) => this._storeInfo(text, 'college_name')}
                     returnKeyType='next'
                     style={{ marginVertical: 3 }}
@@ -84,7 +85,7 @@ export default class AddEducation extends React.Component {
                     }
                 />
                 <Input
-                    label="Degree Name"
+                    label={ I18n.t('Degree_Name') }
                     onChangeText={(text) => this._storeInfo(text, 'degree_name')}
                     returnKeyType='next'
                     style={{ marginVertical: 3 }}
@@ -125,7 +126,10 @@ export default class AddEducation extends React.Component {
                 <ScrollView style={styles.container}>
                     {this._renderForm()}
                     <View style={{ margin: 10, marginTop: 20, marginBottom: 40 }}>
-                        <Button onPress={() => { this._submit() }} style={styles.button} title="SUBMIT" color={Colors.alternative}>
+                        <Button onPress={() => { this._submit() }} 
+                        style={styles.button} 
+                        title={ I18n.t('Save') } 
+                        color={Colors.alternative}>
                         </Button>
                     </View>
                 </ScrollView>
