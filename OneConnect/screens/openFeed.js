@@ -20,6 +20,7 @@ import Manager from "../service/dataManager";
 import Button from "../custom/button";
 import I18n from "../service/i18n";
 import AsyncStorage from "@react-native-community/async-storage";
+import Toast from 'react-native-simple-toast';
 const { State: TextInputState } = TextInput;
 const textFontSize = 14;
 
@@ -238,6 +239,16 @@ export default class OpenFeed extends React.Component {
     Manager.like(item.resource_url + "/likes", "POST", { body: item.likes });
   };
 
+  _flag = (item) => {
+    console.log("Item to be flagged", item);
+    Manager.flagPost(`${item.resource_url}/flag`,'POST');
+    // var data = this.state.data.filter((data)=>{ return data.resource_url != item.resource_url })
+    // this.setState({ data: data })
+    // console.log("State is :", this.state.data);
+    Toast.showWithGravity("Thanks for reporting!", Toast.SHORT, Toast.TOP)
+    this.props.navigation.navigate('FeedStack')
+}
+
   render() {
     return (
       <View style={styles.container}>
@@ -247,6 +258,7 @@ export default class OpenFeed extends React.Component {
             commentCallback={this._focusCommentBox}
             instituteCallback={() => this._institute()}
             likeCallback={() => this._like(this.data)}
+            reportCallback={()=> this._flag(this.data)}
           />
           <View style={{ height: 1, backgroundColor: Colors.background }} />
           {this._renderComments()}
