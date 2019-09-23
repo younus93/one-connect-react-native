@@ -7,6 +7,7 @@ import Manager from '../service/dataManager';
 import Icon from 'react-native-vector-icons/FontAwesome5';
 import Button from '../custom/button';
 import I18n from '../service/i18n';
+import Toast from 'react-native-simple-toast';
 
 export default class NewsFeed extends React.Component {
     static navigationOptions = ({ navigation }) => ({
@@ -40,6 +41,9 @@ export default class NewsFeed extends React.Component {
         console.log("news feed component did mount")
         Manager.addListener('NEWS_S', this._newsSuccess)
         Manager.addListener('NEWS_E', this._newsError)
+
+        Manager.addListener('POST_FLAG_S', this._flagPostSuccess)
+        Manager.addListener('POST_FLAG_E', this._flagPostError)
 
         Manager.addListener('LIKE_S', this._likeSuccess)
         Manager.addListener('LIKE_E', this._likeError)
@@ -79,7 +83,7 @@ export default class NewsFeed extends React.Component {
     _newsSuccess = (data) => {
         console.log("news feed successfull : ")
         // TODO: FIX IT.
-        this.data = [...this.data, ...data.data]
+        this.data = [...this.data, ...data.data.filter((item)=>{ return !item.is_flagged })]
         this.setState(state => ({
             loading: false,
             refreshing: false,
@@ -100,6 +104,14 @@ export default class NewsFeed extends React.Component {
             totalPage: 0,
             currentPage: 0
         })
+    }
+
+    _flagPostSuccess = (data) => {
+        console.log("Flag Post success",data);
+    }
+
+    _flagPostError = (data) => {
+        console.log("Flag Post error",data);
     }
 
     _likeSuccess = (data) => {
@@ -123,7 +135,15 @@ export default class NewsFeed extends React.Component {
     _like = (item) => {
         console.log("item after like: ", item)
         Manager.like(item.resource_url + '/likes', 'POST', { 'body': item.likes })
+    }
 
+    _flag = (item) => {
+        console.log("Item to be flagged", item);
+        Manager.flagPost(`${item.resource_url}/flag`,'POST');
+        var data = this.state.data.filter((data)=>{ return data.resource_url != item.resource_url })
+        this.setState({ data: data })
+        console.log("State is :", this.state.data);
+        Toast.showWithGravity("Thanks for reporting!", Toast.SHORT, Toast.TOP)
     }
 
     _institute = (item) => {
@@ -139,6 +159,7 @@ export default class NewsFeed extends React.Component {
                 commentCallback={() => this._comment(item)}
                 instituteCallback={() => this._institute(item)}
                 likeCallback={() => this._like(item)}
+                reportCallback={()=> this._flag(item)}
                 touchable
             />
         )

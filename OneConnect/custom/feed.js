@@ -1,5 +1,6 @@
 import React from "react";
 import {
+  Alert,
   View,
   Text,
   StyleSheet,
@@ -62,6 +63,17 @@ export default class Feed extends React.Component {
 
   _share = e => {};
 
+  _report = e => {
+     Alert.alert(
+      'Report as inappropriate?',
+      'You can report abuse, spam or anything else that doesn\'t follow our Community Guidelines and we will review it accordingly',
+      [
+        {text : 'Cancel'},
+        {text : 'Report', onPress : ()=>this.props.reportCallback()}
+      ]
+     )
+  }
+
   _liked = () => {
     if (this.props.likeCallback) {
       this.setState(previousState => {
@@ -90,6 +102,10 @@ export default class Feed extends React.Component {
   _institute = () => {
     this.props.instituteCallback();
   };
+
+  // _report = () => {
+  //   this.props.reportCallback();
+  // }
 
   _likeText = () => {
     if(this.state.likeIconActive)
@@ -195,6 +211,12 @@ export default class Feed extends React.Component {
               <Icon name="comment" size={20} color={Colors.onPrimary} />
               <Text style={styles.footerElementText}>
                 {I18n.t("Comment")}
+              </Text>
+            </Button>
+            <Button onPress={this._report} style={styles.footerElement}>
+              <Icon name="flag" size={20} color={Colors.onPrimary} />
+              <Text style={styles.footerElementText}>
+                Report
               </Text>
             </Button>
           </View>
