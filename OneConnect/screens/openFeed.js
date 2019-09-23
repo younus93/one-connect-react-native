@@ -246,7 +246,7 @@ export default class OpenFeed extends React.Component {
     // this.setState({ data: data })
     // console.log("State is :", this.state.data);
     Toast.showWithGravity("Thanks for reporting!", Toast.SHORT, Toast.TOP)
-    this.props.navigation.navigate('FeedStack')
+    // this.props.navigation.navigate('FeedStack')
 }
 
   render() {
