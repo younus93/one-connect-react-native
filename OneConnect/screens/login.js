@@ -191,14 +191,13 @@ export default class LoginScreen extends Component<Props> {
                 <RNButton buttonStyle={{ backgroundColor: Colors.yellowDark, borderRadius: 20 }}
                   onPress={this._loginButton} title="Login" />
 
-                <RNButton buttonStyle={{ backgroundColor: Colors.greenDark, borderRadius: 20, marginTop : 10 }}
-                  onPress={this._signUpButton} title="Sign Up" />
+                {/* <RNButton buttonStyle={{ backgroundColor: Colors.greenDark, borderRadius: 20, marginTop : 10 }}
+                  onPress={this._signUpButton} title="Sign Up" /> */}
 
               </View>
               <View style={{ margin: 10, marginTop: 50 }}>
                 <Text style={styles.textTerm}>
-                  By proceeding you agree to the Terms of Services and Privacy
-                  Policy
+                  By logging in you agree to the EULA and Privacy Policy.
                 </Text>
               </View>
             </View>
@@ -271,7 +270,7 @@ const styles = StyleSheet.create({
     marginTop: 20,
   },
   textTerm: {
-    fontSize: 10,
+    fontSize: 12,
     alignSelf: "center",
     paddingBottom: 5,
     color: Colors.onSurface,

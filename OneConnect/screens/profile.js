@@ -326,12 +326,18 @@ export default class Profile extends React.Component {
     _renderFriendMeta() {
         if (this.state.profile.editable)
             return null;
+        if(this.state.profile.friends_meta.has_blocked_profile){
+            return <RNButton
+                disabled
+                title="Blocked by you!"
+                />
+        }
         if (this.state.profile.friends_meta.is_friends) {
             return (
                 <View style={{ margin: 30, paddingHorizontal: 50 }}>
                     <RNButton titleStyle={{ color: "black" }}
                         buttonStyle={{ backgroundColor: Colors.yellowDark }}
-                        title={ I18n.t('Unfriend') }
+                        title={I18n.t('Unfriend')}
                         onPress={() => { this._unfriend(this.state.profile.basic.id) }}
                     />
                 </View>
@@ -341,7 +347,7 @@ export default class Profile extends React.Component {
             return <View style={{ margin: 30, paddingHorizontal: 50 }}>
                 <RNButton titleStyle={{ color: "black" }}
                     buttonStyle={{ backgroundColor: Colors.yellowDark }}
-                    title={ I18n.t('Unsend') }
+                    title={I18n.t('Unsend')}
                     onPress={() => { this._unsend(this.state.profile.basic.id) }}
                 />
             </View>
@@ -349,21 +355,27 @@ export default class Profile extends React.Component {
             return <View style={{ margin: 10, paddingHorizontal: 50, flexDirection: 'row', justifyContent: 'center' }}>
                 <RNButton titleStyle={{ color: "black" }}
                     buttonStyle={{ backgroundColor: Colors.yellowDark, width: 150 }}
-                    title={ I18n.t('Accept') }
+                    title={I18n.t('Accept')}
                     onPress={() => { this._accept(this.state.profile.basic.id) }}
                 />
                 <RNButton titleStyle={{ color: "black" }}
                     buttonStyle={{ backgroundColor: Colors.grey, marginLeft: 10, width: 150 }}
-                    title={ I18n.t('Reject') }
+                    title={I18n.t('Reject')}
                     onPress={() => { this._deny(this.state.profile.basic.id) }}
                 />
             </View>
-        return <View style={{ margin: 30, paddingHorizontal: 50 }}>
+        return <View style={{ display : "flex", flexDirection : "row", justifyContent : "space-around", margin: 20, paddingHorizontal: 50 }}>
             <RNButton titleStyle={{ color: "black" }}
                 buttonStyle={{ backgroundColor: Colors.yellowDark }}
-                title={ I18n.t('Send_Request') }
+                title={I18n.t('Send_Request')}
                 onPress={() => { this._send(this.state.profile.basic.id) }}
             />
+            <RNButton titleStyle={{ color : "black" }}
+                buttonStyle={{ backgroundColor : Colors.grey, paddingHorizontal : 15 }}
+                title="Block"
+                onPress={()=> this._block(this.state.profile.basic.id) }
+            />
+
         </View>
 
     }
@@ -382,6 +394,13 @@ export default class Profile extends React.Component {
         });
     };
 
+    _block = id => {
+        console.log("Block ", id);
+        // this.requestType == "A";
+        Manager.friendRequest("/api/friend-request/block", "POST", {
+            professional_id: id
+        });
+    };
 
     _deny = id => {
         console.log("Deny");
@@ -435,6 +454,7 @@ export default class Profile extends React.Component {
                                                 + this.state.profile.basic.f_name + ' '
                                                 + this.state.profile.basic.l_name}
                                         </Text>
+                                        <View style={{ alignItems:"flex-end" }}>
                                         {
                                             this.state.profile.editable ?
                                                 <Button onPress={this._navigateToSettings}>
@@ -442,6 +462,7 @@ export default class Profile extends React.Component {
                                                 </Button>
                                                 : null
                                         }
+                                        </View>
                                     </View>
                                 </View>
                                 <View>
@@ -549,7 +570,7 @@ export default class Profile extends React.Component {
                                             <View key={`pelt-${Math.random(1)}`} style={[styles.item, { alignItems: 'center' }]}>
                                                 <View>
                                                     <Text style={[styles.itemText, { paddingTop: 5 }]}>
-                                                        { I18n.t('Experience_not_updated') } 
+                                                        {I18n.t('Experience_not_updated')}
                                                     </Text>
                                                 </View>
                                             </View>
@@ -600,8 +621,8 @@ export default class Profile extends React.Component {
                                             <View key={`pelt-${Math.random(1)}`} style={[styles.item, { alignItems: 'center' }]}>
                                                 <View>
                                                     <Text style={[styles.itemText, { paddingTop: 5 }]}>
-                                                    { I18n.t('Education_details_not_updated') } 
-                                                </Text>
+                                                        {I18n.t('Education_details_not_updated')}
+                                                    </Text>
                                                 </View>
                                             </View>
                                     }
@@ -630,17 +651,17 @@ export default class Profile extends React.Component {
                                             <TouchableWithoutFeedback onPress={this._toggleModal} >
                                                 <View style={{ flex: 1, backgroundColor: '#00000070', justifyContent: 'center', alignItems: 'center', color: '#FFFFFF', paddingHorizontal: 20 }}>
                                                     <View style={{ backgroundColor: Colors.surface, width: '100%', padding: 20, borderRadius: 20 }}>
-                                                        <Text>{ I18n.t('Enter_Tags_Comma') }</Text>
+                                                        <Text>{I18n.t('Enter_Tags_Comma')}</Text>
                                                         <TextInput style={styles.textInput}
                                                             multiline
                                                             placeholder="Add new tag"
                                                             onChangeText={this._addTag}
                                                             allowFontScaling={false}
                                                         />
-                                                        <Button style={styles.button} 
-                                                        title={ I18n.t('Save') }
-                                                        color={Colors.alternative}
-                                                        onPress={this._submitNewTag}>
+                                                        <Button style={styles.button}
+                                                            title={I18n.t('Save')}
+                                                            color={Colors.alternative}
+                                                            onPress={this._submitNewTag}>
                                                         </Button>
                                                         <Button style={{
                                                             backgroundColor: Colors.yellowDark,
@@ -674,7 +695,7 @@ export default class Profile extends React.Component {
                                             :
                                             <View>
                                                 <Text style={[styles.itemText, { paddingTop: 5 }]}>
-                                                    { I18n.t('Tags_not_updated') }
+                                                    {I18n.t('Tags_not_updated')}
                                                 </Text>
                                             </View>
                                     }
@@ -685,7 +706,7 @@ export default class Profile extends React.Component {
                                     <RNButton
                                         containerStyle={{ margin: 10 }}
                                         buttonStyle={{ backgroundColor: Colors.yellowDark }}
-                                        title={ I18n.t('Privacy_Setting') }
+                                        title={I18n.t('Privacy_Setting')}
                                         onPress={this._navigateToPrivacy}
                                     />
                                     : null
