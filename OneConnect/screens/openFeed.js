@@ -60,6 +60,7 @@ export default class OpenFeed extends React.Component {
     Manager.addListener("COMMENTS_E", this._commentsLoadingError);
     Manager.addListener("LANG_U", this._updateLanguage);
     Manager.addListener("DELETE_COMMENT_S", this._deleteCommentSuccess);
+    Manager.addListener("COMMENT_FLAG_S", this._deleteCommentSuccess);
     AsyncStorage.getItem("@id")
       .then(res => {
         console.log("id in comment", res);
@@ -93,7 +94,7 @@ export default class OpenFeed extends React.Component {
   };
 
   _commentsLoadingSuccess = data => {
-    this.comments = data.data;
+    this.comments = data.data.filter((item)=>{ return !item.is_flagged });
     this.data.comments_count = this.comments.length;
     console.log("feed comment data : ", this.comments);
     this.setState({
@@ -206,6 +207,7 @@ export default class OpenFeed extends React.Component {
     }
 
     return this.comments.map(item => {
+      if(!item.is_flagged)
       return (
         <Comments
           key={`cs-${Math.random(1)}`}
@@ -213,6 +215,7 @@ export default class OpenFeed extends React.Component {
           callback={() => this._profile(item)}
           userId={this.state.id}
           _deleteComment={this._deleteComment}
+          _flagComment={this._flagComment}
         />
       );
     });
@@ -227,6 +230,15 @@ export default class OpenFeed extends React.Component {
       "DELETE"
     );
   };
+  _flagComment = id => {
+    this.setState({
+      commentLoading: true
+    });
+    Manager.flagComment(`${this.data["resource_url"]}/comments/${id}/flag`,'POST');
+    Toast.showWithGravity("Thanks for reporting!", Toast.SHORT, Toast.TOP) 
+    console.log("Comment to flag has id", id);
+  }
+
   _institute = () => {
     // console.log("reached institute callback with ", item)
     this.props.navigation.navigate("Institution", {

@@ -341,6 +341,16 @@ class dataManager {
         })
     }
 
+    flagComment = (uri, method, data=null) => {
+        Call(uri, method, data, this.token)
+        .then(response => {
+            this.eventEmitter.emit('COMMENT_FLAG_S', response)
+        })
+        .catch(error => {
+            this.eventEmitter.emit('COMMENT_FLAG_E', error)
+        })
+    }
+
     forgotPassword = (uri, method, data=null) => {
         console.log('forgotPassword',data)
         Call(uri, method, data, this.token)

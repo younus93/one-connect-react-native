@@ -1,5 +1,6 @@
 import React from "react";
 import {
+  Alert,
   View,
   Text,
   StyleSheet,
@@ -37,6 +38,18 @@ export default class Comments extends React.Component {
     console.log("delete comment", this.state.data.id);
     this.props._deleteComment(this.state.data.id);
   };
+
+  _flag = () => {
+    Alert.alert(
+      'Report as inappropriate?',
+      'You can report abuse, spam or anything else that doesn\'t follow our Community Guidelines and we will review it accordingly',
+      [
+        {text : 'Cancel'},
+        {text : 'Report', onPress : ()=>this.props._flagComment(this.state.data.id)}
+      ]
+     )
+  }
+
   render() {
     return (
       <View style={[styles.container]}>
@@ -67,24 +80,41 @@ export default class Comments extends React.Component {
               <Text style={styles.bodyText}>{this.state.data.body}</Text>
             </View>
           </View>
-          {this.props.userId === this.state.data.poster.id + "" && (
+          {this.props.userId == this.state.data.poster.id ? 
             <Button
               style={{
                 position: "absolute",
                 right: 0,
                 top: 15,
-                width:"10%",
-                height:"30%",
-                alignItems:"center"
+                width: "10%",
+                height: "30%",
+                alignItems: "center"
               }}
               onPress={() => {
                 this._deleteComment();
               }}
               rippleColor={Colors.safe}
             >
-              <Icon name="trash" size={12} color={Colors.error} style={{alignSelf:"center"}} />
+              <Icon name="trash" size={12} color={Colors.error} style={{ alignSelf: "center" }} />
             </Button>
-          )}
+           :
+            <Button
+              style={{
+                position: "absolute",
+                right: 0,
+                top: 15,
+                width: "10%",
+                height: "30%",
+                alignItems: "center"
+              }}
+              onPress={() => {
+                this._flag();
+              }}
+              rippleColor={Colors.safe}
+            >
+              <Icon name="flag" size={12} color={Colors.error} style={{ alignSelf: "center" }} />
+            </Button>
+          }
         </View>
       </View>
     );
@@ -96,8 +126,8 @@ const styles = StyleSheet.create({
     //flex: 1,
     flexDirection: "row",
     padding: 10,
-    margin : 10,
-    borderRadius : 10,
+    margin: 10,
+    borderRadius: 10,
     backgroundColor: Colors.surface
   },
   display: {
