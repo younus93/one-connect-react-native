@@ -326,12 +326,12 @@ export default class Profile extends React.Component {
     _renderFriendMeta() {
         if (this.state.profile.editable)
             return null;
-        if(this.state.profile.friends_meta.has_blocked_profile){
-            return <RNButton
-                disabled
-                title="Blocked by you!"
-                />
-        }
+        // if(this.state.profile.friends_meta.has_blocked_profile){
+        //     return <RNButton
+        //         disabled
+        //         title="Blocked by you!"
+        //         />
+        // }
         if (this.state.profile.friends_meta.is_friends) {
             return (
                 <View style={{ margin: 30, paddingHorizontal: 50 }}>
@@ -370,11 +370,11 @@ export default class Profile extends React.Component {
                 title={I18n.t('Send_Request')}
                 onPress={() => { this._send(this.state.profile.basic.id) }}
             />
-            <RNButton titleStyle={{ color : "black" }}
+            {/* <RNButton titleStyle={{ color : "black" }}
                 buttonStyle={{ backgroundColor : Colors.grey, paddingHorizontal : 15 }}
                 title="Block"
                 onPress={()=> this._block(this.state.profile.basic.id) }
-            />
+            /> */}
 
         </View>
 
