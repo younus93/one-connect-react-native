@@ -6,16 +6,22 @@ import {
   View,
   TextInput,
   TouchableWithoutFeedback,
+  Dimensions,
   Keyboard,
   SafeAreaView,
   ActivityIndicator,
+  ScrollView,
   Animated,
   Alert,
-  ImageBackground
+  ImageBackground,
+  Linking,
+  Modal
 } from "react-native";
+import { Input, Button as RNButton } from 'react-native-elements';
+
 import AsyncStorage from '@react-native-community/async-storage';
-import Icon from "react-native-vector-icons/FontAwesome5";
-import GradientButton from 'react-native-gradient-buttons';
+import Icon from "react-native-vector-icons/Entypo";
+// import GradientButton from 'react-native-gradient-buttons';
 
 import { Colors } from "../constants";
 import Manager from "../service/dataManager";
@@ -29,33 +35,41 @@ const DismissKeyboard = ({ children }) => (
   </TouchableWithoutFeedback>
 );
 
+const isCloseToBottom = ({ layoutMeasurement, contentOffset, contentSize }) => {
+  const paddingToBottom = 20;
+  return layoutMeasurement.height + contentOffset.y >=
+    contentSize.height - paddingToBottom;
+};
+
+const { width, height } = Dimensions.get('window');
+
 type Props = {};
-export default class SignUpScreen extends Component<Props> {
+export default class LoginScreen extends Component<Props> {
   constructor(props) {
     super(props);
 
-    this.userName = null;
-    this.password = null;
+    this.firstName = null;
+    this.lastName = null;
+    this.email = null;
     this.opacity = new Animated.Value(0);
 
     this.state = {
       loading: false,
-      loggedIn: false,
       error: false,
       errorText: null
     };
   }
 
   componentDidMount() {
-    console.log("component did mount login");
+    console.log("component did mount signup");
     Manager.addListener("SIGNUP_S", this._signupSuccess);
     Manager.addListener("SIGNUP_E", this._signupError);
   }
 
   componentWillUnmount() {
-    console.log("component will unmount login");
-    Manager.removeListener("LOGIN_S", this._signupSuccess);
-    Manager.removeListener("LOGIN_E", this._signupError);
+    console.log("component will unmount signup");
+    Manager.removeListener("SIGNUP_S", this._signupSuccess);
+    Manager.removeListener("SIGNUP_E", this._signupError);
   }
 
   _toggleError = (state = null) => {
@@ -67,18 +81,15 @@ export default class SignUpScreen extends Component<Props> {
   };
 
   _signupSuccess = data => {
-    console.log("login successfull : ", data);
-    Manager.setToken(data.data.token, data.data.user.basic.profile_pic, data.data.user.basic.id, data.data.user);
-    // AsyncStorage.setItem('user',data.data.user);
+    console.log("signup successfull : ", data);
     Animated.timing(this.opacity, {
       toValue: 0,
       duration: 10
     }).start(() => {
       this.setState({
         loading: false,
-        loggedIn: true
       });
-      this.props.navigation.navigate("Drawer");
+      this.props.navigation.navigate("Login");
     });
   };
 
@@ -90,17 +101,13 @@ export default class SignUpScreen extends Component<Props> {
     });
   };
 
-  _userNameChange = text => {
-    this.userName = text;
-  };
+  _handleInputChange = (key, value) => {
+    this[key] = value;
+  }
 
-  _passwordChange = text => {
-    this.password = text;
-  };
-
-  _loginButton = () => {
-    console.log("login button clicked");
-    if (this.userName && this.password) {
+  _signupButton = () => {
+    console.log("signup button clicked");
+    if (this.firstName && this.lastName && this.email) {
       this.setState({
         loading: true,
         error: false
@@ -110,9 +117,10 @@ export default class SignUpScreen extends Component<Props> {
         toValue: 0.7,
         duration: 100
       }).start(() => {
-        Manager.login("/api/login", "POST", {
-          email: this.userName,
-          password: this.password
+        Manager.signup("/api/sign-up", "POST", {
+          f_name: this.firstName,
+          l_name: this.lastName,
+          email: this.email,
         });
       });
     } else {
@@ -123,13 +131,18 @@ export default class SignUpScreen extends Component<Props> {
       }
     }
   };
+
+  _backToLoginButton = () => {
+    this.props.navigation.navigate("Login");
+  }
+
   _forgetPassword = () => {
     console.log('forgot password');
     this.props.navigation.navigate("ForgotPassword");
   }
 
   render() {
-    console.log("login render");
+    console.log("signup render");
     return (
       <ErrorHandler
         error={this.state.error}
@@ -137,7 +150,7 @@ export default class SignUpScreen extends Component<Props> {
         callback={this._toggleError}
       >
         <DismissKeyboard>
-          <View style={[styles.container]}>
+          <View style={styles.container}>
             <View style={styles.header}>
               <ImageBackground
                 style={styles.image}
@@ -147,57 +160,52 @@ export default class SignUpScreen extends Component<Props> {
             </View>
             <View style={[styles.containerBox]}>
               <View>
-                <Text style={styles.welcome}>Welcome!</Text>
+                <Text style={styles.welcome}>Sign Up</Text>
               </View>
               <View>
-                <Text style={styles.signIn}>Please sign in to continue</Text>
-              </View>
-              <View>
-                <TextInput
-                  style={styles.textInput}
-                  placeholder="Email"
-                  onChangeText={this._userNameChange}
-                  allowFontScaling={false}
+                <Input
+                  placeholder='First Name'
+                  shake={true}
+                  // leftIcon={<Icon name="email"></Icon>}
+                  // leftIconContainerStyle={{ marginRight: 10 }}
+                  onChangeText={(value) => this._handleInputChange('firstName', value)}
+                  containerStyle={{ paddingBottom: 10, marginVertical: 10 }}
                 />
-                <TextInput
-                  style={styles.textInput}
-                  placeholder="Password"
-                  onChangeText={this._passwordChange}
-                  allowFontScaling={false}
-                  secureTextEntry
+                <Input
+                  placeholder='Last Name'
+                  shake={true}
+                  // leftIcon={<Icon name="email"></Icon>}
+                  // leftIconContainerStyle={{ marginRight: 10 }}
+                  onChangeText={(value) => this._handleInputChange('lastName', value)}
+                  containerStyle={{ paddingBottom: 10, marginVertical: 10 }}
                 />
-              </View>
-              <View style={styles.buttonContainer}>
-                <Button
-                  onPress={this._forgetPassword}
-                  style={styles.forgotPasswordButton}
-                  color={Colors.alternative}
-                >
-                  <Text style={styles.forgotPasswordText}>
-                    Forgot password?
-                  </Text>
-                </Button>
-              </View>
-              <GradientButton
-                style={{ marginVertical: 8 }}
-                text="Login"
-                textStyle={{ fontSize: 20 }}
-                gradientBegin="#ffec8d"
-                gradientEnd="#f1b31b"
-                gradientDirection="diagonal"
-                height={60}
-                width={300}
-                radius={15}
-                impact
-                impactStyle='Light'
-                onPressAction={() => this._loginButton}
-              />
+                <Input
+                  placeholder='Email'
+                  shake={true}
+                  // leftIcon={<Icon name="email"></Icon>}
+                  // leftIconContainerStyle={{ marginRight: 10 }}
+                  onChangeText={(value) => this._handleInputChange('email', value)}
+                  containerStyle={{ paddingBottom: 10, marginVertical: 10 }}
+                />
 
-              <View style={{ margin: 10, marginTop: 50 }}>
-                <Text style={styles.textTerm}>
-                  By proceeding you agree to the Terms of Services and Privacy
-                  Policy
-                </Text>
+                <View style={styles.buttonContainer}>
+                  <Button
+                    onPress={this._forgetPassword}
+                    style={styles.forgotPasswordButton}
+                    color={Colors.alternative}
+                  >
+                    <Text style={styles.forgotPasswordText}>
+                      Forgot password?
+                  </Text>
+                  </Button>
+                </View>
+
+                <RNButton buttonStyle={{ backgroundColor: Colors.yellowDark, borderRadius: 20 }}
+                  onPress={this._signupButton} title="Sign Up" />
+
+                <RNButton buttonStyle={{ backgroundColor: Colors.greenDark, borderRadius: 20, marginTop : 10 }}
+                  onPress={this._backToLoginButton} title="Back to Login" />
+
               </View>
             </View>
             {this.state.loading ? (
@@ -223,20 +231,20 @@ export default class SignUpScreen extends Component<Props> {
             ) : null}
           </View>
         </DismissKeyboard>
-      </ErrorHandler>
+      </ErrorHandler >
     );
   }
 }
 
 const styles = StyleSheet.create({
   container: {
+    margin: 10,
     flex: 1,
-    backgroundColor: Colors.background
+    backgroundColor: Colors.surface
   },
   containerBox: {
     flex: 1,
     padding: 10,
-    paddingTop: 50,
     backgroundColor: Colors.surface,
     justifyContent: "center"
   },
@@ -262,6 +270,7 @@ const styles = StyleSheet.create({
   },
   forgotPasswordButton: {
     marginLeft: 10,
+    paddingBottom: 10,
     width: "40%",
   },
   forgotPasswordText: {
@@ -269,7 +278,7 @@ const styles = StyleSheet.create({
     marginTop: 20,
   },
   textTerm: {
-    fontSize: 10,
+    fontSize: 12,
     alignSelf: "center",
     paddingBottom: 5,
     color: Colors.onSurface,
@@ -277,9 +286,9 @@ const styles = StyleSheet.create({
     marginBottom: 10
   },
   header: {
-    backgroundColor: Colors.primary,
+    backgroundColor: Colors.surface,
     opacity: 0.8,
-    height: "40%",
+    height: "30%",
     alignItems: "center",
     justifyContent: "center"
   },
@@ -298,8 +307,50 @@ const styles = StyleSheet.create({
   },
   image: {
     width: "100%",
-    height: "100%",
+    height: "70%",
+    marginTop: 40,
     justifyContent: "center",
     backgroundColor: Colors.surface
+  },
+  title: {
+    fontSize: 22,
+    alignSelf: 'center'
+  },
+  tcP: {
+    marginTop: 10,
+    marginBottom: 10,
+    fontSize: 12
+  },
+  tcP: {
+    marginTop: 10,
+    fontSize: 12
+  },
+  tcL: {
+    marginLeft: 10,
+    marginTop: 10,
+    marginBottom: 10,
+    fontSize: 12
+  },
+  tcContainer: {
+    marginTop: 15,
+    marginBottom: 15,
+    height: height * .7
+  },
+
+  button: {
+    borderRadius: 5,
+    padding: 10
+  },
+
+  buttonDisabled: {
+    borderRadius: 5,
+    padding: 10
+  },
+
+  buttonLabel: {
+    fontSize: 14,
+    color: '#FFF',
+    alignSelf: 'center'
   }
+
 });
