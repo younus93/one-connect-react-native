@@ -71,6 +71,20 @@ class dataManager {
         })
     }
 
+    signup = (uri, method, data=null) => {
+        Call(uri, method, data)
+        .then(response => {
+            console.warn(response);
+            if(!response.message) {
+                throw(Error(response.message))
+            }
+            this.eventEmitter.emit('SIGNUP_S', response)
+        })
+        .catch(error => {
+            this.eventEmitter.emit('SIGNUP_E', error)
+        })
+    }
+
     newsFeeds = (uri, method, data=null) => {
 
         Call(uri, method, data, this.token)
