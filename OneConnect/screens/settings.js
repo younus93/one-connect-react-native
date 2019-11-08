@@ -17,6 +17,7 @@ import {
   ImageBackground,
   Modal
 } from "react-native";
+import {KeyboardAwareScrollView} from 'react-native-keyboard-aware-scrollview';
 import { Input } from "react-native-elements";
 import { Colors } from "../constants";
 import Manager from "../service/dataManager";
@@ -133,7 +134,7 @@ export default class Settings extends React.Component {
         errorText={this.state.errorText}
         callback={this._toggleError}
       >
-        <ScrollView>
+        <KeyboardAwareScrollView>
           <View style={styles.container}>
             <ScrollView alwaysBounceVertical={false} bounces={false}>
               {/* <ImageView
@@ -176,7 +177,7 @@ export default class Settings extends React.Component {
               />
             </Animated.View>
           ) : null}
-        </ScrollView>
+        </KeyboardAwareScrollView>
       </ErrorHandler>
     );
   }
@@ -523,6 +524,7 @@ class ProfileList extends React.Component {
 
   render() {
     let { user } = this.state;
+    console.warn('===========', user);
     return (
       <View>
         <View>
@@ -537,6 +539,8 @@ class ProfileList extends React.Component {
           isVisible={this.state.isDateTimePickerVisible}
           onConfirm={this._handleDatePicked}
           onCancel={this._hideDateTimePicker}
+          date={new Date(user.basic.dob)}
+          maximumDate={new Date()}
         />
         <View>
           <Modal

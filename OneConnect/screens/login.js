@@ -4,11 +4,10 @@ import {
   StyleSheet,
   Text,
   View,
-  TextInput,
   TouchableWithoutFeedback,
   Dimensions,
   Keyboard,
-  SafeAreaView,
+  KeyboardAvoidingView,
   ActivityIndicator,
   ScrollView,
   Animated,
@@ -271,7 +270,7 @@ export default class LoginScreen extends Component<Props> {
           </View>
         </Modal>
         <DismissKeyboard>
-          <View style={styles.container}>
+          <KeyboardAvoidingView style={styles.container}>
             <View style={styles.header}>
               <ImageBackground
                 style={styles.image}
@@ -348,7 +347,7 @@ export default class LoginScreen extends Component<Props> {
                 />
               </Animated.View>
             ) : null}
-          </View>
+          </KeyboardAvoidingView>
         </DismissKeyboard>
       </ErrorHandler >
     );

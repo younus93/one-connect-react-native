@@ -4,7 +4,7 @@ import { createStackNavigator, createAppContainer } from "react-navigation";
 import Button from '../custom/button';
 
 // Screen Imports
-import Profile from '../screens/profile';
+import MyProfile from '../screens/profile1';
 import Settings from '../screens/settings';
 import AddCompany from '../screens/addCompany';
 import AddEducation from '../screens/addEducation';
@@ -33,7 +33,7 @@ const navigatorConfig = {
 
 const ProfileStack = createStackNavigator({
     Profile: {
-        screen: Profile,
+        screen: MyProfile,
     },
     Settings: {
         screen: Settings,
