@@ -11,7 +11,7 @@ import I18n from '../service/i18n';
 import Lightbox from 'react-native-lightbox';
 import { TabView, SceneMap } from 'react-native-tab-view';
 
-export default class Profile extends React.Component {
+export default class MyProfile extends React.Component {
     static navigationOptions = ({navigation}) => {
         const accessLevel = navigation.getParam('accessLevel', 0)
         let options = {title: navigation.getParam('title'),
@@ -73,9 +73,9 @@ export default class Profile extends React.Component {
 
     _updateLanguage = () => {
         this.props.navigation.setParams({ title: I18n.t('Profile')});
-        this.setState(previousState => {
+        this.setState(previousState => ({
             updateNeeded: !previousState.updateNeeded
-        })
+        }))
     }
 
     _hamPressed = () => {

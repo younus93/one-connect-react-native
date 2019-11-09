@@ -4,11 +4,10 @@ import {
   StyleSheet,
   Text,
   View,
-  TextInput,
   TouchableWithoutFeedback,
   Dimensions,
   Keyboard,
-  SafeAreaView,
+  KeyboardAvoidingView,
   ActivityIndicator,
   ScrollView,
   Animated,
@@ -140,7 +139,8 @@ export default class LoginScreen extends Component<Props> {
   };
 
   _signUpButton = () => {
-    Linking.openURL('http://beebuckapp.com/sign-up');
+    // Linking.openURL('http://beebuckapp.com/sign-up');
+    this.props.navigation.navigate("SignUp");
   }
 
   _forgetPassword = () => {
@@ -271,7 +271,7 @@ export default class LoginScreen extends Component<Props> {
           </View>
         </Modal>
         <DismissKeyboard>
-          <View style={styles.container}>
+          <KeyboardAvoidingView style={styles.container}>
             <View style={styles.header}>
               <ImageBackground
                 style={styles.image}
@@ -317,11 +317,11 @@ export default class LoginScreen extends Component<Props> {
                 <RNButton buttonStyle={{ backgroundColor: Colors.yellowDark, borderRadius: 20 }}
                   onPress={this._loginButton} title="Login" />
 
-                {/* <RNButton buttonStyle={{ backgroundColor: Colors.greenDark, borderRadius: 20, marginTop : 10 }}
-                  onPress={this._signUpButton} title="Sign Up" /> */}
+                <RNButton buttonStyle={{ backgroundColor: Colors.greenDark, borderRadius: 20, marginTop : 10 }}
+                  onPress={this._signUpButton} title="Sign Up" />
 
               </View>
-              <View style={{ margin: 10, marginTop: 50 }}>
+              <View style={{ margin: 10, marginTop: 30 }}>
                 <Button style={styles.textTerm} onPress={() => { this.ShowModalFunction(true) }}>
                   <Text>By logging in you agree to the EULA and Privacy Policy.</Text>
                 </Button>
@@ -348,7 +348,7 @@ export default class LoginScreen extends Component<Props> {
                 />
               </Animated.View>
             ) : null}
-          </View>
+          </KeyboardAvoidingView>
         </DismissKeyboard>
       </ErrorHandler >
     );
@@ -401,7 +401,6 @@ const styles = StyleSheet.create({
     alignSelf: "center",
     paddingBottom: 5,
     color: Colors.onSurface,
-    marginTop: 20,
     marginBottom: 10
   },
   header: {

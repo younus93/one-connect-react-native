@@ -62,6 +62,7 @@ export default class Profile extends React.Component {
 
     componentDidMount() {
         console.log("profile mounted")
+        this.props.navigation.addListener('didFocus', this.refreshPage);
         Manager.addListener('PROFILE_S', this._profileSuccess)
         Manager.addListener('PROFILE_E', this._profileError)
         Manager.addListener('PIC_S', this._profilePicSuccess)
@@ -74,6 +75,10 @@ export default class Profile extends React.Component {
         Manager.profile(this.url, 'GET')
         this.props.navigation.setParams({ backButton: this._backButtonPressed });
         this.props.navigation.setParams({ hamPressed: this._hamPressed });
+    }
+
+    refreshPage = () => {
+        Manager.profile(this.url, 'GET')
     }
 
     componentWillUnmount() {
@@ -102,7 +107,6 @@ export default class Profile extends React.Component {
     }
 
     _profileSuccess = (data) => {
-        console.log("profile successful, data received :", data)
         this.data = data.data;
         this.setState({
             loading: false,
@@ -431,7 +435,7 @@ export default class Profile extends React.Component {
     }
 
     _renderProfile() {
-        if (this.state.profile)
+        if (this.state.profile && this.state.profile.basic)
             return (
                 <ScrollView style={{ backgroundColor: Colors.background }}>
                     <View>

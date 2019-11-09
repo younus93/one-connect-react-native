@@ -5,13 +5,10 @@ import {
   ScrollView,
   Image,
   StyleSheet,
-  FlatList,
-  SectionList,
   SafeAreaView,
   TouchableWithoutFeedback,
   TextInput,
   Animated,
-  Easing,
   ActivityIndicator,
   KeyboardAvoidingView,
   ImageBackground,
@@ -30,7 +27,7 @@ import I18n from "../service/i18n";
 export default class Settings extends React.Component {
   constructor(props) {
     super(props);
-    this.data = this.props.navigation.getParam("data", null);
+    this.data = this.props.navigation.getParam("data");
     this.opacity = new Animated.Value(0);
     this.editable = null;
     this.state = {
@@ -67,7 +64,7 @@ export default class Settings extends React.Component {
       modalBackground: Colors.safeDark
     });
     setTimeout(() => {
-      this.props.navigation.navigate('Profile', '/api/profile');
+      this.props.navigation.navigate('MyProfile', '/api/profile');
     }, 2000);
   };
 
@@ -101,7 +98,7 @@ export default class Settings extends React.Component {
 
   _save = () => {
     if (this.editable) {
-      console.log("save");
+      console.warn("save");
       this.setState({
         loading: true
       });
@@ -111,7 +108,7 @@ export default class Settings extends React.Component {
         duration: 100
       }).start(() => {
         Manager.profile("/api/profile", "POST", this.editable);
-        this.props.navigation.getParam("callback")();
+        // this.props.navigation.getParam("callback");
       });
     } else {
       console.log("Nothing to save");
@@ -497,8 +494,7 @@ class ProfileList extends React.Component {
   };
 
   _handleDatePicked = date => {
-    console.log("A date has been picked: ", date);
-    dob = date.getFullYear() + "-" + date.getMonth() + "-" + date.getDate();
+    dob = date.getFullYear() + "-" + (date.getMonth() + 1) + "-" + date.getDate();
     this.setState({
       isDateTimePickerVisible: false,
       dob: dob
@@ -537,6 +533,8 @@ class ProfileList extends React.Component {
           isVisible={this.state.isDateTimePickerVisible}
           onConfirm={this._handleDatePicked}
           onCancel={this._hideDateTimePicker}
+          date={new Date(user.basic.dob)}
+          maximumDate={new Date()}
         />
         <View>
           <Modal
