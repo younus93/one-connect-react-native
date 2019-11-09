@@ -1,33 +1,22 @@
 import React, { Component } from "react";
 import {
-  Platform,
   StyleSheet,
   Text,
   View,
-  TextInput,
   TouchableWithoutFeedback,
   Dimensions,
   Keyboard,
-  SafeAreaView,
   ActivityIndicator,
-  ScrollView,
   Animated,
-  Alert,
   ImageBackground,
-  Linking,
-  Modal
 } from "react-native";
 import { Input, Button as RNButton } from 'react-native-elements';
-
-import AsyncStorage from '@react-native-community/async-storage';
-import Icon from "react-native-vector-icons/Entypo";
-// import GradientButton from 'react-native-gradient-buttons';
+import Toast from 'react-native-simple-toast';
 
 import { Colors } from "../constants";
 import Manager from "../service/dataManager";
-import Button from "../custom/button";
 import ErrorHandler from "../custom/errorHandler";
-import I18n from "../service/i18n";
+import Icon from "react-native-vector-icons/Entypo";
 
 const DismissKeyboard = ({ children }) => (
   <TouchableWithoutFeedback onPress={() => Keyboard.dismiss()}>
@@ -86,6 +75,7 @@ export default class LoginScreen extends Component<Props> {
       toValue: 0,
       duration: 10
     }).start(() => {
+      Toast.showWithGravity(data.message, Toast.LONG, Toast.TOP)
       this.setState({
         loading: false,
       });
@@ -126,7 +116,7 @@ export default class LoginScreen extends Component<Props> {
     } else {
       if (!this.state.error) {
         console.log("empty");
-        let e = new Error("Username/password field empty");
+        let e = new Error("Please fill-in the details.");
         this._signupError(e);
       }
     }
@@ -166,39 +156,27 @@ export default class LoginScreen extends Component<Props> {
                 <Input
                   placeholder='First Name'
                   shake={true}
-                  // leftIcon={<Icon name="email"></Icon>}
-                  // leftIconContainerStyle={{ marginRight: 10 }}
+                  leftIcon={<Icon name="user"></Icon>}
+                  leftIconContainerStyle={{ marginRight: 10 }}
                   onChangeText={(value) => this._handleInputChange('firstName', value)}
                   containerStyle={{ paddingBottom: 10, marginVertical: 10 }}
                 />
                 <Input
                   placeholder='Last Name'
                   shake={true}
-                  // leftIcon={<Icon name="email"></Icon>}
-                  // leftIconContainerStyle={{ marginRight: 10 }}
+                  leftIcon={<Icon name="user"></Icon>}
+                  leftIconContainerStyle={{ marginRight: 10 }}
                   onChangeText={(value) => this._handleInputChange('lastName', value)}
                   containerStyle={{ paddingBottom: 10, marginVertical: 10 }}
                 />
                 <Input
                   placeholder='Email'
                   shake={true}
-                  // leftIcon={<Icon name="email"></Icon>}
-                  // leftIconContainerStyle={{ marginRight: 10 }}
+                  leftIcon={<Icon name="email"></Icon>}
+                  leftIconContainerStyle={{ marginRight: 10 }}
                   onChangeText={(value) => this._handleInputChange('email', value)}
                   containerStyle={{ paddingBottom: 10, marginVertical: 10 }}
                 />
-
-                <View style={styles.buttonContainer}>
-                  <Button
-                    onPress={this._forgetPassword}
-                    style={styles.forgotPasswordButton}
-                    color={Colors.alternative}
-                  >
-                    <Text style={styles.forgotPasswordText}>
-                      Forgot password?
-                  </Text>
-                  </Button>
-                </View>
 
                 <RNButton buttonStyle={{ backgroundColor: Colors.yellowDark, borderRadius: 20 }}
                   onPress={this._signupButton} title="Sign Up" />
@@ -288,7 +266,7 @@ const styles = StyleSheet.create({
   header: {
     backgroundColor: Colors.surface,
     opacity: 0.8,
-    height: "30%",
+    height: "40%",
     alignItems: "center",
     justifyContent: "center"
   },
@@ -308,7 +286,7 @@ const styles = StyleSheet.create({
   image: {
     width: "100%",
     height: "70%",
-    marginTop: 40,
+    marginTop: 50,
     justifyContent: "center",
     backgroundColor: Colors.surface
   },

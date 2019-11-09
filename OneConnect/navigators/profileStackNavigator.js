@@ -4,7 +4,7 @@ import { createStackNavigator, createAppContainer } from "react-navigation";
 import Button from '../custom/button';
 
 // Screen Imports
-import MyProfile from '../screens/profile1';
+import MyProfile from '../screens/profile';
 import Settings from '../screens/settings';
 import AddCompany from '../screens/addCompany';
 import AddEducation from '../screens/addEducation';
@@ -15,7 +15,7 @@ import {Colors} from '../constants'
 import I18n from "../service/i18n";
 
 const navigatorConfig = {
-    initialRouteName: 'Profile',
+    initialRouteName: 'MyProfile',
     initialRouteParams: {url: '/api/profile', accessLevel: 1},
     defaultNavigationOptions: {
         headerStyle: {
@@ -32,8 +32,8 @@ const navigatorConfig = {
 };
 
 const ProfileStack = createStackNavigator({
-    Profile: {
-        screen: MyProfile,
+    MyProfile: {
+        screen: MyProfile
     },
     Settings: {
         screen: Settings,

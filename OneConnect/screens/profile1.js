@@ -73,9 +73,9 @@ export default class MyProfile extends React.Component {
 
     _updateLanguage = () => {
         this.props.navigation.setParams({ title: I18n.t('Profile')});
-        this.setState(previousState => {
+        this.setState(previousState => ({
             updateNeeded: !previousState.updateNeeded
-        })
+        }))
     }
 
     _hamPressed = () => {
