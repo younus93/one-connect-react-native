@@ -6,6 +6,8 @@ import {
   TouchableWithoutFeedback,
   Dimensions,
   Keyboard,
+  KeyboardAvoidingView,
+  Platform,
   ActivityIndicator,
   Animated,
   ImageBackground,
@@ -139,7 +141,10 @@ export default class LoginScreen extends Component<Props> {
         errorText={this.state.errorText}
         callback={this._toggleError}
       >
-        <DismissKeyboard>
+        <KeyboardAvoidingView
+          behavior={Platform.OS === "ios" ? "padding" : null}
+          style={{ flex: 1 }}
+        >
           <View style={styles.container}>
             <View style={styles.header}>
               <ImageBackground
@@ -208,7 +213,7 @@ export default class LoginScreen extends Component<Props> {
               </Animated.View>
             ) : null}
           </View>
-        </DismissKeyboard>
+        </KeyboardAvoidingView>
       </ErrorHandler >
     );
   }

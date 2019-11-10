@@ -12,6 +12,7 @@ import {
   ActivityIndicator,
   KeyboardAvoidingView,
   ImageBackground,
+  Platform,
   Modal
 } from "react-native";
 import { Input } from "react-native-elements";
@@ -130,7 +131,10 @@ export default class Settings extends React.Component {
         errorText={this.state.errorText}
         callback={this._toggleError}
       >
-        <ScrollView>
+        <KeyboardAvoidingView
+          behavior={Platform.OS === "ios" ? "padding" : null}
+          style={{ flex: 1 }}
+        >
           <View style={styles.container}>
             <ScrollView alwaysBounceVertical={false} bounces={false}>
               {/* <ImageView
@@ -173,7 +177,7 @@ export default class Settings extends React.Component {
               />
             </Animated.View>
           ) : null}
-        </ScrollView>
+        </KeyboardAvoidingView>
       </ErrorHandler>
     );
   }
@@ -692,7 +696,7 @@ const styles = StyleSheet.create({
     borderRadius: 30,
     paddingVertical: 15,
     marginHorizontal: 15,
-    marginBottom: 5,
+    marginBottom: 10,
     marginTop: 10,
     color: "#fff"
   }
