@@ -81,10 +81,12 @@ export default class Privacy extends React.Component {
 
     _getItem = item => {
         item = item.charAt(0).toUpperCase() + item.slice(1).replace('_', " ");
+        if(item == 'Phone Number')
+            return "Phone_Number";
         if(item == 'Dob')
-            return "Date of Birth";
+            return "Date_of_Birth";
         if(item == 'Bio')
-            return "About Me";
+            return "About_Me";
         return item;
     }
 
@@ -96,7 +98,7 @@ export default class Privacy extends React.Component {
                     <View key={`pelt-${Math.random(1)}`}>
                         <View style={{flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center', paddingRight: 10}}>
                             <Text style={styles.header}>
-                                {this._getItem(item)}
+                                {I18n.t(this._getItem(item))}
                             </Text>
                         </View>
                         <View style={styles.sectionBody}>
@@ -104,7 +106,10 @@ export default class Privacy extends React.Component {
                             this.data[item].map((value, index) => {
                                 return(
                                     <View key={`prng-${Math.random(1)}`}>
-                                        <Text style={styles.bodyTextstyle}>{this.level[index]}</Text>
+                                        <Text style={styles.bodyTextstyle}>
+                                            
+                                            {I18n.t(this.level[index])}
+                                        </Text>
                                         <Switch value={value ? true : false} onValueChange={(newValue) => this._toggleSwitch(newValue, item, index)}/>
                                     </View>
                                 )

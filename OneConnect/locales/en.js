@@ -69,5 +69,7 @@ export default {
     Send_Request : 'Send Request',
     Experience_not_updated: 'Experience not updated!',
     Unfriend : 'Unfriend',
-    Unsend : 'Unsend'
+    Unsend : 'Unsend',
+    Public : 'Public',
+    Location : 'Location'
 }

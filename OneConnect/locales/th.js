@@ -68,6 +68,8 @@ export default {
     Experience_not_updated: 'ประสบการณ์ยังไม่ถูกอัพเดท',
     Unfriend: 'เลิกเป็นเพื่อน',
     Send_Request: 'ส่งคำขอเป็นเพื่อน',
-    Unsend : 'ยกเลิกคำขอ'
+    Unsend : 'ยกเลิกคำขอ',
+    Public : 'สาธารณะ',
+    Location : 'ที่ตั้ง'
 }
 
