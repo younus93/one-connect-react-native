@@ -271,7 +271,10 @@ export default class LoginScreen extends Component<Props> {
           </View>
         </Modal>
         <DismissKeyboard>
-          <KeyboardAvoidingView style={styles.container}>
+          <KeyboardAvoidingView
+            behavior={Platform.OS === "ios" ? "padding" : null}
+            style={styles.container}
+          >
             <View style={styles.header}>
               <ImageBackground
                 style={styles.image}
