@@ -38,7 +38,7 @@ export default {
     Date_of_Birth: 'วันเกิด',
     Gender: 'เพศ',
     Website: 'เว็บไซต์',
-    About_me: 'แนะนำตัว',
+    About_Me: 'แนะนำตัว',
     Experience: 'ประสบการณ์',
     Education: 'การศึกษา',
     Tags: 'แท็ก',

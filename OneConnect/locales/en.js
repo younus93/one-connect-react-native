@@ -38,7 +38,7 @@ export default {
     Email: 'Email',
     Date_of_Birth: 'Date of Birth',
     Gender: 'Gender',
-    About_me: 'About me',
+    About_Me: 'About me',
     Website : 'Website',
     Experience: 'Experience',
     Education: 'Education',

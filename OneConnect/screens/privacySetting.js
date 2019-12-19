@@ -81,7 +81,8 @@ export default class Privacy extends React.Component {
 
     _getItem = item => {
         item = item.charAt(0).toUpperCase() + item.slice(1).replace('_', " ");
-        if(item == 'Phone Number')
+        console.log(item);
+        if(item == 'Phone number')
             return "Phone_Number";
         if(item == 'Dob')
             return "Date_of_Birth";
@@ -107,7 +108,6 @@ export default class Privacy extends React.Component {
                                 return(
                                     <View key={`prng-${Math.random(1)}`}>
                                         <Text style={styles.bodyTextstyle}>
-                                            
                                             {I18n.t(this.level[index])}
                                         </Text>
                                         <Switch value={value ? true : false} onValueChange={(newValue) => this._toggleSwitch(newValue, item, index)}/>
