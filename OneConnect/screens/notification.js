@@ -17,9 +17,9 @@ import Button from "../custom/button";
 import Icon from "react-native-vector-icons/FontAwesome5";
 import I18n from "../service/i18n";
 // import Toast, { DURATION } from "react-native-easy-toast";
-import Toast from 'react-native-simple-toast';
+import Toast from "react-native-simple-toast";
 import UserList from "../custom/userList";
-import { TabView, SceneMap, TabBar } from 'react-native-tab-view';
+import { TabView, SceneMap, TabBar } from "react-native-tab-view";
 import SearchUserList from "../custom/searchUserList";
 import FriendRequestList from "../custom/FriendRequests";
 
@@ -31,11 +31,9 @@ export default class Notification extends React.Component {
         style={{ borderRadius: 20 }}
         onPress={navigation.getParam("hamPressed")}
       >
-        <Icon
-          name="bars"
-          size={22}
-          color={Colors.onPrimary}
-          style={{ padding: 10 }}
+        <Image
+          style={{ width: 22, height: 22, padding: 10 }}
+          source={require("../resources/bee_bar.jpg")}
         />
       </Button>
     ),
@@ -55,9 +53,9 @@ export default class Notification extends React.Component {
       updateToggle: false,
       index: 0,
       routes: [
-        { key: 'first', title: I18n.t('Friend_Requests') },
-        { key: 'second', title: I18n.t('Birthdays') },
-      ],
+        { key: "first", title: I18n.t("Friend_Requests") },
+        { key: "second", title: I18n.t("Birthdays") }
+      ]
     };
   }
 
@@ -119,7 +117,7 @@ export default class Notification extends React.Component {
         user.url = item.url;
         user.extra_info = item.birthdayString;
         return user;
-      }),
+      })
     });
     console.log(this.state);
   };
@@ -139,9 +137,7 @@ export default class Notification extends React.Component {
   _navigateUser = item => {
     this.props.navigation.navigate("Profile", { url: item.url });
   };
-  _renderBirthdays = section => {
-
-  };
+  _renderBirthdays = section => {};
   // return(
   //     <View style={{
   //         backgroundColor: Colors.background,
@@ -153,7 +149,6 @@ export default class Notification extends React.Component {
   //         <Text style={{color: Colors.secondaryDark, fontSize: 16,fontWeight: '700', opacity: 0.4}}>You don't have any friend's birthday today.</Text>
   //     </View>
   // )
-
 
   _navigatePost = item => {
     this.props.navigation.navigate("OpenFeed", { item: item.searchable });
@@ -170,24 +165,34 @@ export default class Notification extends React.Component {
     console.log("First Route");
     console.log(this.state);
     if (this.state.birthdays.length > 0)
-      return <SearchUserList userList={this.state.birthdays}
-        navigation={this.props.navigation}
-      ></SearchUserList>;
-    return <View style={styles.item}>
-      <Text style={styles.itemText}>{ I18n.t('No_birthday_alerts') }</Text>
-    </View>;
+      return (
+        <SearchUserList
+          userList={this.state.birthdays}
+          navigation={this.props.navigation}
+        ></SearchUserList>
+      );
+    return (
+      <View style={styles.item}>
+        <Text style={styles.itemText}>{I18n.t("No_birthday_alerts")}</Text>
+      </View>
+    );
   };
 
   SecondRoute = () => {
     console.log("Seond route");
     console.log(this.state);
     if (this.state.incomingFriendships.length > 0)
-      return <FriendRequestList incomingFriendships={this.state.incomingFriendships} 
-          navigation={this.props.navigation}> 
-      </FriendRequestList>
-    return <View style={styles.item}>
-      <Text style={styles.itemText}>{ I18n.t('No_friend_requests') }</Text>
-    </View>;
+      return (
+        <FriendRequestList
+          incomingFriendships={this.state.incomingFriendships}
+          navigation={this.props.navigation}
+        ></FriendRequestList>
+      );
+    return (
+      <View style={styles.item}>
+        <Text style={styles.itemText}>{I18n.t("No_friend_requests")}</Text>
+      </View>
+    );
   };
 
   render() {
@@ -198,20 +203,19 @@ export default class Notification extends React.Component {
             navigationState={this.state}
             renderScene={SceneMap({
               first: this.SecondRoute,
-              second: this.FirstRoute,
+              second: this.FirstRoute
             })}
             onIndexChange={index => this.setState({ index })}
-            initialLayout={{ width: Dimensions.get('window').width }}
+            initialLayout={{ width: Dimensions.get("window").width }}
             style={styles.container}
-            renderTabBar={props =>
+            renderTabBar={props => (
               <TabBar
                 {...props}
                 indicatorStyle={{ backgroundColor: Colors.yellowDark }}
                 style={{ backgroundColor: Colors.primaryLight }}
-                labelStyle={{ color: '#000000' }}
+                labelStyle={{ color: "#000000" }}
               />
-            }
-
+            )}
           />
         </ScrollView>
       );
@@ -235,7 +239,7 @@ export default class Notification extends React.Component {
 
 const styles = StyleSheet.create({
   scene: {
-    flex: 1,
+    flex: 1
   },
   container: {
     flex: 1,
@@ -319,7 +323,7 @@ const styles = StyleSheet.create({
   buttons: {
     justifyContent: "space-between",
     flexDirection: "row",
-    textAlign: 'center',
+    textAlign: "center",
     marginTop: 5,
     width: "70%"
   },
@@ -333,7 +337,7 @@ const styles = StyleSheet.create({
     justifyContent: "space-between",
     textAlign: "center",
     flexDirection: "row",
-    width: '50%',
+    width: "50%",
     marginLeft: 10,
     marginTop: 10,
     borderRadius: 10

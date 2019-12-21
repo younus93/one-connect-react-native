@@ -17,7 +17,7 @@ import Manager from "../service/dataManager";
 import Button from "../custom/button";
 import Icon from "react-native-vector-icons/FontAwesome5";
 import I18n from "../service/i18n";
-const UUID = require('uuid');
+const UUID = require("uuid");
 export default class Friends extends React.Component {
   static navigationOptions = ({ navigation }) => ({
     title: navigation.getParam("title"),
@@ -26,11 +26,9 @@ export default class Friends extends React.Component {
         style={{ borderRadius: 20 }}
         onPress={navigation.getParam("hamPressed")}
       >
-        <Icon
-          name="bars"
-          size={22}
-          color={Colors.onPrimary}
-          style={{ padding: 10 }}
+        <Image
+          style={{ width: 22, height: 22, padding: 10 }}
+          source={require("../resources/bee_bar.jpg")}
         />
       </Button>
     ),
@@ -139,13 +137,11 @@ export default class Friends extends React.Component {
           </View>
           <View style={styles.profileContainer}>
             <Text style={styles.name}>{item.f_name + " " + item.l_name}</Text>
-            {
-              item.companies.length > 0 ?
-                <Text style={styles.mutualFriendsCount}>
-                  {item.companies[0].name}
-                </Text>
-                : null
-            }
+            {item.companies.length > 0 ? (
+              <Text style={styles.mutualFriendsCount}>
+                {item.companies[0].name}
+              </Text>
+            ) : null}
             <Text style={styles.mutualFriendsCount}>
               {item.friends_meta.mutual_friends_count}{" "}
               {I18n.t("Mutual_friends")}
@@ -178,7 +174,7 @@ export default class Friends extends React.Component {
               opacity: 0.4
             }}
           >
-            { I18n.t('No_Friends_yet') }
+            {I18n.t("No_Friends_yet")}
           </Text>
         </View>
       );
@@ -236,7 +232,7 @@ export default class Friends extends React.Component {
       <View style={styles.search}>
         <TextInput
           style={styles.searchText}
-          placeholder={I18n.t('Search')}
+          placeholder={I18n.t("Search")}
           onChangeText={this._searchFilter}
         />
       </View>
@@ -260,16 +256,16 @@ export default class Friends extends React.Component {
       // const {data} = this.data;
       let regex = new RegExp("^" + text, "i");
       const searchedData = this.data.filter(item => {
-        console.log('search friend', item)
+        console.log("search friend", item);
         let match = regex.test(item.f_name) || regex.test(item.l_name);
         let tagMatch = false;
         item.tags.map(tag => {
           if (regex.test(tag.name)) {
-            tagMatch = true
+            tagMatch = true;
           }
-        })
-        match = tagMatch || match
-        console.log('search return match', match)
+        });
+        match = tagMatch || match;
+        console.log("search return match", match);
         return match;
       });
       console.log("searched list : ", searchedData);
@@ -358,7 +354,7 @@ const styles = StyleSheet.create({
     fontWeight: "300",
     flexDirection: "row",
     flexWrap: "wrap",
-    paddingRight: 10,
+    paddingRight: 10
   },
   tag: {
     paddingLeft: 10
