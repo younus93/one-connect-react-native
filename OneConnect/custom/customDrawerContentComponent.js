@@ -118,15 +118,26 @@ export default class CustomDrawerContentComponent extends React.Component {
       <View style={styles.container}>
         <View style={styles.header}>
           <View style={{ justifyContent: "center", width: "auto" }}>
-            <Image
-              style={styles.image}
-              source={{
-                uri: Manager.profilePicUrl
-              }}
-              // defaultSource={require("../resources/dummy_profile.png")}
-              resizeMode="cover"
-              onError={error => console.log(error)}
-            />
+            <View style={{ justifyContent: "center", marginLeft: "30%" }}>
+              <Image
+                style={styles.image}
+                source={{
+                  uri: Manager.profilePicUrl
+                }}
+                // defaultSource={require("../resources/dummy_profile.png")}
+                resizeMode="cover"
+                onError={error => console.log(error)}
+              />
+              <Image
+                style={{
+                  width: 100,
+                  height: 100,
+
+                  position: "absolute"
+                }}
+                source={require("../resources/ic_hex_yellow.png")}
+              />
+            </View>
             <Button
               onPress={this.navigateToScreen("Profile", { accessLevel: 1 })}
             >
@@ -269,7 +280,7 @@ const styles = StyleSheet.create({
   },
   image: {
     borderRadius: 50,
-    marginLeft: "30%",
+    alignItems: "center",
     width: 100,
     height: 100
   },

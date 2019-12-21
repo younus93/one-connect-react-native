@@ -30,7 +30,7 @@ class dataManager {
         this.eventEmitter.emit(eventName, data)
     }
 
-    setToken = (token, profilePic,id, user) => {
+    setToken = (token, profilePic, id, user) => {
         console.log("User sent ",user, token, profilePic, id);
         this.token = token;
         this.profilePicUrl = profilePic;
@@ -43,6 +43,30 @@ class dataManager {
             if(!res[0][1]){
                 AsyncStorage.multiSet([['@appKey', token], ['@profilePic', profilePic],['@id',id+""]])
                 .then(response => {console.log('setToken',id);console.log("token saved")})
+                .catch(error => console.log("token not saved",error))
+            }
+
+            if(res[1][1]) {
+                UpdateLocale(res[1][1])
+            }
+        })
+        .catch(error => {
+            console.log("storage error : ", error)
+            AsyncStorage.multiSet([['@appKey', token], ['@profilePic', profilePic]])
+            .then(response => console.log(" token saved z"))
+            .catch(error => console.log("token not saved"))
+        })
+    }
+
+    setTokenAfterSignUp = (data) => {
+        const { token, id } = data;
+        this.token = token;
+        AsyncStorage.multiGet(['@appKey', '@locale','@id'])
+        .then(res => {
+            console.log('setToken inside async storage',res)
+            if(!res[0][1]){
+                AsyncStorage.multiSet([['@appKey', token], ['@id',id+""]])
+                .then(response => {console.log('setToken',id);console.log("token saved ==========")})
                 .catch(error => console.log("token not saved",error))
             }
 
@@ -74,10 +98,10 @@ class dataManager {
     signup = (uri, method, data=null) => {
         Call(uri, method, data)
         .then(response => {
-            console.warn(response);
-            if(!response.message) {
-                throw(Error(response.message))
-            }
+            console.warn('======================', response);
+            // if(!response.message) {
+            //     throw(Error(response.message))
+            // }
             this.eventEmitter.emit('SIGNUP_S', response)
         })
         .catch(error => {

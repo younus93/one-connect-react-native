@@ -72,7 +72,9 @@ export default class LoginScreen extends Component<Props> {
   };
 
   _signupSuccess = data => {
-    console.log("signup successfull : ", data);
+    console.warn("signup successfull : ", data);
+    Manager.setToken(data.data.token, data.data.user.basic.profile_pic, data.data.user.basic.id, data.data.user);
+
     Animated.timing(this.opacity, {
       toValue: 0,
       duration: 10
@@ -81,7 +83,7 @@ export default class LoginScreen extends Component<Props> {
       this.setState({
         loading: false,
       });
-      this.props.navigation.navigate("Login");
+      this.props.navigation.navigate("MyProfile");
     });
   };
 

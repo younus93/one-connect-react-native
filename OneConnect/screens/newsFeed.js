@@ -27,7 +27,7 @@ export default class NewsFeed extends React.Component {
         onPress={navigation.getParam("hamPressed")}
       >
         <Image
-          style={{ width: 22, height: 22, padding: 10 }}
+          style={{ width: 22, height: 22, padding: 1 }}
           source={require("../resources/ic_logo_trans.png")}
         />
       </Button>
