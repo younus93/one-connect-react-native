@@ -259,7 +259,7 @@ class ProfileList extends React.Component {
     this.state = {
       user: data,
       isDateTimePickerVisible: false,
-      dob: data.basic.dob.split("T")[0],
+      dob: data.basic.dob ? data.basic.dob.split("T")[0] : '',
       gender: data.basic.gender,
       isGenderPickerVisible: false
     };

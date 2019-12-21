@@ -21,6 +21,8 @@
     "react-native-gesture-handler": "^1.3.0",
     "react-native-gradient-buttons": "^2.0.1",
     "react-native-i18n": "^2.0.15",
+    "react-native-paper": "^3.2.1",
+    "react-navigation-material-bottom-tabs": "^2.1.5",
     "react-native-image-picker": "github:gengjiawen/react-native-image-picker#bugfix/android_photo_crash",
     "react-native-keyboard-aware-scrollview": "^2.0.0",
     "react-native-lightbox": "^0.8.0",
