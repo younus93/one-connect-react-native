@@ -62,7 +62,7 @@ export default class Profile extends React.Component {
           >
             <Image
               style={{ width: 22, height: 22, padding: 10 }}
-              source={require("../resources/bee_bar.jpg")}
+              source={require("../resources/ic_logo_trans.png")}
             />
           </Button>
         </View>
@@ -526,18 +526,51 @@ export default class Profile extends React.Component {
             >
               <View
                 style={{
-                  flexDirection: "row",
                   justifyContent: "center",
                   alignItems: "center"
                 }}
               >
-                <Avatar
-                  size="xlarge"
-                  rounded
+                <Image
+                  style={{
+                    width: 150,
+                    height: 150
+                  }}
                   source={{ uri: this.state.profile.basic.profile_pic }}
-                  showEditButton={this.state.profile.editable}
-                  onEditPress={this._editPhoto}
+                  onPress={this._editPhoto}
                 />
+
+                <Image
+                  style={{
+                    width: 150,
+                    height: 150,
+                    margin: 10,
+                    position: "absolute"
+                  }}
+                  source={require("../resources/ic_gray_hex.png")}
+                />
+
+                <Button
+                  onPress={this._editPhoto}
+                  style={{
+                    width: 35,
+                    height: 35,
+                    margin: 10,
+                    position: "absolute",
+                    bottom: 0,
+                    right: "35%",
+                    borderRadius: 17,
+                    padding: 10,
+                    backgroundColor: Colors.yellowDark
+                  }}
+                >
+                  <Icon
+                    name="edit"
+                    color={"white"}
+                    style={{
+                      fontSize: 16
+                    }}
+                  ></Icon>
+                </Button>
               </View>
               {this._renderFriendMeta()}
               <View style={styles.container}>
@@ -958,10 +991,18 @@ export default class Profile extends React.Component {
           style={{
             width: 100,
             height: 100,
-            margin: 10,
-            backgroundColor: "red"
+            margin: 10
           }}
           source={require("../resources/bee_bar.jpg")}
+        />
+        <Image
+          style={{
+            width: 100,
+            height: 100,
+            margin: 10,
+            position: "absolute"
+          }}
+          source={require("../resources/ic_gray_hex.png")}
         />
       </View>
     );

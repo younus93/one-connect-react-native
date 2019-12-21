@@ -28,7 +28,7 @@ export default class NewsFeed extends React.Component {
       >
         <Image
           style={{ width: 22, height: 22, padding: 10 }}
-          source={require("../resources/bee_bar.jpg")}
+          source={require("../resources/ic_logo_trans.png")}
         />
       </Button>
     ),

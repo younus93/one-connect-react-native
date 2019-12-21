@@ -134,6 +134,14 @@ export default class Friends extends React.Component {
               resizeMode="cover"
               onError={error => console.log(error)}
             />
+            <Image
+              style={{
+                width: 120,
+                height: 120,
+                position: "absolute"
+              }}
+              source={require("../resources/ic_white_hex.png")}
+            />
           </View>
           <View style={styles.profileContainer}>
             <Text style={styles.name}>{item.f_name + " " + item.l_name}</Text>

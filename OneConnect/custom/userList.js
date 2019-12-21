@@ -25,11 +25,9 @@ export default class UserList extends React.Component {
         style={{ borderRadius: 20 }}
         onPress={navigation.getParam("hamPressed")}
       >
-        <Icon
-          name="bars"
-          size={22}
-          color={Colors.onPrimary}
-          style={{ padding: 10 }}
+        <Image
+          style={{ width: 22, height: 22, padding: 10 }}
+          source={require("../resources/ic_logo_trans.png")}
         />
       </Button>
     ),
@@ -40,10 +38,11 @@ export default class UserList extends React.Component {
 
   constructor(props) {
     super(props);
-    // this.props.navigation.setParams({ title: I18n.t("Notifications") });
+    this.props.navigation.setParams({ title: I18n.t("Notifications") });
     this.type = ["Birthdays", "Friend requests"];
     this.data = null;
     this.state = {
+      birthdays: [],
       loading: true,
       updateToggle: false,
       section: this.props.section
@@ -54,15 +53,75 @@ export default class UserList extends React.Component {
     return true;
   };
   componentDidMount() {
-    console.log("user list mounted");
+    console.log("hi3333", "hello");
+    this.props.navigation.addListener("didFocus", this._refresh);
+    this.props.navigation.setParams({ backButton: this._backButtonPressed });
+    Manager.addListener("NOTIFICATION_S", this._notificationSuccess);
+    Manager.addListener("NOTIFICATION_E", this._notificationError);
+    Manager.addListener("NOTIFICATION_U", this._refresh);
+    Manager.addListener("LANG_U", this._updateLanguage);
   }
 
   componentWillUnmount() {
-    // Manager.removeListener("NOTIFICATION_S", this._notificationSuccess);
-    // Manager.removeListener("NOTIFICATION_E", this._notificationError);
-    // Manager.removeListener("NOTIFICATION_U", this._refresh);
-    // Manager.removeListener("LANG_U", this._updateLanguage);
+    Manager.removeListener("NOTIFICATION_S", this._notificationSuccess);
+    Manager.removeListener("NOTIFICATION_E", this._notificationError);
+    Manager.removeListener("NOTIFICATION_U", this._refresh);
+    Manager.removeListener("LANG_U", this._updateLanguage);
   }
+
+  _updateLanguage = () => {
+    this.props.navigation.setParams({ title: I18n.t("Notifications") });
+    this.setState(previousState => {
+      updateToggle: !previousState.updateToggle;
+    });
+  };
+
+  _hamPressed = () => {
+    this.props.navigation.dispatch(DrawerActions.toggleDrawer());
+  };
+
+  _refresh = () => {
+    console.log("refreshing notification");
+    this.data = null;
+    this.state = {
+      loading: true
+    };
+    Manager.notification(`/api/notifications`, "GET");
+  };
+
+  _notificationSuccess = data => {
+    console.log("hi333", data);
+    this.data = data.data;
+    console.log(data);
+    this.setState({
+      loading: false,
+      incomingFriendships: data.data.incomingFriendships,
+      birthdays: data.data.birthdays.map(item => {
+        let user = {};
+        user.id = item.searchable.basic.id;
+        user.f_name = item.searchable.basic.f_name;
+        user.l_name = item.searchable.basic.l_name;
+        user.profile_pic = item.searchable.basic.profile_pic;
+        user.tags = item.searchable.tags;
+        user.friends_meta = item.searchable.friends_meta;
+        user.url = item.url;
+        user.extra_info = item.birthdayString;
+        return user;
+      })
+    });
+  };
+
+  _notificationError = error => {
+    console.log("notification error : ", error);
+  };
+
+  _backButtonPressed = () => {
+    console.log("back button pressed");
+    const backAction = NavigationActions.back({
+      key: null
+    });
+    this.props.navigation.dispatch(backAction);
+  };
 
   _navigateUser = item => {
     this.props.navigation.navigate("Profile", { url: item.url });
@@ -211,14 +270,34 @@ export default class UserList extends React.Component {
         </View>
       );
     }
-    return null;
+    return (
+      <View style={styles.noItem}>
+        <Text style={styles.itemText}>{I18n.t("No_birthday_alerts")}</Text>
+      </View>
+    );
   };
 
   render() {
     console.log("render", this.state.section);
+    if (!this.state.loading)
+      return (
+        <View style={styles.container}>
+          {this._renderUsers(this.props.section)}
+        </View>
+      );
     return (
-      <View style={styles.container}>
-        {this._renderUsers(this.props.section)}
+      <View
+        style={{
+          justifyContent: "center",
+          alignItems: "center",
+          padding: 10
+        }}
+      >
+        <ActivityIndicator
+          animating={this.state.loading}
+          size="large"
+          color={Colors.secondaryDark}
+        />
       </View>
     );
   }
@@ -256,7 +335,15 @@ const styles = StyleSheet.create({
   itemText: {
     paddingLeft: 10,
     fontSize: 14,
-    fontWeight: "400"
+    fontWeight: "400",
+    textAlign: "center"
+  },
+  noItem: {
+    flexDirection: "row",
+    alignItems: "center",
+    padding: 20,
+    paddingVertical: 20,
+    justifyContent: "center"
   },
   header: {
     // flex: 1,
@@ -326,14 +413,14 @@ const styles = StyleSheet.create({
     fontSize: 12,
     fontWeight: "300",
     flexDirection: "row",
-    flexWrap:"wrap",
-    paddingRight:10,
+    flexWrap: "wrap",
+    paddingRight: 10,
     flexShrink: 1
   },
   tag: {
     paddingLeft: 10
   },
-  profileContainer:{
-    flexShrink:1
+  profileContainer: {
+    flexShrink: 1
   }
 });
