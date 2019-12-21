@@ -14,7 +14,7 @@ import BatchMates from "../screens/batchmates";
 import Profile from "../screens/profile";
 
 const navigatorConfig = {
-  initialRouteName: "Profile",
+  initialRouteName: "NewsFeed",
   defaultNavigationOptions: {
     headerStyle: {
       backgroundColor: Colors.primary,
