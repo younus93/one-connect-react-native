@@ -71,5 +71,8 @@ export default {
     Unfriend : 'Unfriend',
     Unsend : 'Unsend',
     Public : 'Public',
-    Location : 'Location'
+    Location : 'Location',
+    Version:'Version 5.0',
+    PrivacyPolicy:'Terms & Conditions',
+
 }

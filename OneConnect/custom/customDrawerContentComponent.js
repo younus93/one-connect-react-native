@@ -3,19 +3,69 @@ import { Text, View, StyleSheet, Image, ImageBackground, Switch } from 'react-na
 import AsyncStorage from '@react-native-community/async-storage';
 import { SafeAreaView, NavigationActions } from 'react-navigation';
 import Icon from 'react-native-vector-icons/FontAwesome5';
+import IconSideBar from 'react-native-vector-icons/MaterialCommunityIcons';
 import { Colors } from '../constants';
 import Button from '../custom/button';
 import Manager from '../service/dataManager';
 import I18n, { SaveLocale } from '../service/i18n';
 import Privacy from "../screens/privacySetting";
+import Terms from "../screens/termsCondition";
 export default class CustomDrawerContentComponent extends React.Component {
     constructor(props) {
         super(props)
+        this.url = props.navigation.getParam('url', '/api/profile')
 
         this.state = {
-            switchValue: I18n.locale == 'en' ? true : false
+            switchValue: I18n.locale == 'en' ? true : false,
+            profile: {},
+            loading: true,
+            error: false,
+            errorText: null,
+
         }
     }
+
+    componentDidMount(){
+      this.props.navigation.addListener('didFocus', this.refreshPage);
+      Manager.addListener('PROFILE_S', this._profileSuccess)
+      Manager.addListener('PROFILE_E', this._profileError)
+      Manager.profile(this.url, 'GET')
+      this.props.navigation.setParams({ backButton: this._backButtonPressed });
+      this.props.navigation.setParams({ hamPressed: this._hamPressed });
+
+    }
+
+    _hamPressed = () => {
+        this.props.navigation.dispatch(DrawerActions.toggleDrawer())
+    }
+
+    _backButtonPressed = () => {
+        console.log("back button pressed")
+        const backAction = NavigationActions.back({
+            key: null,
+        });
+        this.props.navigation.dispatch(backAction);
+    }
+
+    refreshPage = () => {
+        Manager.profile(this.url, 'GET')
+    }
+
+    componentWillUnmount() {
+        console.log("profile unmouted")
+        Manager.removeListener('PROFILE_S', this._profileSuccess)
+        Manager.removeListener('PROFILE_E', this._profileError)
+      }
+
+      _profileSuccess = (data) => {
+          console.log("hi23423",data);
+          this.setState({
+              loading: false,
+              error: false,
+              profile: data.data,
+              errorText: null
+          })
+      }
     navigateToScreen = (route, props = null) => () => {
         console.log("Navigating to ", route);
         const navigateAction = NavigationActions.navigate({
@@ -47,6 +97,16 @@ export default class CustomDrawerContentComponent extends React.Component {
         newValue ? SaveLocale('th') : SaveLocale('en')
     }
 
+    _needsUpdate = () => {
+        console.log("profile needs update")
+        this.setState({
+            loading: true,
+            error: false,
+            errorText: null
+        })
+    }
+
+
     render() {
         const iconSize = 18
         console.log(Manager);
@@ -72,32 +132,10 @@ export default class CustomDrawerContentComponent extends React.Component {
                                     <Text style={styles.bodyTextstyle}>{ I18n.t('View_Profile') }</Text>
                                 </View>
                             </View>
-                        </Button> 
+                        </Button>
                     </View>
                 </View>
                 <View style={styles.body}>
-                
-                    <Button onPress={this.navigateToScreen('NewsFeed')}>
-                        <View style={styles.item}>
-                            <View style={styles.icon}>
-                                <Icon name="home" size={iconSize} color={Colors.primaryDark} />
-                            </View>
-                            <View style={styles.textBody}>
-                                <Text style={styles.bodyTextstyle}>{I18n.t('Newsfeed')}</Text>
-                            </View>
-                        </View>
-                    </Button>
-
-                    <Button onPress={this.navigateToScreen('Friends')}>
-                        <View style={styles.item}>
-                            <View style={styles.icon}>
-                                <Icon name="user-friends" size={iconSize} color={Colors.primaryDark} />
-                            </View>
-                            <View style={styles.textBody}>
-                                <Text style={styles.bodyTextstyle}>{I18n.t('Friends')}</Text>
-                            </View>
-                        </View>
-                    </Button>
 
                     <Button onPress={this.navigateToScreen('Batch')}>
                         <View style={styles.item}>
@@ -110,16 +148,6 @@ export default class CustomDrawerContentComponent extends React.Component {
                         </View>
                     </Button>
 
-                    <Button onPress={this.navigateToScreen('Notification')}>
-                        <View style={styles.item}>
-                            <View style={styles.icon}>
-                                <Icon name="bell" size={iconSize} color={Colors.primaryDark} />
-                            </View>
-                            <View style={styles.textBody}>
-                                <Text style={styles.bodyTextstyle}>{I18n.t('Notifications')}</Text>
-                            </View>
-                        </View>
-                    </Button>
 
                     <Button onPress={this.navigateToScreen('ChangePassword')}>
                         <View style={styles.item}>
@@ -131,6 +159,30 @@ export default class CustomDrawerContentComponent extends React.Component {
                             </View>
                         </View>
                     </Button>
+
+                    <Button onPress={this.navigateToScreen('Privacy', { data: this.state.profile.privacy, callback: this._needsUpdate })}>
+                        <View style={styles.item}>
+                            <View style={styles.icon}>
+                                <IconSideBar name="incognito" size={iconSize} color={Colors.primaryDark} />
+                            </View>
+                            <View style={styles.textBody}>
+                                <Text style={styles.bodyTextstyle}>{I18n.t('Privacy_Setting')}</Text>
+                            </View>
+                        </View>
+                    </Button>
+
+                    <Button onPress={this.navigateToScreen('Terms')}>
+                        <View style={styles.item}>
+                            <View style={styles.icon}>
+                                <IconSideBar name="alpha-t-circle-outline" size={iconSize} color={Colors.primaryDark} />
+                            </View>
+                            <View style={styles.textBody}>
+                                <Text style={styles.bodyTextstyle}>{I18n.t('PrivacyPolicy')}</Text>
+                            </View>
+                        </View>
+                    </Button>
+
+
 
                     {/* <Button onPress={this.navigateToScreen('Privacy')}>
                         <View style={styles.item}>
@@ -156,6 +208,13 @@ export default class CustomDrawerContentComponent extends React.Component {
                     </View>
 
                 </View>
+
+                <View style={styles.item}>
+                    <View style={styles.textBody}>
+                        <Text style={{fontSize: 13,
+                        fontWeight: '400',textAlign:'center'}}>{I18n.t('Version')}</Text>
+                    </View>
+                    </View>
 
                 <Button style={styles.footer} onPress={this.navigateToScreen('AuthLoading', { action: 'logout' })}>
                     <View>

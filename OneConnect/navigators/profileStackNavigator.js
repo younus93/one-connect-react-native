@@ -10,6 +10,7 @@ import AddCompany from '../screens/addCompany';
 import AddEducation from '../screens/addEducation';
 import ChangePassword from '../screens/changePassword';
 import Privacy from '../screens/privacySetting';
+import Terms from "../screens/termsCondition";
 import Icon from 'react-native-vector-icons/FontAwesome5';
 import {Colors} from '../constants'
 import I18n from "../service/i18n";
@@ -64,6 +65,12 @@ const ProfileStack = createStackNavigator({
         navigationOptions: () => ({
             title: `PRIVACY`,
         }),
+    },
+    Terms:{
+      screen:Terms,
+      navigationOptions: () => ({
+          title: `Terms & Conditions`,
+      }),
     }
 }, navigatorConfig);
 

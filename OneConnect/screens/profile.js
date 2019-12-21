@@ -246,7 +246,7 @@ export default class Profile extends React.Component {
     }
 
     _navigateToPrivacy = () => {
-        console.log("navigateing to privacy")
+        console.log("hi123",this.state.profile)
         this.props.navigation.navigate('Privacy', { data: this.state.profile.privacy, callback: this._needsUpdate })
     }
 
@@ -870,4 +870,3 @@ const styles = StyleSheet.create({
         // marginBottom: 5
     }
 });
-

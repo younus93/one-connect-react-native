@@ -70,6 +70,8 @@ export default {
     Send_Request: 'ส่งคำขอเป็นเพื่อน',
     Unsend : 'ยกเลิกคำขอ',
     Public : 'สาธารณะ',
-    Location : 'ที่ตั้ง'
-}
+    Location : 'ที่ตั้ง',
+    Version:'เวอร์ชัน 5.0',
+    PrivacyPolicy:'ข้อตกลงและเงื่อนไข',
 
+}
