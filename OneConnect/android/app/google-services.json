@@ -1,0 +1,40 @@
+{
+  "project_info": {
+    "project_number": "83060980386",
+    "firebase_url": "https://beebuck-c4946.firebaseio.com",
+    "project_id": "beebuck-c4946",
+    "storage_bucket": "beebuck-c4946.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:83060980386:android:cc582ca6ad9e3f060075fb",
+        "android_client_info": {
+          "package_name": "com.beebuck"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "83060980386-rij231u9ft30po0c5pv077m8o6ounufk.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyBxdN7EjIPMfrgt3u2LAw1HHrS0a3VTunw"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "83060980386-rij231u9ft30po0c5pv077m8o6ounufk.apps.googleusercontent.com",
+              "client_type": 3
+            }
+          ]
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}

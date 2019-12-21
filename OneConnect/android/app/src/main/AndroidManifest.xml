@@ -26,6 +26,12 @@
       </activity>
       <activity android:name="com.facebook.react.devsupport.DevSettingsActivity" />
       <meta-data android:name="com.google.android.geo.API_KEY" android:value="AIzaSyCKAikarxKHcPYlMfmkweinAPagsqVMKFc"/>
+      <service android:name="io.invertase.firebase.messaging.RNFirebaseMessagingService">
+        <intent-filter>
+          <action android:name="com.google.firebase.MESSAGING_EVENT" />
+        </intent-filter>
+      </service>
+      <service android:name="io.invertase.firebase.messaging.RNFirebaseBackgroundMessagingService" />
     </application>
 
 </manifest>
