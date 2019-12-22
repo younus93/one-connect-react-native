@@ -148,7 +148,6 @@ const Tabs = createAppContainer(
       barStyle: {
         backgroundColor: Colors.white,
         shadowOpacity: 0.4,
-        position: "absolute",
         left: 0,
         bottom: 0,
         right: 0

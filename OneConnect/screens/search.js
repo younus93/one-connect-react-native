@@ -9,6 +9,8 @@ import {
   SafeAreaView,
   TouchableWithoutFeedback,
   TextInput,
+  KeyboardAvoidingView,
+  Platform,
   Keyboard,
   Image
 } from "react-native";
@@ -22,8 +24,14 @@ import SerachUserList from "../custom/searchUserList";
 import I18n from "../service/i18n";
 import SearchUserList from "../custom/searchUserList";
 
+const DismissKeyboard = ({ children }) => (
+  <TouchableWithoutFeedback onPress={() => Keyboard.dismiss()}>
+    {children}
+  </TouchableWithoutFeedback>
+);
+
 // import SearchUserList from "../custom/searchUserList";
-const UUID = require('uuid');
+const UUID = require("uuid");
 export default class Search extends React.Component {
   static navigationOptions = ({ navigation }) => ({
     title: "",
@@ -34,7 +42,7 @@ export default class Search extends React.Component {
     super(props);
     this.type = ["users", "batches", "posts"];
     this.data = null;
-    this.searchText = '';
+    this.searchText = "";
 
     (this.showUser = true),
       (this.showPost = true),
@@ -56,7 +64,7 @@ export default class Search extends React.Component {
       showInstitution: true,
       showCourses: true,
       showBatches: true,
-      userList: '',
+      userList: ""
     };
   }
 
@@ -76,11 +84,13 @@ export default class Search extends React.Component {
   _onSubmitEditing = () => {
     console.log("on submit editing");
     this.setState({
-      ...this.state, loading: true,
-      showUser: false, showPost: false,
+      ...this.state,
+      loading: true,
+      showUser: false,
+      showPost: false,
       showInstitution: false,
       showCourses: false,
-      showBatches: false,
+      showBatches: false
     });
     Manager.search(`/api/search?query=${this.searchText}`, "GET");
   };
@@ -101,6 +111,7 @@ export default class Search extends React.Component {
     console.log("search component will unmount");
     Manager.removeListener("SEARCH_S", this._searchSuccess);
     Manager.removeListener("SEARCH_E", this._searchError);
+    Keyboard.dismiss();
   }
 
   _searchSuccess = data => {
@@ -118,14 +129,17 @@ export default class Search extends React.Component {
       user.l_name = item.searchable.basic.l_name;
       user.profile_pic = item.searchable.basic.profile_pic;
       user.tags = item.searchable.tags;
-      user.extra_info = item.searchable.companies.length ? `${item.searchable.companies[0].name}` : null;
+      user.extra_info = item.searchable.companies.length
+        ? `${item.searchable.companies[0].name}`
+        : null;
       user.friends_meta = item.searchable.friends_meta;
       return user;
     });
     this.setState({
       userList: userList,
       loading: false,
-      showUser: true, showPost: true,
+      showUser: true,
+      showPost: true,
       showInstitution: true,
       showCourses: true,
       showBatches: true
@@ -176,7 +190,6 @@ export default class Search extends React.Component {
             <View style={styles.sectionBody}>
               {list.map(item => {
                 return (
-
                   <Button
                     onPress={() => this._navigateBatch(item)}
                     key={`pelt-${Math.random(1)}`}
@@ -186,7 +199,9 @@ export default class Search extends React.Component {
                       <TouchableWithoutFeedback onPress={this._navigateUser}>
                         <Image
                           style={styles.resourceImage}
-                          source={{ uri: item.searchable.institution.profile_pic }}
+                          source={{
+                            uri: item.searchable.institution.profile_pic
+                          }}
                           defaultSource={require("../resources/dummy_profile.png")}
                           resizeMode="cover"
                           onError={error => console.log(error)}
@@ -203,7 +218,8 @@ export default class Search extends React.Component {
                         {item.title}
                       </Text>
                       <Text style={styles.itemText}>
-                        {I18n.t('Institution')} : {item.searchable.institution.name}
+                        {I18n.t("Institution")} :{" "}
+                        {item.searchable.institution.name}
                       </Text>
                     </View>
                   </Button>
@@ -265,13 +281,15 @@ export default class Search extends React.Component {
     return null;
   };
 
-
   _renderUsers = () => {
     if (this.state.userList) {
       // console.log(this.state.userList);
       if (this.state.userList.length > 0) {
         return (
-          <SearchUserList userList={this.state.userList} navigation={this.props.navigation}></SearchUserList>
+          <SearchUserList
+            userList={this.state.userList}
+            navigation={this.props.navigation}
+          ></SearchUserList>
         );
       }
       return null;
@@ -309,7 +327,9 @@ export default class Search extends React.Component {
                       <TouchableWithoutFeedback onPress={this._navigateUser}>
                         <Image
                           style={styles.resourceImage}
-                          source={{ uri: item.searchable.institution.profile_pic }}
+                          source={{
+                            uri: item.searchable.institution.profile_pic
+                          }}
                           defaultSource={require("../resources/dummy_profile.png")}
                           resizeMode="cover"
                           onError={error => console.log(error)}
@@ -326,7 +346,8 @@ export default class Search extends React.Component {
                         {item.title}
                       </Text>
                       <Text style={styles.itemText}>
-                        {I18n.t('Institution')} : {item.searchable.institution.name}
+                        {I18n.t("Institution")} :{" "}
+                        {item.searchable.institution.name}
                       </Text>
                     </View>
                   </Button>
@@ -406,7 +427,7 @@ export default class Search extends React.Component {
         <View style={styles.header}>
           <Button style={styles.drawerButton} onPress={this._backButtonPressed}>
             <Icon
-              name="arrow-left"
+              name="search"
               size={22}
               color={Colors.onSurface}
               style={{ padding: 10 }}
@@ -415,12 +436,12 @@ export default class Search extends React.Component {
           <View style={styles.search}>
             <TextInput
               style={styles.textInput}
-              placeholder={ I18n.t('Search') }
+              placeholder={I18n.t("Search")}
               allowFontScaling={false}
               onChangeText={this._searchTextChange}
               onSubmitEditing={this._onSubmitEditing}
               autoCorrect={false}
-              autoFocus={true}
+              autoFocus={false}
               enablesReturnKeyAutomatically={true}
               returnKeyType="search"
             />
@@ -441,7 +462,13 @@ export default class Search extends React.Component {
     return (
       <View style={{ marginTop: 5, alignItems: "center" }}>
         <ScrollView horizontal={true}>
-          <View style={{ display: 'flex', flexDirection: 'column', alignItems: "center" }}>
+          <View
+            style={{
+              display: "flex",
+              flexDirection: "column",
+              alignItems: "center"
+            }}
+          >
             <Button
               style={styles.CircleShapeView}
               onPress={() => {
@@ -453,16 +480,18 @@ export default class Search extends React.Component {
                 }));
               }}
             >
-              <Icon
-                name="users"
-                size={22}
-                color={this.state.userBackground}
-              />
+              <Icon name="users" size={22} color={this.state.userBackground} />
             </Button>
             <Text>{I18n.t("Users")}</Text>
           </View>
 
-          <View style={{ display: 'flex', flexDirection: 'column', alignItems: "center" }}>
+          <View
+            style={{
+              display: "flex",
+              flexDirection: "column",
+              alignItems: "center"
+            }}
+          >
             <Button
               style={styles.CircleShapeView}
               onPress={() => {
@@ -482,7 +511,13 @@ export default class Search extends React.Component {
             </Button>
             <Text>{I18n.t("Institutions")}</Text>
           </View>
-          <View style={{ display: 'flex', flexDirection: 'column', alignItems: "center" }}>
+          <View
+            style={{
+              display: "flex",
+              flexDirection: "column",
+              alignItems: "center"
+            }}
+          >
             <Button
               style={styles.CircleShapeView}
               onPress={() => {
@@ -502,7 +537,13 @@ export default class Search extends React.Component {
             </Button>
             <Text>{I18n.t("Batches")}</Text>
           </View>
-          <View style={{ display: 'flex', flexDirection: 'column', alignItems: "center" }}>
+          <View
+            style={{
+              display: "flex",
+              flexDirection: "column",
+              alignItems: "center"
+            }}
+          >
             <Button
               style={styles.CircleShapeView}
               onPress={() => {
@@ -512,7 +553,8 @@ export default class Search extends React.Component {
                     ? Colors.searchFilterSelected
                     : Colors.onPrimary
                 }));
-              }}>
+              }}
+            >
               <Icon
                 name="chalkboard-teacher"
                 size={22}
@@ -520,9 +562,7 @@ export default class Search extends React.Component {
               />
             </Button>
             <Text>{I18n.t("Courses")}</Text>
-
           </View>
-
         </ScrollView>
       </View>
     );
@@ -531,60 +571,74 @@ export default class Search extends React.Component {
   render() {
     console.log("search render");
     return (
-      <View style={styles.container}>
-        {this._renderSearchBar()}
-        {this.data ? this.data.length > 0 ? this._renderFilters() : null : null}
-        {/* {this._renderFilters()} */}
-        {this.state.loading ? (
-          <View
-            style={{
-              justifyContent: "center",
-              alignItems: "center",
-              padding: 10
-            }}
-          >
-            <ActivityIndicator
-              animating={this.state.loading}
-              size="large"
-              color={Colors.secondaryDark}
-            />
-          </View>
-        ) : null}
-        <ScrollView>
-          {this.data ? this.data.length > 0 ? (
-            <View>
-              {this.state.showUser ? this._renderUsers() : null}
-              {this.state.showInstitution ? this._renderInstitutions() : null}
-              {this.state.showBatches ? this._renderBatches() : null}
-              {this.state.showCourses ? this._renderCourses() : null}
-              {this.state.showPost ? this._renderPosts() : null}
-            </View>
-          ) : (
+      <DismissKeyboard>
+        <KeyboardAvoidingView
+          behavior={Platform.OS === "ios" ? "padding" : null}
+          style={styles.container}
+        >
+          <View style={styles.container}>
+            {this._renderSearchBar()}
+            {this.data
+              ? this.data.length > 0
+                ? this._renderFilters()
+                : null
+              : null}
+            {/* {this._renderFilters()} */}
+            {this.state.loading ? (
               <View
                 style={{
-                  backgroundColor: Colors.background,
                   justifyContent: "center",
                   alignItems: "center",
-                  opacity: 1,
-                  width: "100%",
-                  paddingTop: 20
+                  padding: 10
                 }}
               >
-                <Text
-                  style={{
-                    color: Colors.secondaryDark,
-                    fontSize: 22,
-                    fontWeight: "700",
-                    opacity: 0.4
-                  }}
-                >
-                  No results
-              </Text>
+                <ActivityIndicator
+                  animating={this.state.loading}
+                  size="large"
+                  color={Colors.secondaryDark}
+                />
               </View>
             ) : null}
-        </ScrollView>
-
-      </View>
+            <ScrollView keyboardShouldPersistTaps="never">
+              {this.data ? (
+                this.data.length > 0 ? (
+                  <View>
+                    {this.state.showUser ? this._renderUsers() : null}
+                    {this.state.showInstitution
+                      ? this._renderInstitutions()
+                      : null}
+                    {this.state.showBatches ? this._renderBatches() : null}
+                    {this.state.showCourses ? this._renderCourses() : null}
+                    {this.state.showPost ? this._renderPosts() : null}
+                  </View>
+                ) : (
+                  <View
+                    style={{
+                      backgroundColor: Colors.background,
+                      justifyContent: "center",
+                      alignItems: "center",
+                      opacity: 1,
+                      width: "100%",
+                      paddingTop: 20
+                    }}
+                  >
+                    <Text
+                      style={{
+                        color: Colors.secondaryDark,
+                        fontSize: 22,
+                        fontWeight: "700",
+                        opacity: 0.4
+                      }}
+                    >
+                      No results
+                    </Text>
+                  </View>
+                )
+              ) : null}
+            </ScrollView>
+          </View>
+        </KeyboardAvoidingView>
+      </DismissKeyboard>
     );
   }
 }
@@ -593,7 +647,7 @@ const styles = StyleSheet.create({
   resourceImage: {
     height: 60,
     width: 60,
-    resizeMode: 'contain'
+    resizeMode: "contain"
   },
   container: {
     flex: 1,
@@ -602,7 +656,7 @@ const styles = StyleSheet.create({
   bodyHeader: {
     fontSize: 16,
     fontWeight: "600",
-    color: Colors.onPrimary,
+    color: Colors.onPrimary
     // opacity: 0.4
   },
   sectionBody: {
@@ -697,12 +751,12 @@ const styles = StyleSheet.create({
   },
   CircleShapeView: {
     borderWidth: 1,
-    borderColor: 'rgba(0,0,0,0.2)',
-    alignItems: 'center',
-    justifyContent: 'center',
+    borderColor: "rgba(0,0,0,0.2)",
+    alignItems: "center",
+    justifyContent: "center",
     marginHorizontal: 5,
     width: 60,
     height: 60,
-    borderRadius: 30,
+    borderRadius: 30
   }
 });

@@ -64,15 +64,15 @@ export default class Feed extends React.Component {
   _share = e => {};
 
   _report = e => {
-     Alert.alert(
-      'Report as inappropriate?',
-      'You can report abuse, spam or anything else that doesn\'t follow our Community Guidelines and we will review it accordingly',
+    Alert.alert(
+      "Report as inappropriate?",
+      "You can report abuse, spam or anything else that doesn't follow our Community Guidelines and we will review it accordingly",
       [
-        {text : 'Cancel'},
-        {text : 'Report', onPress : ()=>this.props.reportCallback()}
+        { text: "Cancel" },
+        { text: "Report", onPress: () => this.props.reportCallback() }
       ]
-     )
-  }
+    );
+  };
 
   _liked = () => {
     if (this.props.likeCallback) {
@@ -108,17 +108,30 @@ export default class Feed extends React.Component {
   // }
 
   _likeText = () => {
-    if(this.state.likeIconActive)
-      return I18n.t('You_and')+ " " + (this.state.totalLikes - 1) + I18n.t('Liked_it');
-    if(this.props.data.likers.length > 0)
-      return this.props.data.likers[0].f_name +" " + I18n.t('and') + " "  + (this.state.totalLikes - 1)+ " " + I18n.t('Liked_it');
+    if (this.state.likeIconActive)
+      return (
+        I18n.t("You_and") +
+        " " +
+        (this.state.totalLikes - 1) +
+        I18n.t("Liked_it")
+      );
+    if (this.props.data.likers.length > 0)
+      return (
+        this.props.data.likers[0].f_name +
+        " " +
+        I18n.t("and") +
+        " " +
+        (this.state.totalLikes - 1) +
+        " " +
+        I18n.t("Liked_it")
+      );
     return "No Likes yet";
-  }
-  
+  };
+
   _commentText = () => {
-    return this.state.commentsCount+ " " + I18n.t('Comment');
-  }
-  
+    return this.state.commentsCount + " " + I18n.t("Comment");
+  };
+
   _profile = () => {
     // this.props.profileCallback()
   };
@@ -127,7 +140,7 @@ export default class Feed extends React.Component {
     console.log("pic", this.state.pic);
     const { data } = this.props;
     let faces = this.props.data.likers;
-  
+
     return (
       <TouchableWithoutFeedback
         onPress={this._onPress}
@@ -175,20 +188,22 @@ export default class Feed extends React.Component {
           </View>
           <View style={styles.separator} />
           <View style={styles.footer}>
-          <Text style={[
-                  styles.footerMetaElementText,
-                  { color: this.state.likeActiveFont }
-                ]}
-              >
-              { this._likeText() }
-              </Text>
-              <Text style={[
-                  styles.footerMetaElementText,
-                  { color: this.state.likeActiveFont }
-                ]}
-              >
-              { this._commentText() }
-              </Text>
+            <Text
+              style={[
+                styles.footerMetaElementText,
+                { color: this.state.likeActiveFont }
+              ]}
+            >
+              {this._likeText()}
+            </Text>
+            <Text
+              style={[
+                styles.footerMetaElementText,
+                { color: this.state.likeActiveFont }
+              ]}
+            >
+              {this._commentText()}
+            </Text>
           </View>
           <View style={styles.footer}>
             <Button onPress={this._liked} style={styles.footerElement}>
@@ -204,20 +219,16 @@ export default class Feed extends React.Component {
                   { color: this.state.likeActiveFont }
                 ]}
               >
-              {I18n.t("Like") }
+                {I18n.t("Like")}
               </Text>
             </Button>
             <Button onPress={this._comment} style={styles.footerElement}>
               <Icon name="comment" size={20} color={Colors.onPrimary} />
-              <Text style={styles.footerElementText}>
-                {I18n.t("Comment")}
-              </Text>
+              <Text style={styles.footerElementText}>{I18n.t("Comment")}</Text>
             </Button>
             <Button onPress={this._report} style={styles.footerElement}>
               <Icon name="flag" size={20} color={Colors.onPrimary} />
-              <Text style={styles.footerElementText}>
-                Report
-              </Text>
+              <Text style={styles.footerElementText}>Report</Text>
             </Button>
           </View>
         </View>
@@ -235,11 +246,11 @@ const styles = StyleSheet.create({
   container: {
     // paddingHorizontal: 20,
     // paddingTop: 10,
-    paddingHorizontal : 10,
-    paddingVertical : 5,
-    marginHorizontal : 10,
-    marginVertical : 5,
-    borderRadius : 10,
+    paddingHorizontal: 10,
+    paddingVertical: 5,
+    marginHorizontal: 10,
+    marginVertical: 5,
+    borderRadius: 10,
     backgroundColor: Colors.surface
   },
   separator: {
@@ -266,13 +277,13 @@ const styles = StyleSheet.create({
     alignItems: "center",
     opacity: 0.7
   },
-  footerMetaElementText : {
+  footerMetaElementText: {
     fontSize: 10,
     fontWeight: "600",
     opacity: 0.6,
     paddingLeft: 5,
-    flexWrap : 'wrap',
-    maxWidth : '50%'
+    flexWrap: "wrap",
+    maxWidth: "50%"
   },
   footerElementText: {
     color: Colors.onSurface,
@@ -307,8 +318,8 @@ const styles = StyleSheet.create({
     borderRadius: 20,
     width: 60,
     height: 60,
-    aspectRatio : 1.25,
-    resizeMode : 'contain'
+    aspectRatio: 1.25,
+    resizeMode: "contain"
   },
   shadow: {
     shadowColor: Colors.secondary,
@@ -322,12 +333,12 @@ const styles = StyleSheet.create({
     flexDirection: "row",
     paddingBottom: 10
   },
-  feedImage: { height:200,width: "100%" }
+  feedImage: { height: 200, width: "100%" }
 });
 const containerStyles = StyleSheet.create({
   container: {
     flexDirection: "row-reverse",
-    flexWrap: "nowrap",
+    flexWrap: "wrap",
     justifyContent: "flex-start",
     alignItems: "flex-start",
     alignSelf: "flex-start"

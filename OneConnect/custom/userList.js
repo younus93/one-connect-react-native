@@ -7,7 +7,11 @@ import {
   ActivityIndicator,
   SafeAreaView,
   TextInput,
-  Image
+  Image,
+  KeyboardAvoidingView,
+  TouchableWithoutFeedback,
+  Platform,
+  Keyboard
 } from "react-native";
 import { DrawerActions } from "react-navigation-drawer";
 import { Colors } from "../constants";
@@ -17,6 +21,12 @@ import Icon from "react-native-vector-icons/FontAwesome5";
 import I18n from "../service/i18n";
 import Toast, { DURATION } from "react-native-easy-toast";
 const UUID = require("uuid");
+const DismissKeyboard = ({ children }) => (
+  <TouchableWithoutFeedback onPress={() => Keyboard.dismiss()}>
+    {children}
+  </TouchableWithoutFeedback>
+);
+
 export default class UserList extends React.Component {
   static navigationOptions = ({ navigation }) => ({
     title: navigation.getParam("title"),
@@ -60,6 +70,7 @@ export default class UserList extends React.Component {
     Manager.addListener("NOTIFICATION_E", this._notificationError);
     Manager.addListener("NOTIFICATION_U", this._refresh);
     Manager.addListener("LANG_U", this._updateLanguage);
+    this.props.navigation.setParams({ hamPressed: this._hamPressed });
   }
 
   componentWillUnmount() {
@@ -127,11 +138,6 @@ export default class UserList extends React.Component {
     this.props.navigation.navigate("Profile", { url: item.url });
   };
 
-  _navigateMate = item => {
-    console.log("pressed item :", item);
-    this.props._navigateMate(item);
-  };
-
   _accept = id => {
     // Manager.friendRequest("/api/friend-request/accept", "POST", {
     //   professional_id: id
@@ -155,9 +161,6 @@ export default class UserList extends React.Component {
       console.log("data availabe");
       return (
         <View>
-          <View style={{ paddingLeft: 10, paddingTop: 18, paddingBottom: 8 }}>
-            <Text style={styles.bodyHeader}>Friend Request</Text>
-          </View>
           <View style={styles.friendReqSectionBody}>
             {section.map(item => {
               return (
@@ -166,93 +169,52 @@ export default class UserList extends React.Component {
                   style={styles.friendReqBody}
                 >
                   <Button
-                    onPress={() => this._navigateMate(item.sender.resource_url)}
+                    onPress={() => this._navigateUser(item)}
                     style={styles.item}
                   >
                     <View>
                       <Image
                         style={styles.image}
-                        source={{ uri: item.sender.profile_pic }}
+                        source={{ uri: item.profile_pic }}
                         resizeMode="cover"
                         onError={error => console.log(error)}
+                      />
+                      <Image
+                        style={{
+                          width: 120,
+                          height: 120,
+                          position: "absolute"
+                        }}
+                        source={require("../resources/ic_white_hex.png")}
                       />
                     </View>
                     <View style={styles.profileContainer}>
                       <Text style={styles.name}>
-                        {item.sender.f_name + " " + item.sender.l_name}
+                        {item.f_name + " " + item.l_name}
+                      </Text>
+
+                      <Text style={styles.mutualFriendsCount}>
+                        {item.extra_info}
                       </Text>
                       <Text style={styles.mutualFriendsCount}>
-                        {item.sender.friends_meta.mutual_friends_count}{" "}
+                        {item.friends_meta.mutual_friends_count}{" "}
                         {I18n.t("Mutual_friends")}
                       </Text>
                       <View style={styles.tags}>
-                        {item.sender.tags.map(tag => (
+                        {item.tags.map(tag => (
                           <Text style={styles.tag} key={UUID.v4()}>
                             {tag.name}
                           </Text>
                         ))}
                       </View>
-                      <View style={styles.buttons}>
-                        <View
-                          style={{ flexDirection: "row", alignItems: "center" }}
-                        >
-                          <Button
-                            style={{
-                              borderWidth: StyleSheet.hairlineWidth,
-                              borderRadius: 5,
-                              flexDirection: "row",
-                              justifyContent: "center",
-                              alignItems: "center",
-                              backgroundColor: Colors.primaryDark,
-                              padding: 12,
-                              marginRight: 15
-                            }}
-                            onPress={() => this._accept(item.sender.id)}
-                            rippleColor={Colors.safe}
-                          >
-                            <Icon name="user-check" size={12} color={"#fff"} />
-                            <Text
-                              style={{
-                                fontWeight: "600",
-                                fontSize: 14,
-                                color: "#fff",
-                                paddingLeft: 5
-                              }}
-                            >
-                              {" "}
-                              Confirm{" "}
-                            </Text>
-                          </Button>
-                          <Button
-                            style={{
-                              borderWidth: StyleSheet.hairlineWidth,
-                              borderRadius: 5,
-                              flexDirection: "row",
-                              justifyContent: "center",
-                              alignItems: "center",
-                              backgroundColor: Colors.secondaryDark,
-                              padding: 12
-                            }}
-                            onPress={() => this._deny(item.sender.id)}
-                            rippleColor={Colors.primaryDark}
-                          >
-                            <Icon name="user-times" size={12} color={"#fff"} />
-                            <Text
-                              style={{
-                                fontWeight: "600",
-                                fontSize: 14,
-                                color: "#fff",
-                                paddingLeft: 5
-                              }}
-                            >
-                              {" "}
-                              Delete{" "}
-                            </Text>
-                          </Button>
-                        </View>
-                      </View>
                     </View>
                   </Button>
+                  <View
+                    style={{
+                      borderBottomWidth: 1,
+                      borderBottomColor: Colors.grey
+                    }}
+                  />
                 </View>
               );
             })}
@@ -281,24 +243,38 @@ export default class UserList extends React.Component {
     console.log("render", this.state.section);
     if (!this.state.loading)
       return (
-        <View style={styles.container}>
-          {this._renderUsers(this.props.section)}
-        </View>
+        <DismissKeyboard>
+          <KeyboardAvoidingView
+            behavior={Platform.OS === "ios" ? "padding" : null}
+            style={styles.container}
+          >
+            <View style={styles.container}>
+              {this._renderUsers(this.state.birthdays)}
+            </View>
+          </KeyboardAvoidingView>
+        </DismissKeyboard>
       );
     return (
-      <View
-        style={{
-          justifyContent: "center",
-          alignItems: "center",
-          padding: 10
-        }}
-      >
-        <ActivityIndicator
-          animating={this.state.loading}
-          size="large"
-          color={Colors.secondaryDark}
-        />
-      </View>
+      <DismissKeyboard>
+        <KeyboardAvoidingView
+          behavior={Platform.OS === "ios" ? "padding" : null}
+          style={styles.container}
+        >
+          <View
+            style={{
+              justifyContent: "center",
+              alignItems: "center",
+              padding: 10
+            }}
+          >
+            <ActivityIndicator
+              animating={this.state.loading}
+              size="large"
+              color={Colors.secondaryDark}
+            />
+          </View>
+        </KeyboardAvoidingView>
+      </DismissKeyboard>
     );
   }
 }
@@ -306,7 +282,7 @@ export default class UserList extends React.Component {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    backgroundColor: Colors.background
+    backgroundColor: Colors.surface
   },
   bodyHeader: {
     fontSize: 16,
@@ -319,17 +295,16 @@ const styles = StyleSheet.create({
     backgroundColor: Colors.surface
   },
   friendReqSectionBody: {
-    paddingVertical: 20
+    paddingVertical: 0
   },
   friendReqBody: {
-    backgroundColor: Colors.primaryLight,
-    marginBottom: 10,
+    backgroundColor: Colors.surface,
     paddingBottom: 10
   },
   item: {
     flexDirection: "row",
     alignItems: "center",
-    padding: 20,
+    padding: 10,
     paddingVertical: 20
   },
   itemText: {

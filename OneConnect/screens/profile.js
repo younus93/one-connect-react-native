@@ -548,9 +548,7 @@ export default class Profile extends React.Component {
                   }}
                   source={require("../resources/ic_gray_hex.png")}
                 />
-
-                <Button
-                  onPress={this._editPhoto}
+                <View
                   style={{
                     width: 35,
                     height: 35,
@@ -560,17 +558,23 @@ export default class Profile extends React.Component {
                     right: "35%",
                     borderRadius: 17,
                     padding: 10,
-                    backgroundColor: Colors.yellowDark
+                    backgroundColor: this.state.profile.editable
+                      ? Colors.yellowDark
+                      : "transaparent"
                   }}
                 >
-                  <Icon
-                    name="edit"
-                    color={"white"}
-                    style={{
-                      fontSize: 16
-                    }}
-                  ></Icon>
-                </Button>
+                  {this.state.profile.editable ? (
+                    <Button onPress={this._editPhoto}>
+                      <Icon
+                        name="edit"
+                        color={"white"}
+                        style={{
+                          fontSize: 16
+                        }}
+                      ></Icon>
+                    </Button>
+                  ) : null}
+                </View>
               </View>
               {this._renderFriendMeta()}
               <View style={styles.container}>

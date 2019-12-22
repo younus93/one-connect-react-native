@@ -11,17 +11,16 @@ import {
   TextInput
 } from "react-native";
 
-import Toast from 'react-native-simple-toast';
-import { Button as RNButton } from 'react-native-elements';
+import Toast from "react-native-simple-toast";
+import { Button as RNButton } from "react-native-elements";
 import { NavigationActions } from "react-navigation";
 import { Colors } from "../constants";
 import Icon from "react-native-vector-icons/FontAwesome5";
 import Button from "../custom/button";
 import I18n from "../service/i18n";
 import Manager from "../service/dataManager";
-const UUID = require('uuid');
+const UUID = require("uuid");
 export default class FriendRequestList extends React.Component {
-
   static navigationOptions = ({ navigation }) => ({
     title: "",
     header: null
@@ -78,15 +77,17 @@ export default class FriendRequestList extends React.Component {
     console.log("incoming friendships", incomingFriendships);
     this.setState({ incomingFriendships: incomingFriendships });
     console.log(this.state);
-    Toast.showWithGravity(response.message, Toast.SHORT, Toast.TOP)
-  }
+    Toast.showWithGravity(response.message, Toast.SHORT, Toast.TOP);
+  };
 
   _navigateUser = url => {
     url = `/api/professionals/${url}`;
     console.log("navigating to ", url);
-    this.props.navigation.navigate("Profile", { url: url, title: 'View profile' });
+    this.props.navigation.navigate("Profile", {
+      url: url,
+      title: "View profile"
+    });
   };
-
 
   render() {
     return (
@@ -99,10 +100,7 @@ export default class FriendRequestList extends React.Component {
             console.log("inside render");
             console.log(item);
             return (
-              <View
-                key={`pelt-${Math.random(1)}`}
-                style={styles.friendReqBody}
-              >
+              <View key={`pelt-${Math.random(1)}`} style={styles.friendReqBody}>
                 <Button
                   onPress={() => this._navigateUser(item.sender.id)}
                   style={styles.item}
@@ -114,6 +112,14 @@ export default class FriendRequestList extends React.Component {
                       source={{ uri: item.sender.profile_pic }}
                       resizeMode="cover"
                       onError={error => console.log(error)}
+                    />
+                    <Image
+                      style={{
+                        width: 120,
+                        height: 120,
+                        position: "absolute"
+                      }}
+                      source={require("../resources/ic_white_hex.png")}
                     />
                   </View>
                   <View style={styles.profileContainer}>
@@ -131,24 +137,36 @@ export default class FriendRequestList extends React.Component {
                         </Text>
                       ))}
                     </View>
-                    {!item.sender.acceptedRequest ?
-                      <View style={{ flexDirection : "row", marginTop : 10 }}>
+                    {!item.sender.acceptedRequest ? (
+                      <View style={{ flexDirection: "row", marginTop: 10 }}>
                         <RNButton
                           onPress={() => this._accept(item.sender.id)}
                           key={`pelt-accept-${Math.random(1)}`}
-                          buttonStyle={{ backgroundColor: Colors.yellowDark, width : 95, marginLeft : 10 }}
+                          buttonStyle={{
+                            backgroundColor: Colors.yellowDark,
+                            width: 95,
+                            marginLeft: 10
+                          }}
                           title="Accept"
-                          titleStyle={{ color: 'black' }}
+                          titleStyle={{ color: "black" }}
                         />
                         <RNButton
                           onPress={() => this._deny(item.sender.id)}
                           key={`pelt-deny-de${Math.random(1)}`}
-                          buttonStyle={{ backgroundColor : Colors.grey, width : 95, marginLeft : 10 }}
+                          buttonStyle={{
+                            backgroundColor: Colors.grey,
+                            width: 95,
+                            marginLeft: 10
+                          }}
                           title="Deny"
-                          titleStyle={{ color : 'black' }}
+                          titleStyle={{ color: "black" }}
                         />
                       </View>
-                      : <Text style={styles.mutualFriendsCount}>{item.sender.acceptedRequest}</Text>}
+                    ) : (
+                      <Text style={styles.mutualFriendsCount}>
+                        {item.sender.acceptedRequest}
+                      </Text>
+                    )}
                   </View>
                 </Button>
               </View>
@@ -161,7 +179,7 @@ export default class FriendRequestList extends React.Component {
 }
 const styles = StyleSheet.create({
   scene: {
-    flex: 1,
+    flex: 1
   },
   container: {
     flex: 1,
@@ -245,7 +263,7 @@ const styles = StyleSheet.create({
   buttons: {
     justifyContent: "space-between",
     flexDirection: "row",
-    textAlign: 'center',
+    textAlign: "center",
     marginTop: 5,
     width: "70%"
   },
@@ -259,7 +277,7 @@ const styles = StyleSheet.create({
     justifyContent: "space-between",
     textAlign: "center",
     flexDirection: "row",
-    width: '50%',
+    width: "50%",
     marginLeft: 10,
     marginTop: 10,
     borderRadius: 10
