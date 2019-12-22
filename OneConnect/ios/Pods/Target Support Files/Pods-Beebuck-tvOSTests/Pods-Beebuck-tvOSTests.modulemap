@@ -1,0 +1,6 @@
+framework module Pods_Beebuck_tvOSTests {
+  umbrella header "Pods-Beebuck-tvOSTests-umbrella.h"
+
+  export *
+  module * { export * }
+}
