@@ -73,5 +73,7 @@ export default {
   Location: "ที่ตั้ง",
   Version: "เวอร์ชัน 5.0",
   PrivacyPolicy: "ข้อตกลงและเงื่อนไข",
-  Requests: "การร้องขอ"
+  Requests: "การร้องขอ",
+  Links: "ข้อมูลสังคม",
+  Links_not_updated: "ไม่มีข้อมูลอัปเดต"
 };

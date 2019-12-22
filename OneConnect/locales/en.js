@@ -74,5 +74,7 @@ export default {
   Location: "Location",
   Version: "Version 5.0",
   PrivacyPolicy: "Terms & Conditions",
-  Requests: "Requests"
+  Requests: "Requests",
+  Links: "Social Info",
+  Links_not_updated: "No Information Updated"
 };

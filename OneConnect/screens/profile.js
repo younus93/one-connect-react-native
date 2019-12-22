@@ -96,6 +96,7 @@ export default class Profile extends React.Component {
     Manager.addListener("PIC_S", this._profilePicSuccess);
     Manager.addListener("LANG_U", this._updateLanguage);
     Manager.addListener("D_COMPANY_S", this._removeCompanySuccess);
+    Manager.addListener("D_LINKS_S", this._removeLINKSSuccess);
     Manager.addListener("D_EDUCATION_S", this._removeEducationSuccess);
     Manager.addListener("S_TAG_S", this._tagsSuccess);
     Manager.addListener("S_TAG_REMOVE_S", this._tagsRemoveSuccess);
@@ -516,6 +517,7 @@ export default class Profile extends React.Component {
   };
 
   _renderProfile() {
+    console.log("profile", this.state.profile);
     if (this.state.profile && this.state.profile.basic)
       return (
         <ScrollView style={{ backgroundColor: Colors.background }}>
@@ -700,6 +702,134 @@ export default class Profile extends React.Component {
                       <Text style={styles.itemText}>
                         {I18n.t("About_Me")} : {this.state.profile.basic.bio}
                       </Text>
+                    </View>
+                  ) : null}
+                </View>
+              </View>
+              <View style={styles.container}>
+                <View style={styles.bio}>
+                  <View style={{ flexDirection: "row" }}>
+                    <Text
+                      style={{
+                        color: Colors.yellowDark,
+                        fontWeight: "600",
+                        fontSize: 20
+                      }}
+                    >
+                      {I18n.t("Links")}
+                    </Text>
+                  </View>
+                </View>
+                <View style={styles.sectionBody}>
+                  {this.state.profile.basic.bio ? (
+                    <View
+                      key={`pelt-${Math.random(1)}`}
+                      style={{
+                        flexDirection: "column",
+                        paddingBottom: 10
+                      }}
+                    >
+                      {this.state.profile.links.length > 0 ? (
+                        this.state.profile.links.map(item => {
+                          return (
+                            <View
+                              style={{
+                                flexDirection: "row",
+                                margin: 10
+                              }}
+                            >
+                              {item.type == "email" ? (
+                                <Button
+                                  key={`pelt-${Math.random(1)}`}
+                                  style={{
+                                    flexDirection: "row",
+                                    flex: 1,
+                                    marginLeft: 10
+                                  }}
+                                  onPress={() => this._makeEmail(item.type)}
+                                >
+                                  <Icon
+                                    name="envelope"
+                                    size={18}
+                                    color={Colors.primaryDark}
+                                  />
+                                  <Text style={styles.itemText}>
+                                    {item.value}
+                                  </Text>
+                                </Button>
+                              ) : item.type == "phone" ? (
+                                <Button
+                                  key={`pelt-${Math.random(1)}`}
+                                  style={{
+                                    flexDirection: "row",
+                                    flex: 1,
+                                    marginLeft: 10
+                                  }}
+                                  onPress={() => this._makeCall(item.value)}
+                                >
+                                  <Icon
+                                    name="phone"
+                                    size={18}
+                                    color={Colors.primaryDark}
+                                  />
+                                  <Text style={styles.itemText}>
+                                    {item.value}
+                                  </Text>
+                                </Button>
+                              ) : (
+                                <View
+                                  style={{
+                                    flexDirection: "row",
+                                    flex: 1,
+                                    marginLeft: 10
+                                  }}
+                                >
+                                  <Icon
+                                    name={item.type}
+                                    color={Colors.primaryDark}
+                                    style={{
+                                      fontSize: 16
+                                    }}
+                                  />
+                                  <Text style={[styles.itemText, { flex: 1 }]}>
+                                    {item.value}
+                                  </Text>
+                                </View>
+                              )}
+
+                              {this.state.profile.editable ? (
+                                <Button
+                                  onPress={() => this._removeCompany(item)}
+                                  style={{
+                                    alignItems: "flex-end",
+                                    marginEnd: 10
+                                  }}
+                                >
+                                  <Icon
+                                    name="trash"
+                                    size={15}
+                                    color={Colors.primaryDark}
+                                    style={{
+                                      alignItems: "flex-end"
+                                    }}
+                                  />
+                                </Button>
+                              ) : null}
+                            </View>
+                          );
+                        })
+                      ) : (
+                        <View
+                          key={`pelt-${Math.random(1)}`}
+                          style={[styles.item, { alignItems: "center" }]}
+                        >
+                          <View>
+                            <Text style={[styles.itemText, { paddingTop: 5 }]}>
+                              {I18n.t("Links_not_updated")}
+                            </Text>
+                          </View>
+                        </View>
+                      )}
                     </View>
                   ) : null}
                 </View>
