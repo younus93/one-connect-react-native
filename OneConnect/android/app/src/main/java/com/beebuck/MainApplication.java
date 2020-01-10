@@ -3,6 +3,10 @@ package com.beebuck;
 import android.app.Application;
 
 import com.facebook.react.ReactApplication;
+import org.unimodules.adapters.react.ModuleRegistryAdapter;
+import org.unimodules.adapters.react.ReactAdapterPackage;
+import org.unimodules.adapters.react.ReactModuleRegistryProvider;
+
 import com.AlexanderZaytsev.RNI18n.RNI18nPackage;
 import com.oblador.vectoricons.VectorIconsPackage;
 import com.swmansion.reanimated.ReanimatedPackage;
@@ -40,11 +44,15 @@ public class MainApplication extends Application implements ReactApplication {
       );
     }
 
+
+
     @Override
     protected String getJSMainModuleName() {
       return "index";
     }
   };
+
+
 
   @Override
   public ReactNativeHost getReactNativeHost() {

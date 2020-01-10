@@ -1,4 +1,14 @@
 rootProject.name = 'Beebuck'
+include ':unimodules-core'
+project(':unimodules-core').projectDir = new File(rootProject.projectDir, '../node_modules/@unimodules/core/android')
+include ':unimodules-font-interface'
+project(':unimodules-font-interface').projectDir = new File(rootProject.projectDir, '../node_modules/unimodules-font-interface/android')
+include ':@unimodules_react-native-adapter'
+project(':@unimodules_react-native-adapter').projectDir = new File(rootProject.projectDir, '../node_modules/@unimodules/react-native-adapter/android')
+include ':unimodules-permissions-interface'
+project(':unimodules-permissions-interface').projectDir = new File(rootProject.projectDir, '../node_modules/unimodules-permissions-interface/android')
+include ':unimodules-image-loader-interface'
+project(':unimodules-image-loader-interface').projectDir = new File(rootProject.projectDir, '../node_modules/unimodules-image-loader-interface/android')
 include ':react-native-i18n'
 project(':react-native-i18n').projectDir = new File(rootProject.projectDir, '../node_modules/react-native-i18n/android')
 include ':react-native-vector-icons'
