@@ -109,6 +109,7 @@ export default class BatchMates extends React.Component {
             <Text style={styles.name}>
               {item[0].f_name + " " + item[0].l_name}
             </Text>
+            <Text style={styles.mutualFriendsCount}>{item[0].nick_name}</Text>
             {item[0].companies.length > 0 ? (
               <Text style={styles.mutualFriendsCount}>
                 {item[0].companies[0].name}
@@ -118,13 +119,6 @@ export default class BatchMates extends React.Component {
               {item[0].friends_meta.mutual_friends_count}{" "}
               {I18n.t("Mutual_friends")}
             </Text>
-            <View style={styles.tags}>
-              {item[0].tags.map(tag => (
-                <Text style={styles.tag} key={UUID.v4()}>
-                  {tag.name}
-                </Text>
-              ))}
-            </View>
           </View>
         </View>
       </Button>
@@ -254,6 +248,7 @@ export default class BatchMates extends React.Component {
 
   render() {
     const { navigation } = this.props;
+    console.log("batchmates", this.state.data);
     return (
       <View style={{ width: "100%", height: "100%" }}>
         <Header navigation={navigation} title={"BATCHMATES"} isBack={true} />
