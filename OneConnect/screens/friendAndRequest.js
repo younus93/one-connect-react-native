@@ -23,24 +23,11 @@ import { TabView, SceneMap, TabBar } from "react-native-tab-view";
 import SearchUserList from "../custom/searchUserList";
 import FriendRequestList from "../custom/FriendRequests";
 import Friends from "./friends";
+import Header from "../custom/Header";
 
 export default class FriendAndRequest extends React.Component {
   static navigationOptions = ({ navigation }) => ({
-    title: navigation.getParam("title"),
-    headerLeft: (
-      <Button
-        style={{ borderRadius: 20 }}
-        onPress={navigation.getParam("hamPressed")}
-      >
-        <Image
-          style={{ width: 22, height: 22, padding: 10 }}
-          source={require("../resources/ic_logo_trans.png")}
-        />
-      </Button>
-    ),
-    headerLeftContainerStyle: {
-      paddingLeft: 15
-    }
+    header: null
   });
 
   constructor(props) {
@@ -186,42 +173,55 @@ export default class FriendAndRequest extends React.Component {
   };
 
   render() {
+    const { navigation } = this.props;
     if (!this.state.loading)
       return (
-        <ScrollView>
-          <TabView
-            navigationState={this.state}
-            renderScene={SceneMap({
-              first: this.FirstRoute,
-              second: this.SecondRoute
-            })}
-            onIndexChange={index => this.setState({ index })}
-            initialLayout={{ width: Dimensions.get("window").width }}
-            style={styles.container}
-            renderTabBar={props => (
-              <TabBar
-                {...props}
-                indicatorStyle={{ backgroundColor: Colors.yellowDark }}
-                style={{ backgroundColor: Colors.primaryLight }}
-                labelStyle={{ color: "#000000" }}
-              />
-            )}
+        <View style={{ width: "100%", height: "100%" }}>
+          <Header
+            navigation={navigation}
+            title={navigation.getParam("title")}
+            isBack={false}
           />
-        </ScrollView>
+
+          <ScrollView>
+            <TabView
+              navigationState={this.state}
+              renderScene={SceneMap({
+                first: this.FirstRoute,
+                second: this.SecondRoute
+              })}
+              onIndexChange={index => this.setState({ index })}
+              initialLayout={{ width: Dimensions.get("window").width }}
+              style={styles.container}
+              renderTabBar={props => (
+                <TabBar
+                  {...props}
+                  indicatorStyle={{ backgroundColor: Colors.yellowDark }}
+                  style={{ backgroundColor: Colors.primaryLight }}
+                  labelStyle={{ color: "#000000" }}
+                />
+              )}
+            />
+          </ScrollView>
+        </View>
       );
     return (
-      <View
-        style={{
-          justifyContent: "center",
-          alignItems: "center",
-          padding: 10
-        }}
-      >
-        <ActivityIndicator
-          animating={this.state.loading}
-          size="large"
-          color={Colors.secondaryDark}
-        />
+      <View style={{ width: "100%", height: "100%" }}>
+        <Header navigation={navigation} title={navigation.getParam("title")} />
+
+        <View
+          style={{
+            justifyContent: "center",
+            alignItems: "center",
+            padding: 10
+          }}
+        >
+          <ActivityIndicator
+            animating={this.state.loading}
+            size="large"
+            color={Colors.secondaryDark}
+          />
+        </View>
       </View>
     );
   }

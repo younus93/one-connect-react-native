@@ -9,16 +9,40 @@ import {
   Animated,
   Easing,
   Modal,
-  TextInput
+  TextInput,
+  TouchableOpacity
 } from "react-native";
 import { Colors } from "../constants";
 import Icon from "react-native-vector-icons/FontAwesome5";
 import Button from "../custom/button";
 import I18n from "../service/i18n";
 import FacePile from "react-native-face-pile";
+import ImageViewer from "react-native-image-zoom-viewer";
 
 let faceData = [];
 let remainingFaces = 0;
+const images = [
+  {
+    // Simplest usage.
+    url: "https://avatars2.githubusercontent.com/u/7970947?v=3&s=460",
+
+    // width: number
+    // height: number
+    // Optional, if you know the image size, you can set the optimization performance
+
+    // You can pass props to <Image />.
+    props: {
+      // headers: ...
+    }
+  },
+  {
+    url: "",
+    props: {
+      // Or you can set source directory.
+      //source: require("../background.png")
+    }
+  }
+];
 export default class Feed extends React.Component {
   constructor(props) {
     super(props);
@@ -27,7 +51,8 @@ export default class Feed extends React.Component {
       likeIconActive: props.data.is_liked,
       likeActivefont: Colors.red,
       commentsCount: props.data.comments_count,
-      pic: props.data.pic
+      pic: props.data.pic,
+      isSlider: false
     };
   }
 
@@ -36,9 +61,9 @@ export default class Feed extends React.Component {
   componentWillReceiveProps(nextProps) {
     console.log("feeds received props");
     if (this.data !== nextProps.data) {
-      console.log("current feeds state and next props not match");
+      console.log("Current feeds state and next props not match");
       this.setState({
-        totalLikes: nextProps.data.likes,
+        totalLikes: nextProps.data.likess,
         likeIconActive: nextProps.data.is_liked,
         likeActivefont: Colors.red,
         commentsCount: nextProps.data.comments_count,
@@ -47,9 +72,20 @@ export default class Feed extends React.Component {
     }
   }
   _onPress = e => {
+    console.warn("in focus");
+
+    //commented post page detail callback
+    //this.props.callback();
+    this.setState({
+      isSlider: !this.state.isSlider
+    });
+  };
+
+  redirectPostdetail = e => {
     console.log("in focus");
     if (this.props.touchable) {
       if (this.props.callback) {
+        //commented post page detail callback
         this.props.callback();
       }
     }
@@ -136,103 +172,153 @@ export default class Feed extends React.Component {
     // this.props.profileCallback()
   };
 
+  renderCancel = () => {
+    console.warn("hello");
+    return (
+      <View>
+        <Text style={{ width: 100, height: 100, backgroundColor: "red" }}>
+          Close
+        </Text>
+      </View>
+    );
+  };
+
   render() {
     console.log("pic", this.state.pic);
     const { data } = this.props;
     let faces = this.props.data.likers;
 
     return (
-      <TouchableWithoutFeedback
-        onPress={this._onPress}
-        hitSlop={{ top: 5, left: 5, bottom: 5, right: 5 }}
-      >
-        <View style={[styles.container, this.transformation]}>
-          <View style={styles.header}>
-            <TouchableWithoutFeedback
-              onPress={this._profile}
-              hitSlop={{ top: 5, left: 5, bottom: 5, right: 5 }}
-            >
-              <View style={styles.paddingHorizontal}>
-                <Image
-                  style={styles.image}
-                  source={{
-                    uri: data.institution ? data.institution.profile_pic : null
-                  }}
-                  defaultSource={require("../resources/dummy_profile.png")}
-                  resizeMode="cover"
-                  onError={error => console.log(error)}
-                />
-              </View>
-            </TouchableWithoutFeedback>
-            <TouchableWithoutFeedback
-              onPress={this._institute}
-              hitSlop={{ top: 5, left: 5, bottom: 5, right: 5 }}
-            >
-              <View style={styles.paddingHorizontal10}>
-                <Text style={styles.headerText}>
-                  {data.institution ? data.institution.name : "Institute"}
-                </Text>
-                <Text style={styles.headerSubText}>{data.created_at}</Text>
-              </View>
-            </TouchableWithoutFeedback>
-          </View>
-          <View style={styles.paddingVertical20}>
-            <Text style={styles.bodyText}>{data.body}</Text>
-            {this.state.pic != null && (
-              <Image
-                style={styles.feedImage}
-                resizeMode="contain"
-                source={{ uri: this.state.pic }}
-              />
-            )}
-          </View>
-          <View style={styles.separator} />
-          <View style={styles.footer}>
-            <Text
-              style={[
-                styles.footerMetaElementText,
-                { color: this.state.likeActiveFont }
-              ]}
-            >
-              {this._likeText()}
-            </Text>
-            <Text
-              style={[
-                styles.footerMetaElementText,
-                { color: this.state.likeActiveFont }
-              ]}
-            >
-              {this._commentText()}
-            </Text>
-          </View>
-          <View style={styles.footer}>
-            <Button onPress={this._liked} style={styles.footerElement}>
-              <Icon
-                name="heart"
-                size={20}
-                color={Colors.red}
-                solid={this.state.likeIconActive}
-              />
+      <View>
+        <TouchableWithoutFeedback
+          onPress={this.redirectPostdetail}
+          hitSlop={{ top: 0, left: 5, bottom: 0, right: 5 }}
+        >
+          <View style={[styles.container]}>
+            <View style={styles.header}>
+              <TouchableWithoutFeedback
+                onPress={this._profile}
+                hitSlop={{ top: 0, left: 5, bottom: 0, right: 5 }}
+              >
+                <View style={styles.paddingHorizontal}>
+                  <Image
+                    style={styles.image}
+                    source={{
+                      uri: data.institution
+                        ? data.institution.profile_pic
+                        : null
+                    }}
+                    defaultSource={require("../resources/dummy_profile.png")}
+                    resizeMode="cover"
+                    onError={error => console.log(error)}
+                  />
+                </View>
+              </TouchableWithoutFeedback>
+              <TouchableWithoutFeedback
+                onPress={this._institute}
+                hitSlop={{ top: 5, left: 5, bottom: 5, right: 5 }}
+              >
+                <View style={styles.paddingHorizontal10}>
+                  <Text style={styles.headerText}>
+                    {data.institution ? data.institution.name : "Institute"}
+                  </Text>
+                  <Text style={styles.headerSubText}>{data.created_at}</Text>
+                </View>
+              </TouchableWithoutFeedback>
+            </View>
+            <View style={styles.paddingVertical20}>
+              <Text style={styles.bodyText}>{data.body}</Text>
+              {this.state.pic != null && (
+                <TouchableOpacity onPress={this._onPress}>
+                  <Image
+                    style={[styles.feedImage, { marginTop: "3%" }]}
+                    source={{ uri: this.state.pic }}
+                  />
+                </TouchableOpacity>
+              )}
+            </View>
+            <View style={styles.separator} />
+            <View style={styles.footer}>
               <Text
                 style={[
-                  styles.footerElementText,
+                  styles.footerMetaElementText,
                   { color: this.state.likeActiveFont }
                 ]}
               >
-                {I18n.t("Like")}
+                {this._likeText()}
               </Text>
-            </Button>
-            <Button onPress={this._comment} style={styles.footerElement}>
-              <Icon name="comment" size={20} color={Colors.onPrimary} />
-              <Text style={styles.footerElementText}>{I18n.t("Comment")}</Text>
-            </Button>
-            <Button onPress={this._report} style={styles.footerElement}>
-              <Icon name="flag" size={20} color={Colors.onPrimary} />
-              <Text style={styles.footerElementText}>Report</Text>
-            </Button>
+              <Text
+                style={[
+                  styles.footerMetaElementText,
+                  { color: this.state.likeActiveFont }
+                ]}
+              >
+                {this._commentText()}
+              </Text>
+            </View>
+            <View style={styles.footer}>
+              <Button onPress={this._liked} style={styles.footerElement}>
+                <Icon
+                  name="heart"
+                  size={20}
+                  color={Colors.red}
+                  solid={this.state.likeIconActive}
+                />
+                <Text
+                  style={[
+                    styles.footerElementText,
+                    { color: this.state.likeActiveFont }
+                  ]}
+                >
+                  {I18n.t("Like")}
+                </Text>
+              </Button>
+              <Button onPress={this._comment} style={styles.footerElement}>
+                <Icon name="comment" size={20} color={Colors.onPrimary} />
+                <Text style={styles.footerElementText}>
+                  {I18n.t("Comment")}
+                </Text>
+              </Button>
+              <Button onPress={this._report} style={styles.footerElement}>
+                <Icon name="flag" size={20} color={Colors.onPrimary} />
+                <Text style={styles.footerElementText}>Report</Text>
+              </Button>
+            </View>
           </View>
-        </View>
-      </TouchableWithoutFeedback>
+        </TouchableWithoutFeedback>
+        {this.state.isSlider ? (
+          <View>
+            <Modal
+              visible={this.state.isSlider}
+              transparent={true}
+              style={{ width: 100, height: 100 }}
+            >
+              <ImageViewer imageUrls={images} menus />
+            </Modal>
+
+            <View
+              style={{
+                justifyContent: "center",
+                alignItems: "center",
+                alignSelf: "center",
+                position: "absolute",
+                width: 100,
+                height: 100
+              }}
+            >
+              <View
+                style={{
+                  backgroundColor: "blue",
+                  borderRadius: 10,
+                  height: 100,
+                  width: 100,
+                  borderRadius: 100 / 2
+                }}
+              ></View>
+            </View>
+          </View>
+        ) : null}
+      </View>
     );
   }
 }
@@ -244,8 +330,7 @@ export default class Feed extends React.Component {
 
 const styles = StyleSheet.create({
   container: {
-    // paddingHorizontal: 20,
-    // paddingTop: 10,
+    paddingTop: 10,
     paddingHorizontal: 10,
     paddingVertical: 5,
     marginHorizontal: 10,
@@ -262,9 +347,7 @@ const styles = StyleSheet.create({
   paddingHorizontal10: {
     paddingHorizontal: 10
   },
-  paddingVertical20: {
-    paddingVertical: 20
-  },
+  paddingVertical20: {},
   footer: {
     flexDirection: "row",
     justifyContent: "space-between"

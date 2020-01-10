@@ -19,10 +19,12 @@ import Manager from "../service/dataManager";
 import Button from "../custom/button";
 import Feed from "../custom/feed";
 import I18n from "../service/i18n";
+import Header from "../custom/Header";
 
 export default class Institution extends React.Component {
   static navigationOptions = ({ navigation }) => ({
-    title: navigation.getParam("title")
+    title: navigation.getParam("title"),
+    header: null
   });
 
   constructor(props) {
@@ -30,7 +32,7 @@ export default class Institution extends React.Component {
     this.props.navigation.setParams({ title: I18n.t("Institutions") });
     this.item = this.props.navigation.getParam("item");
     this.state = {
-      profile_pic : this.item.profile_pic,
+      profile_pic: this.item.profile_pic,
       loading: true,
       error: false,
       errorText: null
@@ -56,7 +58,7 @@ export default class Institution extends React.Component {
     this.data = data.data;
     this.latlong = this.data.latitude_longitude.split(",");
     this.setState({
-      profile_pic : this.data.profile_pic,
+      profile_pic: this.data.profile_pic,
       loading: false,
       error: false,
       error: null
@@ -127,113 +129,128 @@ export default class Institution extends React.Component {
             opacity: 0.4
           }}
         >
-          { I18n.t('No_posts_to_display') }
+          {I18n.t("No_posts_to_display")}
         </Text>
       </View>
     );
   };
 
   render() {
+    const { navigation } = this.props;
     if (this.state.loading) {
       return (
-        <View
-          style={[
-            styles.container,
-            { justifyContent: "center", alignItems: "center" }
-          ]}
-        >
-          <ActivityIndicator
-            animating={this.state.loading}
-            size="large"
-            color={Colors.secondaryDark}
+        <View style={{ width: "100%", height: "100%" }}>
+          <Header
+            navigation={navigation}
+            title={navigation.getParam("title")}
+            isBack={true}
           />
+          <View
+            style={[
+              styles.container,
+              { justifyContent: "center", alignItems: "center" }
+            ]}
+          >
+            <ActivityIndicator
+              animating={this.state.loading}
+              size="large"
+              color={Colors.secondaryDark}
+            />
+          </View>
         </View>
       );
     }
 
     return (
-      <ScrollView
-        style={styles.container}
-        alwaysBounceVertical={false}
-        bounces={false}
-      >
-        <View
-          style={{
-            flexDirection: "row",
-            padding: 5,
-            alignItems: "center",
-          }}
+      <View style={{ width: "100%", height: "100%" }}>
+        <Header
+          navigation={navigation}
+          title={navigation.getParam("title")}
+          isBack={true}
+        />
+        <ScrollView
+          style={styles.container}
+          alwaysBounceVertical={false}
+          bounces={false}
         >
-          <Image
-            style={{ width: 180, height: 180, borderRadius: 75 }}
-            resizeMode="contain"
-            source={{ uri: this.state.profile_pic }}
-          />
-          <View style={styles.imageTextContainer}>
-            <Text style={styles.imageText}>{this.data.name}</Text>
-            <Text style={styles.imageSubText}>{this.data.address}</Text>
-          </View>
-        </View>
-
-        <View style={styles.overviewBar}>
-          <View style={styles.overviewBox}>
-            <Text style={styles.overViewTextMain}>
-              {this.data.students_count}
-            </Text>
-            <Text style={styles.overViewTextSecondary}>Students</Text>
-          </View>
-
-          <View style={styles.overviewBox}>
-            <Text style={styles.overViewTextMain}>
-              {this.data.batches_count}
-            </Text>
-            <Text style={styles.overViewTextSecondary}>Batches</Text>
-          </View>
-
-          <View style={[styles.overviewBox, { borderRightWidth: 0 }]}>
-            <Text style={styles.overViewTextMain}>
-              {this.data.courses_count}
-            </Text>
-            <Text style={styles.overViewTextSecondary}>Courses</Text>
-          </View>
-        </View>
-        <View style={styles.mapContainer}>
-          <View style={{ padding: 10, paddingTop: 10 }}>
-            <Text style={styles.mapHeader}>LOCATION</Text>
-          </View>
-          <MapView
-            initialRegion={{
-              latitude: parseInt(this.latlong[0]),
-              longitude: parseInt(this.latlong[1]),
-              latitudeDelta: 0.0922,
-              longitudeDelta: 0.0421
+          <View
+            style={{
+              flexDirection: "row",
+              padding: 5,
+              alignItems: "center"
             }}
-            style={{ flex: 1 }}
-            zoomEnabled={false}
-            liteMode={true}
-            scrollEnabled={false}
-            loadingEnabled={true}
-            // cacheEnabled={true}
           >
-            <Marker
-              coordinate={{
-                latitude: parseInt(this.latlong[0]),
-                longitude: parseInt(this.latlong[1])
-              }}
-              title={"Institution"}
-              description={"This Institute"}
-            >
-              <Callout tooltip={true} />
-            </Marker>
-          </MapView>
-        </View>
-        <SafeAreaView forceInset={{ bottom: "always" }}>
-          <View style={{ padding: 10, paddingTop: 10 }}>
-            <Text style={styles.mapHeader}>POSTS</Text>
+            <Image
+              style={{ width: 180, height: 180, borderRadius: 75 }}
+              resizeMode="contain"
+              source={{ uri: this.state.profile_pic }}
+            />
+            <View style={styles.imageTextContainer}>
+              <Text style={styles.imageText}>{this.data.name}</Text>
+              <Text style={styles.imageSubText}>{this.data.address}</Text>
+            </View>
           </View>
-          {this._renderPost()}
-        </SafeAreaView>
-      </ScrollView>
+
+          <View style={styles.overviewBar}>
+            <View style={styles.overviewBox}>
+              <Text style={styles.overViewTextMain}>
+                {this.data.students_count}
+              </Text>
+              <Text style={styles.overViewTextSecondary}>Students</Text>
+            </View>
+
+            <View style={styles.overviewBox}>
+              <Text style={styles.overViewTextMain}>
+                {this.data.batches_count}
+              </Text>
+              <Text style={styles.overViewTextSecondary}>Batches</Text>
+            </View>
+
+            <View style={[styles.overviewBox, { borderRightWidth: 0 }]}>
+              <Text style={styles.overViewTextMain}>
+                {this.data.courses_count}
+              </Text>
+              <Text style={styles.overViewTextSecondary}>Courses</Text>
+            </View>
+          </View>
+          <View style={styles.mapContainer}>
+            <View style={{ padding: 10, paddingTop: 10 }}>
+              <Text style={styles.mapHeader}>LOCATION</Text>
+            </View>
+            <MapView
+              initialRegion={{
+                latitude: parseInt(this.latlong[0]),
+                longitude: parseInt(this.latlong[1]),
+                latitudeDelta: 0.0922,
+                longitudeDelta: 0.0421
+              }}
+              style={{ flex: 1 }}
+              zoomEnabled={false}
+              liteMode={true}
+              scrollEnabled={false}
+              loadingEnabled={true}
+              // cacheEnabled={true}
+            >
+              <Marker
+                coordinate={{
+                  latitude: parseInt(this.latlong[0]),
+                  longitude: parseInt(this.latlong[1])
+                }}
+                title={"Institution"}
+                description={"This Institute"}
+              >
+                <Callout tooltip={true} />
+              </Marker>
+            </MapView>
+          </View>
+          <SafeAreaView forceInset={{ bottom: "always" }}>
+            <View style={{ padding: 10, paddingTop: 10 }}>
+              <Text style={styles.mapHeader}>POSTS</Text>
+            </View>
+            {this._renderPost()}
+          </SafeAreaView>
+        </ScrollView>
+      </View>
     );
   }
 }
@@ -244,8 +261,8 @@ const styles = StyleSheet.create({
     backgroundColor: Colors.background
   },
   imageTextContainer: {
-    padding:15,
-    flexDirection: 'column',
+    padding: 15,
+    flexDirection: "column",
     paddingLeft: 20,
     flexShrink: 1
     // backgroundColor: Colors.background
@@ -268,12 +285,12 @@ const styles = StyleSheet.create({
   imageText: {
     color: Colors.onPrimary,
     fontSize: 30,
-    fontWeight: "700",
+    fontWeight: "700"
   },
   imageSubText: {
     color: Colors.onPrimary,
     fontSize: 14,
-    fontWeight: "500",
+    fontWeight: "500"
   },
   overviewBar: {
     backgroundColor: Colors.surface,

@@ -24,10 +24,12 @@ import Button from "../custom/button";
 import Icon from "react-native-vector-icons/FontAwesome5";
 import ErrorHandler from "../custom/errorHandler";
 import I18n from "../service/i18n";
+import Header from "../custom/Header";
 
 export default class Privacy extends React.Component {
   static navigationOptions = ({ navigation }) => ({
-    title: navigation.getParam("title")
+    title: navigation.getParam("title"),
+    header: null
   });
 
   constructor(props) {
@@ -173,6 +175,7 @@ export default class Privacy extends React.Component {
   };
 
   render() {
+    const { navigation } = this.props;
     return (
       <ErrorHandler
         backgroundColor={this.state.modalBackground}
@@ -181,6 +184,11 @@ export default class Privacy extends React.Component {
         callback={this._toggleError}
       >
         <View style={styles.container}>
+          <Header
+            navigation={navigation}
+            title={navigation.getParam("title")}
+            isBack={true}
+          />
           <ScrollView>
             {this._renderSetting()}
             <Button

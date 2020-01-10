@@ -11,11 +11,12 @@ import {
   ActivityIndicator,
   Animated,
   Alert,
-  ImageBackground
+  ImageBackground,
+  BackHandler
 } from "react-native";
-import { Button as RNButton, Input } from 'react-native-elements';
+import { Button as RNButton, Input } from "react-native-elements";
 
-import AsyncStorage from '@react-native-community/async-storage';
+import AsyncStorage from "@react-native-community/async-storage";
 import Icon from "react-native-vector-icons/FontAwesome5";
 // import GradientButton from 'react-native-gradient-buttons';
 
@@ -33,7 +34,6 @@ const DismissKeyboard = ({ children }) => (
 
 type Props = {};
 export default class LoginScreen extends Component<Props> {
-
   constructor(props) {
     super(props);
     this.userEmail = null;
@@ -44,7 +44,7 @@ export default class LoginScreen extends Component<Props> {
       error: false,
       errorText: null
     };
-
+    this.handleBackButtonClick = this.handleBackButtonClick.bind(this);
   }
 
   componentDidMount() {
@@ -52,7 +52,13 @@ export default class LoginScreen extends Component<Props> {
     Manager.addListener("FORGOT_S", this._forgotSuccess);
     Manager.addListener("FORGOT_E", this._forgotError);
     this.props.navigation.setParams({ backButton: this._backButtonPressed });
+    BackHandler.addEventListener(
+      "hardwareBackPress",
+      this.handleBackButtonClick
+    );
   }
+
+  compone;
 
   componentWillUnmount() {
     console.log("component will unmount ForgotPassword");
@@ -60,7 +66,20 @@ export default class LoginScreen extends Component<Props> {
     Manager.removeListener("FORGOT_E", this._forgotError);
   }
 
+  componentWillUnmount() {
+    BackHandler.removeEventListener(
+      "hardwareBackPress",
+      this.handleBackButtonClick
+    );
+  }
+
+  handleBackButtonClick() {
+    this.props.navigation.navigate("Login");
+    return true;
+  }
+
   _backButtonPressed = () => {
+    //this.props.navigation.navigate("Login");
     this.props.navigation.navigate("Login");
   };
 
@@ -87,18 +106,17 @@ export default class LoginScreen extends Component<Props> {
       error: true,
       errorText: error.data.message
     });
-    setTimeout(()=>{
+    setTimeout(() => {
       this._toggleError();
-    },2000)
+    }, 2000);
   };
 
   _userEmailChange = text => {
-    console.log('userEmail',text)
-    this.userEmail=text;
+    console.log("userEmail", text);
+    this.userEmail = text;
     this.setState({
       userEmail: text
     });
-  
   };
 
   _resetPassword = () => {
@@ -106,7 +124,9 @@ export default class LoginScreen extends Component<Props> {
     // this.setState({
     //   resetPassword: true
     // });
-     Manager.forgotPassword("/api/forgot-password", 'POST',  {email:this.state.userEmail})
+    Manager.forgotPassword("/api/forgot-password", "POST", {
+      email: this.state.userEmail
+    });
   };
 
   // _signUpButton = () => {
@@ -116,7 +136,7 @@ export default class LoginScreen extends Component<Props> {
   _navigateToLogin = () => {
     // console.log('forgot password');
     this.props.navigation.navigate("Login");
-  }
+  };
 
   render() {
     console.log("login render");
@@ -140,20 +160,31 @@ export default class LoginScreen extends Component<Props> {
                 <Text style={styles.welcome}>Reset your password!</Text>
               </View>
               <View>
-
                 <Input
-                  placeholder='Email'
+                  placeholder="Email"
                   shake={true}
                   onChangeText={this._userEmailChange}
                   containerStyle={{ paddingBottom: 10, marginVertical: 10 }}
                 />
 
-                <RNButton buttonStyle={{ backgroundColor: Colors.yellowDark, borderRadius: 20 }}
-                  onPress={this._resetPassword} title="Reset Password" />
+                <RNButton
+                  buttonStyle={{
+                    backgroundColor: Colors.yellowDark,
+                    borderRadius: 20
+                  }}
+                  onPress={this._resetPassword}
+                  title="Reset Password"
+                />
 
-                <RNButton buttonStyle={{ backgroundColor: Colors.secondaryLight, borderRadius: 20, marginTop: 10 }}
-                  onPress={this._navigateToLogin} title="Back to Login" />
-
+                <RNButton
+                  buttonStyle={{
+                    backgroundColor: Colors.secondaryLight,
+                    borderRadius: 20,
+                    marginTop: 10
+                  }}
+                  onPress={this._navigateToLogin}
+                  title="Back to Login"
+                />
               </View>
               <View style={{ margin: 10, marginTop: 50 }}>
                 <Text style={styles.textTerm}>
@@ -185,7 +216,7 @@ export default class LoginScreen extends Component<Props> {
             ) : null}
           </View>
         </DismissKeyboard>
-      </ErrorHandler >
+      </ErrorHandler>
     );
   }
 }
@@ -224,11 +255,11 @@ const styles = StyleSheet.create({
   forgotPasswordButton: {
     marginLeft: 10,
     paddingBottom: 10,
-    width: "40%",
+    width: "40%"
   },
   forgotPasswordText: {
     fontSize: 15,
-    marginTop: 20,
+    marginTop: 20
   },
   textTerm: {
     fontSize: 10,

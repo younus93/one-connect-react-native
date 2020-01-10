@@ -11,6 +11,7 @@ import {
 } from "react-native";
 import { DrawerActions } from "react-navigation-drawer";
 import Feed from "../custom/feed";
+import Header from "../custom/Header";
 import { Colors } from "../constants";
 import Manager from "../service/dataManager";
 import Icon from "react-native-vector-icons/FontAwesome5";
@@ -20,21 +21,7 @@ import Toast from "react-native-simple-toast";
 
 export default class NewsFeed extends React.Component {
   static navigationOptions = ({ navigation }) => ({
-    title: navigation.getParam("title"),
-    headerLeft: (
-      <Button
-        style={{ borderRadius: 20 }}
-        onPress={navigation.getParam("hamPressed")}
-      >
-        <Image
-          style={{ width: 22, height: 22, padding: 1 }}
-          source={require("../resources/ic_logo_trans.png")}
-        />
-      </Button>
-    ),
-    headerLeftContainerStyle: {
-      paddingLeft: 15
-    }
+    header: null
   });
 
   constructor(props) {
@@ -186,11 +173,7 @@ export default class NewsFeed extends React.Component {
   };
 
   _itemSeparator = props => {
-    return (
-      <View
-        style={{ backgroundColor: Colors.background, paddingVertical: 10 }}
-      />
-    );
+    return <View style={{ backgroundColor: Colors.background }} />;
   };
 
   _renderEmptyList = () => {
@@ -315,9 +298,15 @@ export default class NewsFeed extends React.Component {
 
   render() {
     const { data } = this.state;
+    const { navigation } = this.props;
     console.log("render data is ", data);
     return (
       <View style={styles.container}>
+        <Header
+          navigation={navigation}
+          title={navigation.getParam("title")}
+          isBack={false}
+        />
         <FlatList
           data={this.state.data}
           keyExtractor={this._keyExtractor}
@@ -339,26 +328,9 @@ export default class NewsFeed extends React.Component {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    backgroundColor: "transparent"
-    //padding: 10
+    backgroundColor: Colors.background
   },
-  header: {
-    // flex: 1,
-    flexDirection: "row",
-    justifyContent: "flex-start",
-    alignItems: "center",
-    height: 40,
-    backgroundColor: Colors.surface,
-    marginHorizontal: 20,
-    marginTop: 15,
-    marginBottom: 3,
-    borderRadius: 20,
-    shadowColor: Colors.secondary,
-    shadowOffset: { width: 0, height: 2 },
-    shadowOpacity: 0.8,
-    shadowRadius: 2,
-    zIndex: 100
-  },
+
   search: {
     flex: 1,
     borderBottomRightRadius: 20,

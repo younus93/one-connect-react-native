@@ -34,14 +34,14 @@ const RootNavigator = createSwitchNavigator(
     Login: {
       screen: LoginScreen
     },
-    SignUp : {
+    SignUp: {
       screen: SignUpScreen
     },
     Drawer: {
       screen: Drawer
     },
     ForgotPassword: {
-        screen: ForgotPassword
+      screen: ForgotPassword
     }
   },
   navigatorConfig

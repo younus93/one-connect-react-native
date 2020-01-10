@@ -72,7 +72,7 @@ export default class CustomDrawerContentComponent extends React.Component {
     });
   };
   navigateToScreen = (route, props = null) => () => {
-    console.log("Navigating to ", route);
+    console.log("Navigating to ", route, props);
     const navigateAction = NavigationActions.navigate({
       routeName: route,
       params: props
@@ -132,7 +132,6 @@ export default class CustomDrawerContentComponent extends React.Component {
                 style={{
                   width: 100,
                   height: 100,
-
                   position: "absolute"
                 }}
                 source={require("../resources/ic_hex_yellow.png")}

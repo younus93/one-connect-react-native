@@ -15,10 +15,13 @@ import { Colors } from "../constants";
 import Manager from "../service/dataManager";
 import Button from "../custom/button";
 import I18n from "../service/i18n";
+import Header from "../custom/Header";
+
 const UUID = require("uuid");
 export default class BatchMates extends React.Component {
   static navigationOptions = ({ navigation }) => ({
-    title: "BATCHMATES"
+    title: "BATCHMATES",
+    header: null
   });
   constructor(props) {
     super(props);
@@ -250,17 +253,21 @@ export default class BatchMates extends React.Component {
   };
 
   render() {
+    const { navigation } = this.props;
     return (
-      <FlatList
-        data={this.state.data}
-        keyExtractor={this._keyExtractor}
-        renderItem={this._renderMateList}
-        ItemSeparatorComponent={this._itemSeparator}
-        ListEmptyComponent={this._renderEmptyList}
-        ListFooterComponent={this._listFooter}
-        ListHeaderComponent={this._listHeader}
-        style={styles.listStyle}
-      />
+      <View style={{ width: "100%", height: "100%" }}>
+        <Header navigation={navigation} title={"BATCHMATES"} isBack={true} />
+        <FlatList
+          data={this.state.data}
+          keyExtractor={this._keyExtractor}
+          renderItem={this._renderMateList}
+          ItemSeparatorComponent={this._itemSeparator}
+          ListEmptyComponent={this._renderEmptyList}
+          ListFooterComponent={this._listFooter}
+          ListHeaderComponent={this._listHeader}
+          style={styles.listStyle}
+        />
+      </View>
     );
   }
 }

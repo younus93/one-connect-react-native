@@ -41,35 +41,14 @@ import I18n from "../service/i18n";
 import Lightbox from "react-native-lightbox";
 import { TabView, SceneMap } from "react-native-tab-view";
 import Toast from "react-native-simple-toast";
+import Header from "../custom/Header";
 
 const UUID = require("uuid");
 
 export default class Profile extends React.Component {
-  static navigationOptions = ({ navigation }) => {
-    const accessLevel = navigation.getParam("accessLevel", 0);
-    let options = {
-      title: navigation.getParam("title"),
-      headerLeftContainerStyle: {
-        paddingLeft: 15
-      }
-    };
-    if (accessLevel) {
-      options["headerLeft"] = (
-        <View style={{ flexDirection: "row" }}>
-          <Button
-            style={{ borderRadius: 20 }}
-            onPress={navigation.getParam("hamPressed")}
-          >
-            <Image
-              style={{ width: 22, height: 22, padding: 10 }}
-              source={require("../resources/ic_logo_trans.png")}
-            />
-          </Button>
-        </View>
-      );
-    }
-    return options;
-  };
+  static navigationOptions = ({ navigation }) => ({
+    header: null
+  });
 
   constructor(props) {
     super(props);
@@ -729,7 +708,8 @@ export default class Profile extends React.Component {
                         paddingBottom: 10
                       }}
                     >
-                      {this.state.profile.links.length > 0 ? (
+                      {this.state.profile.links != null &&
+                      this.state.profile.links.length > 0 ? (
                         this.state.profile.links.map(item => {
                           return (
                             <View
@@ -1143,8 +1123,16 @@ export default class Profile extends React.Component {
   }
 
   render() {
+    const { navigation } = this.props;
+
     return (
-      <View>
+      <View style={{ width: "100%", height: "100%" }}>
+        <Header
+          navigation={navigation}
+          title={navigation.getParam("title")}
+          isBack={false}
+        />
+
         {this.state.loading ? (
           <View
             style={{
