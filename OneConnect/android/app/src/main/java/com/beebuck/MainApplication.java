@@ -3,6 +3,9 @@ package com.beebuck;
 import android.app.Application;
 
 import com.facebook.react.ReactApplication;
+import com.horcrux.svg.SvgPackage;
+import iyegoroff.imagefilterkit.ImageFilterKitPackage;
+import org.unimodules.adapters.react.ModuleRegistryAdapter;
 import com.AlexanderZaytsev.RNI18n.RNI18nPackage;
 import com.oblador.vectoricons.VectorIconsPackage;
 import com.swmansion.reanimated.ReanimatedPackage;
@@ -30,6 +33,9 @@ public class MainApplication extends Application implements ReactApplication {
     protected List<ReactPackage> getPackages() {
       return Arrays.<ReactPackage>asList(
           new MainReactPackage(),
+            new SvgPackage(),
+            new ImageFilterKitPackage(),
+            new ModuleRegistryAdapter(),
             new RNI18nPackage(),
             new VectorIconsPackage(),
             new ReanimatedPackage(),
