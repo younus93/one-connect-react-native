@@ -14,7 +14,8 @@ import {
   Alert,
   ImageBackground,
   Linking,
-  Modal
+  Modal,
+  SafeAreaView
 } from "react-native";
 import { Input, Button as RNButton } from "react-native-elements";
 import AsyncStorage from "@react-native-community/async-storage";
@@ -26,6 +27,7 @@ import {
   GoogleSigninButton,
   statusCodes
 } from "react-native-google-signin";
+import firebase from "react-native-firebase";
 
 import { Colors } from "../constants";
 import Manager from "../service/dataManager";
@@ -67,7 +69,7 @@ export default class LoginScreen extends Component<Props> {
     };
   }
 
-  componentDidMount() {
+  async componentDidMount() {
     console.log("component did mount login");
     Manager.addListener("LOGIN_S", this._loginSuccess);
     Manager.addListener("LOGIN_E", this._loginError);
@@ -85,6 +87,53 @@ export default class LoginScreen extends Component<Props> {
       iosClientId:
         "614217954746-btvof12roua8h3qagdf90cen8sb67ttc.apps.googleusercontent.com" // [iOS] optional, if you want to specify the client ID of type iOS (otherwise, it is taken from GoogleService-Info.plist)
     });
+
+    //push notification
+    firebase
+      .messaging()
+      .getToken()
+      .then(fcmToken => {
+        if (fcmToken) {
+          // user has a device token
+          console.log("token", fcmToken);
+        } else {
+          // user doesn't have a device token yet
+          console.log("token", "Error to get token");
+        }
+      });
+  }
+
+  async checkPermission() {
+    const enabled = await firebase.messaging().hasPermission();
+    if (enabled) {
+      this.getToken();
+    } else {
+      this.requestPermission();
+    }
+  }
+
+  async getToken() {
+    let fcmToken = await AsyncStorage.getItem("fcmToken");
+    if (!fcmToken) {
+      fcmToken = await firebase.messaging().getToken();
+      if (fcmToken) {
+        // user has a device token
+        console.log("token", fcmToken);
+        await AsyncStorage.setItem("fcmToken", fcmToken);
+      }
+    }
+  }
+
+  //2
+  async requestPermission() {
+    try {
+      await firebase.messaging().requestPermission();
+      // User has authorised
+      this.getToken();
+    } catch (error) {
+      // User has rejected permissions
+      console.log("permission rejected");
+    }
   }
 
   signIn = async () => {
@@ -441,13 +490,9 @@ export default class LoginScreen extends Component<Props> {
               <ImageBackground
                 style={styles.image}
                 source={require("../resources/Beebuck_Logo.png")}
-                imageStyle={{ resizeMode: "contain" }}
               />
             </View>
             <View style={[styles.containerBox]}>
-              <View>
-                <Text style={styles.welcome}>Welcome!</Text>
-              </View>
               <View>
                 <Input
                   placeholder="Email"
@@ -497,29 +542,48 @@ export default class LoginScreen extends Component<Props> {
                   onPress={this._signUpButton}
                   title="Sign Up"
                 />
-                <LoginButton
-                  onLoginFinished={(error, result) => {
-                    if (error) {
-                      console.log("login has error: " + result.error);
-                    } else if (result.isCancelled) {
-                      console.log("login is cancelled.");
-                    } else {
-                      AccessToken.getCurrentAccessToken().then(data => {
-                        console.log(data.accessToken.toString());
-                      });
-                    }
+                <View
+                  style={{
+                    flex: 1,
+                    flexDirection: "row",
+                    height: "10%",
+                    margin: 10,
+                    justifyContent: "center"
                   }}
-                  onLogoutFinished={() => console.log("logout.")}
-                />
-                <GoogleSigninButton
-                  style={{ width: 192, height: 48 }}
-                  size={GoogleSigninButton.Size.Wide}
-                  color={GoogleSigninButton.Color.Dark}
-                  onPress={this.signIn}
-                  disabled={this.state.isSigninInProgress}
-                />
+                >
+                  <LoginButton
+                    style={{
+                      height: 50,
+                      marginTop: 3,
+                      marginRight: 3,
+                      width: "50%",
+                      textAlign: "center",
+                      alignItems: "center",
+                      justifyContent: "center"
+                    }}
+                    onLoginFinished={(error, result) => {
+                      if (error) {
+                        console.log("login has error: " + result.error);
+                      } else if (result.isCancelled) {
+                        console.log("login is cancelled.");
+                      } else {
+                        AccessToken.getCurrentAccessToken().then(data => {
+                          console.log(data.accessToken.toString());
+                        });
+                      }
+                    }}
+                    onLogoutFinished={() => console.log("logout.")}
+                  />
+                  <GoogleSigninButton
+                    style={{ height: 55, width: "50%" }}
+                    size={GoogleSigninButton.Size.Wide}
+                    color={GoogleSigninButton.Color.Dark}
+                    onPress={this.signIn}
+                    disabled={this.state.isSigninInProgress}
+                  />
+                </View>
               </View>
-              <View style={{ margin: 10, marginTop: 30 }}>
+              <View style={{ marginTop: 50, marginLeft: 10, marginRight: 10 }}>
                 <Button
                   style={styles.textTerm}
                   onPress={() => {
@@ -611,7 +675,7 @@ const styles = StyleSheet.create({
   header: {
     backgroundColor: Colors.surface,
     opacity: 0.8,
-    height: "40%",
+
     alignItems: "center",
     justifyContent: "center"
   },
@@ -629,9 +693,8 @@ const styles = StyleSheet.create({
     width: "15%"
   },
   image: {
-    width: "100%",
-    height: "70%",
-    marginTop: 50,
+    width: 150,
+    height: 150,
     justifyContent: "center",
     backgroundColor: Colors.surface
   },

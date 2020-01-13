@@ -6,7 +6,8 @@
     "start": "node node_modules/react-native/local-cli/cli.js start",
     "run-android": "node node_modules/react-native/local-cli/cli.js run-android",
     "run-ios": "node node_modules/react-native/local-cli/cli.js run-ios",
-    "test": "jest"
+    "test": "jest",
+    "postinstall": "npx jetify"
   },
   "dependencies": {
     "@eva-design/eva": "^1.0.1",
@@ -17,6 +18,7 @@
     "react-native-elements": "^1.1.0",
     "react-native-face-pile": "^1.9.0",
     "react-native-fbsdk": "^1.1.1",
+    "react-native-firebase": "^5.6.0",
     "react-native-gesture-handler": "^1.0.5",
     "react-native-google-signin": "^2.1.1",
     "react-native-gradient-buttons": "^2.0.1",
