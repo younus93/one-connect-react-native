@@ -144,7 +144,7 @@ const Tabs = createAppContainer(
       backBehavior: "history",
       resetOnBlur: true,
       activeColor: Colors.yellowDark,
-      inactiveColor: Colors.primaryDark,
+      inactiveColor: Colors.onSecondary,
       barStyle: {
         backgroundColor: Colors.white,
         shadowOpacity: 0.4,

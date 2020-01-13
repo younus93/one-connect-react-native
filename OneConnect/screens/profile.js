@@ -41,6 +41,7 @@ import I18n from "../service/i18n";
 import Lightbox from "react-native-lightbox";
 import { TabView, SceneMap } from "react-native-tab-view";
 import Toast from "react-native-simple-toast";
+import Header from "../custom/Header";
 
 const UUID = require("uuid");
 
@@ -49,9 +50,7 @@ export default class Profile extends React.Component {
     const accessLevel = navigation.getParam("accessLevel", 0);
     let options = {
       title: navigation.getParam("title"),
-      headerLeftContainerStyle: {
-        paddingLeft: 15
-      }
+      header: null
     };
     if (accessLevel) {
       options["headerLeft"] = (
@@ -1143,8 +1142,15 @@ export default class Profile extends React.Component {
   }
 
   render() {
+    const { navigation } = this.props;
+
     return (
-      <View>
+      <View style={{ width: "100%", height: "100%" }}>
+        <Header
+          title={I18n.t("Profile")}
+          navigation={navigation}
+          isBack={false}
+        />
         {this.state.loading ? (
           <View
             style={{

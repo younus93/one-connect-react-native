@@ -188,10 +188,14 @@ export default class CustomDrawerContentComponent extends React.Component {
           </Button>
 
           <Button
-            onPress={this.navigateToScreen("Privacy", {
-              data: this.state.profile.privacy,
-              callback: this._needsUpdate
-            })}
+            onPress={
+              this.state.profile != null
+                ? this.navigateToScreen("Privacy", {
+                    data: this.state.profile.privacy,
+                    callback: this._needsUpdate
+                  })
+                : null
+            }
           >
             <View style={styles.item}>
               <View style={styles.icon}>

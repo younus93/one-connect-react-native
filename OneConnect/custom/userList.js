@@ -20,6 +20,8 @@ import Button from "../custom/button";
 import Icon from "react-native-vector-icons/FontAwesome5";
 import I18n from "../service/i18n";
 import Toast, { DURATION } from "react-native-easy-toast";
+import Header from "../custom/Header";
+
 const UUID = require("uuid");
 const DismissKeyboard = ({ children }) => (
   <TouchableWithoutFeedback onPress={() => Keyboard.dismiss()}>
@@ -30,20 +32,7 @@ const DismissKeyboard = ({ children }) => (
 export default class UserList extends React.Component {
   static navigationOptions = ({ navigation }) => ({
     title: navigation.getParam("title"),
-    headerLeft: (
-      <Button
-        style={{ borderRadius: 20 }}
-        onPress={navigation.getParam("hamPressed")}
-      >
-        <Image
-          style={{ width: 22, height: 22, padding: 10 }}
-          source={require("../resources/ic_logo_trans.png")}
-        />
-      </Button>
-    ),
-    headerLeftContainerStyle: {
-      paddingLeft: 15
-    }
+    header: null
   });
 
   constructor(props) {
@@ -240,18 +229,26 @@ export default class UserList extends React.Component {
   };
 
   render() {
+    const { navigation } = this.props;
     console.log("render", this.state.section);
     if (!this.state.loading)
       return (
         <DismissKeyboard>
-          <KeyboardAvoidingView
-            behavior={Platform.OS === "ios" ? "padding" : null}
-            style={styles.container}
-          >
-            <View style={styles.container}>
-              {this._renderUsers(this.state.birthdays)}
-            </View>
-          </KeyboardAvoidingView>
+          <View style={{ width: "100%", height: "100%" }}>
+            <Header
+              title={I18n.t("Notifications")}
+              navigation={navigation}
+              isBack={false}
+            />
+            <KeyboardAvoidingView
+              behavior={Platform.OS === "ios" ? "padding" : null}
+              style={styles.container}
+            >
+              <View style={styles.container}>
+                {this._renderUsers(this.state.birthdays)}
+              </View>
+            </KeyboardAvoidingView>
+          </View>
         </DismissKeyboard>
       );
     return (

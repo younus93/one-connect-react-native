@@ -11,6 +11,7 @@ import {
 } from "react-native";
 import { DrawerActions } from "react-navigation-drawer";
 import Feed from "../custom/feed";
+import Header from "../custom/Header";
 import { Colors } from "../constants";
 import Manager from "../service/dataManager";
 import Icon from "react-native-vector-icons/FontAwesome5";
@@ -21,20 +22,7 @@ import Toast from "react-native-simple-toast";
 export default class NewsFeed extends React.Component {
   static navigationOptions = ({ navigation }) => ({
     title: navigation.getParam("title"),
-    headerLeft: (
-      <Button
-        style={{ borderRadius: 20 }}
-        onPress={navigation.getParam("hamPressed")}
-      >
-        <Image
-          style={{ width: 22, height: 22, padding: 1 }}
-          source={require("../resources/ic_logo_trans.png")}
-        />
-      </Button>
-    ),
-    headerLeftContainerStyle: {
-      paddingLeft: 15
-    }
+    header: null
   });
 
   constructor(props) {
@@ -186,11 +174,7 @@ export default class NewsFeed extends React.Component {
   };
 
   _itemSeparator = props => {
-    return (
-      <View
-        style={{ backgroundColor: Colors.background, paddingVertical: 10 }}
-      />
-    );
+    return <View style={{ backgroundColor: Colors.background }} />;
   };
 
   _renderEmptyList = () => {
@@ -229,7 +213,7 @@ export default class NewsFeed extends React.Component {
       return (
         <View
           style={{
-            backgroundColor: Colors.background,
+            backgroundColor: Colors.backgroun,
             padding: 10,
             justifyContent: "center",
             alignItems: "center"
@@ -315,9 +299,15 @@ export default class NewsFeed extends React.Component {
 
   render() {
     const { data } = this.state;
+    const { navigation } = this.props;
     console.log("render data is ", data);
     return (
       <View style={styles.container}>
+        <Header
+          title={I18n.t("Newsfeed")}
+          navigation={navigation}
+          isBack={false}
+        />
         <FlatList
           data={this.state.data}
           keyExtractor={this._keyExtractor}
