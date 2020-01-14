@@ -375,7 +375,7 @@ export default class LoginScreen extends Component<Props> {
   render() {
     console.log("login render");
     return (
-      <ScrollView>
+      <ScrollView style={{ flex: 1 }}>
         <ErrorHandler
           error={this.state.error}
           errorText={this.state.errorText}
@@ -686,7 +686,7 @@ export default class LoginScreen extends Component<Props> {
                       </Text>
                     </TouchableOpacity>
                     <GoogleSigninButton
-                      style={{ height: 55, width: "50%" }}
+                      style={styles.loginGmail}
                       size={GoogleSigninButton.Size.Wide}
                       color={GoogleSigninButton.Color.Dark}
                       onPress={this.signIn}
@@ -694,9 +694,7 @@ export default class LoginScreen extends Component<Props> {
                     />
                   </View>
                 </View>
-                <View
-                  style={{ marginTop: 10, marginLeft: 10, marginRight: 10 }}
-                >
+                <View style={{ marginTop: 3, marginLeft: 10, marginRight: 10 }}>
                   <Button
                     style={styles.textTerm}
                     onPress={() => {
@@ -756,9 +754,9 @@ export default class LoginScreen extends Component<Props> {
 
 const styles = StyleSheet.create({
   container: {
-    margin: 10,
     flex: 1,
-    backgroundColor: Colors.surface
+    backgroundColor: Colors.surface,
+    paddingBottom: 50
   },
   containerBox: {
     flex: 1,
@@ -778,8 +776,8 @@ const styles = StyleSheet.create({
     marginBottom: 10
   },
   textInput: {
-    padding: 10,
-    margin: 10
+    padding: 5,
+    margin: 5
   },
   buttonContainer: {
     flexDirection: "row",
@@ -871,11 +869,16 @@ const styles = StyleSheet.create({
   loginFacebook: {
     width: screenWidth / 3,
     height: screenWidth / 8,
-    margin: "1%",
     backgroundColor: Colors.colorFacebook,
     alignItems: "center",
     borderRadius: 3,
     flexDirection: "row",
-    padding: 10
+    padding: 10,
+    marginTop: "1.2%",
+    marginRight: "1%"
+  },
+  loginGmail: {
+    height: screenWidth / 7,
+    width: screenWidth / 2.5
   }
 });
