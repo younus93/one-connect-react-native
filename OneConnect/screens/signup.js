@@ -10,10 +10,10 @@ import {
   Platform,
   ActivityIndicator,
   Animated,
-  ImageBackground,
+  ImageBackground
 } from "react-native";
-import { Input, Button as RNButton } from 'react-native-elements';
-import Toast from 'react-native-simple-toast';
+import { Input, Button as RNButton } from "react-native-elements";
+import Toast from "react-native-simple-toast";
 
 import { Colors } from "../constants";
 import Manager from "../service/dataManager";
@@ -28,11 +28,13 @@ const DismissKeyboard = ({ children }) => (
 
 const isCloseToBottom = ({ layoutMeasurement, contentOffset, contentSize }) => {
   const paddingToBottom = 20;
-  return layoutMeasurement.height + contentOffset.y >=
-    contentSize.height - paddingToBottom;
+  return (
+    layoutMeasurement.height + contentOffset.y >=
+    contentSize.height - paddingToBottom
+  );
 };
 
-const { width, height } = Dimensions.get('window');
+const { width, height } = Dimensions.get("window");
 
 type Props = {};
 export default class LoginScreen extends Component<Props> {
@@ -73,15 +75,20 @@ export default class LoginScreen extends Component<Props> {
 
   _signupSuccess = data => {
     console.warn("signup successfull : ", data);
-    Manager.setToken(data.data.token, data.data.user.basic.profile_pic, data.data.user.basic.id, data.data.user);
+    Manager.setToken(
+      data.data.token,
+      data.data.user.basic.profile_pic,
+      data.data.user.basic.id,
+      data.data.user
+    );
 
     Animated.timing(this.opacity, {
       toValue: 0,
       duration: 10
     }).start(() => {
-      Toast.showWithGravity(data.message, Toast.LONG, Toast.TOP)
+      Toast.showWithGravity(data.message, Toast.LONG, Toast.TOP);
       this.setState({
-        loading: false,
+        loading: false
       });
       this.props.navigation.navigate("MyProfile");
     });
@@ -97,7 +104,7 @@ export default class LoginScreen extends Component<Props> {
 
   _handleInputChange = (key, value) => {
     this[key] = value;
-  }
+  };
 
   _signupButton = () => {
     console.log("signup button clicked");
@@ -114,7 +121,7 @@ export default class LoginScreen extends Component<Props> {
         Manager.signup("/api/sign-up", "POST", {
           f_name: this.firstName,
           l_name: this.lastName,
-          email: this.email,
+          email: this.email
         });
       });
     } else {
@@ -128,12 +135,12 @@ export default class LoginScreen extends Component<Props> {
 
   _backToLoginButton = () => {
     this.props.navigation.navigate("Login");
-  }
+  };
 
   _forgetPassword = () => {
-    console.log('forgot password');
+    console.log("forgot password");
     this.props.navigation.navigate("ForgotPassword");
-  }
+  };
 
   render() {
     console.log("signup render");
@@ -161,36 +168,54 @@ export default class LoginScreen extends Component<Props> {
               </View>
               <View>
                 <Input
-                  placeholder='First Name'
+                  placeholder="First Name"
                   shake={true}
                   leftIcon={<Icon name="user"></Icon>}
                   leftIconContainerStyle={{ marginRight: 10 }}
-                  onChangeText={(value) => this._handleInputChange('firstName', value)}
+                  onChangeText={value =>
+                    this._handleInputChange("firstName", value)
+                  }
                   containerStyle={{ paddingBottom: 10, marginVertical: 10 }}
                 />
                 <Input
-                  placeholder='Last Name'
+                  placeholder="Last Name"
                   shake={true}
                   leftIcon={<Icon name="user"></Icon>}
                   leftIconContainerStyle={{ marginRight: 10 }}
-                  onChangeText={(value) => this._handleInputChange('lastName', value)}
+                  onChangeText={value =>
+                    this._handleInputChange("lastName", value)
+                  }
                   containerStyle={{ paddingBottom: 10, marginVertical: 10 }}
                 />
                 <Input
-                  placeholder='Email'
+                  placeholder="Email"
                   shake={true}
                   leftIcon={<Icon name="email"></Icon>}
                   leftIconContainerStyle={{ marginRight: 10 }}
-                  onChangeText={(value) => this._handleInputChange('email', value)}
+                  onChangeText={value =>
+                    this._handleInputChange("email", value)
+                  }
                   containerStyle={{ paddingBottom: 10, marginVertical: 10 }}
                 />
 
-                <RNButton buttonStyle={{ backgroundColor: Colors.yellowDark, borderRadius: 20 }}
-                  onPress={this._signupButton} title="Sign Up" />
+                <RNButton
+                  buttonStyle={{
+                    backgroundColor: Colors.yellowDark,
+                    borderRadius: 20
+                  }}
+                  onPress={this._signupButton}
+                  title="Sign Up"
+                />
 
-                <RNButton buttonStyle={{ backgroundColor: Colors.greenDark, borderRadius: 20, marginTop : 10 }}
-                  onPress={this._backToLoginButton} title="Back to Login" />
-
+                <RNButton
+                  buttonStyle={{
+                    backgroundColor: Colors.greenDark,
+                    borderRadius: 20,
+                    marginTop: 10
+                  }}
+                  onPress={this._backToLoginButton}
+                  title="Back to Login"
+                />
               </View>
             </View>
             {this.state.loading ? (
@@ -216,7 +241,7 @@ export default class LoginScreen extends Component<Props> {
             ) : null}
           </View>
         </KeyboardAvoidingView>
-      </ErrorHandler >
+      </ErrorHandler>
     );
   }
 }
@@ -256,11 +281,11 @@ const styles = StyleSheet.create({
   forgotPasswordButton: {
     marginLeft: 10,
     paddingBottom: 10,
-    width: "40%",
+    width: "40%"
   },
   forgotPasswordText: {
     fontSize: 15,
-    marginTop: 20,
+    marginTop: 20
   },
   textTerm: {
     fontSize: 12,
@@ -299,7 +324,7 @@ const styles = StyleSheet.create({
   },
   title: {
     fontSize: 22,
-    alignSelf: 'center'
+    alignSelf: "center"
   },
   tcP: {
     marginTop: 10,
@@ -319,7 +344,7 @@ const styles = StyleSheet.create({
   tcContainer: {
     marginTop: 15,
     marginBottom: 15,
-    height: height * .7
+    height: height * 0.7
   },
 
   button: {
@@ -334,8 +359,7 @@ const styles = StyleSheet.create({
 
   buttonLabel: {
     fontSize: 14,
-    color: '#FFF',
-    alignSelf: 'center'
+    color: "#FFF",
+    alignSelf: "center"
   }
-
 });

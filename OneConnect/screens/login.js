@@ -76,7 +76,8 @@ export default class LoginScreen extends Component<Props> {
       error: false,
       errorText: null,
       clipboardText: "",
-      textInputText: ""
+      textInputText: "",
+      userData: {}
     };
   }
 
@@ -153,17 +154,35 @@ export default class LoginScreen extends Component<Props> {
     try {
       await GoogleSignin.hasPlayServices();
       const userInfo = await GoogleSignin.signIn();
-      this.setState({ userInfo });
-      console.warn(userInfo);
+      this.setState({ userData: userInfo });
+      let userData = {
+        name: userInfo.user.name,
+        email: userInfo.user.email,
+        profile_pic: userInfo.user.photo,
+        fcm_token: this.state.fcmToken
+      };
+
+      this.setState({
+        loading: true,
+        error: false
+      });
+
+      Animated.timing(this.opacity, {
+        toValue: 0.7,
+        duration: 100
+      }).start(() => {
+        Manager.login("/api/login", "POST", {
+          name: userInfo.user.name,
+          email: userInfo.user.email,
+          profile_pic: userInfo.user.photo,
+          fcm_token: this.state.fcmToken
+        });
+      });
     } catch (error) {
-      if (error.code === statusCodes.SIGN_IN_CANCELLED) {
-        // user cancelled the login flow
-      } else if (error.code === statusCodes.IN_PROGRESS) {
-        // operation (f.e. sign in) is in progress already
-      } else if (error.code === statusCodes.PLAY_SERVICES_NOT_AVAILABLE) {
-        // play services not available or outdated
-      } else {
-        // some other error happened
+      if (!this.state.error) {
+        console.log("empty");
+        let e = new Error("Invalid credencials");
+        this._loginError(e);
       }
     }
   };
@@ -607,8 +626,10 @@ export default class LoginScreen extends Component<Props> {
                         } else if (result.isCancelled) {
                           console.log("login is cancelled.");
                         } else {
+                          console.log("hello", result);
+
                           AccessToken.getCurrentAccessToken().then(data => {
-                            console.log(data.accessToken.toString());
+                            console.log("hello", data.accessToken.toString());
                             new GraphRequestManager()
                               .addRequest(infoRequest)
                               .start();
