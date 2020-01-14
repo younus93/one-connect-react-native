@@ -31,6 +31,7 @@ export default {
   Mutual_friends: "mutual friends",
   You_and: "You and",
   Liked_it: "others liked it",
+  Like_it: "liked it",
   Friend_Requests: "Friend Requests",
   Birthdays: "Birthdays",
   Nick_Name: "Nick Name",
@@ -77,5 +78,6 @@ export default {
   Requests: "Requests",
   Links: "Social Info",
   Links_not_updated: "No Information Updated",
-  facebook: "Login with Facebook"
+  facebook: "Login with Facebook",
+  You: "You "
 };

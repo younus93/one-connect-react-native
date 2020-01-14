@@ -30,6 +30,7 @@ export default {
   Mutual_friends: "เพื่อนร่วมกัน",
   You_and: "คุณและอีก",
   Liked_it: "คนถูกใจสิ่งนี้",
+  Like_it: "ชอบมัน",
   Friend_Requests: "คำขอเป็นเพื่อน",
   Birthdays: "วันเกิด",
   Nick_Name: "ชื่อเล่น",
@@ -76,5 +77,6 @@ export default {
   Requests: "การร้องขอ",
   Links: "ข้อมูลสังคม",
   Links_not_updated: "ไม่มีข้อมูลอัปเดต",
-  facebook: "เข้าสู่ระบบด้วยหนังสือหน้า"
+  facebook: "เข้าสู่ระบบด้วยหนังสือหน้า",
+  You: "คุณ"
 };

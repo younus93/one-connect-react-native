@@ -63,7 +63,6 @@
 
 export const Colors = {
   background: "#eff1f9",
-  primary: "#ffecb3",
   primaryDark: "#000000",
   primaryLight: "#ffffe5",
   secondary: "#355c01",
@@ -96,7 +95,7 @@ export const Colors = {
   colorFacebook: "#3b5998",
   colorTheme: "#f4b500",
   background: "#eff1f9",
-  primary: "#677189",
+  primary: "#f7df97",
   primaryDark: "#3c465c",
   secondary: "#7986cb",
   secondaryDark: "#49599a",

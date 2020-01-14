@@ -108,13 +108,7 @@ export default class Feed extends React.Component {
   // }
 
   _likeText = () => {
-    if (this.state.likeIconActive)
-      return (
-        I18n.t("You_and") +
-        " " +
-        (this.state.totalLikes - 1) +
-        I18n.t("Liked_it")
-      );
+    if (this.state.likeIconActive) return I18n.t("You") + I18n.t("Like_it");
     if (this.props.data.likers.length > 0)
       return (
         this.props.data.likers[0].f_name +
@@ -257,13 +251,13 @@ const styles = StyleSheet.create({
     width: "100%",
     height: StyleSheet.hairlineWidth,
     backgroundColor: Colors.background,
-    marginTop: 5
+    marginTop: 0
   },
   paddingHorizontal10: {
     paddingHorizontal: 10
   },
   paddingVertical20: {
-    paddingVertical: 20
+    paddingVertical: 10
   },
   footer: {
     flexDirection: "row",

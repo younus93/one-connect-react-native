@@ -328,8 +328,8 @@ const styles = StyleSheet.create({
     textAlign: "center",
     fontWeight: "700",
     //paddingTop: 10,
-    fontSize: 20,
-    color: Colors.onPrimary
+    fontSize: 20
+    //color: Colors.onPrimary
   },
   itemText: {
     paddingLeft: 10,
