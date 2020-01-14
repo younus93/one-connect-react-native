@@ -11,7 +11,7 @@ export default {
   No_Notifications_yet: "No Notifications yet  ",
   Friends: "Friends  ",
   No_Friends_yet: "No Friends yet  ",
-  No_Posts: "No Batchmates  ",
+  No_Posts: "No Batches  ",
   Data_Unavailable: "No posts to show!  ",
   Like: "Like  ",
   Comment: "Comment  ",

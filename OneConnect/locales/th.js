@@ -10,7 +10,7 @@ export default {
   Notifications: "การแจ้งเตือน",
   No_Notifications_yet: "ยังไม่มีการแจ้งเตือน",
   Friends: "เพื่อน",
-  No_Posts: "ไม่มีแบทช์  ",
+  No_Posts: "ไม่มีแบตช์  ",
   No_Friends_yet: "ยังไม่มีเพื่อน",
   Data_Unavailable: "ไม่พบข้อมูล",
   Like: "ไลค์",

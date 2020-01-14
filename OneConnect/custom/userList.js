@@ -144,6 +144,7 @@ export default class UserList extends React.Component {
     // this.refs.toast.show("Friend request rejected", 500, () => {});
     this.props._deny(id);
   };
+
   _renderUsers = section => {
     console.log("friend messages : ", section);
     if (section && section.length > 0) {
@@ -228,28 +229,95 @@ export default class UserList extends React.Component {
     );
   };
 
+  renderNotification = section => {
+    console.log("notifications", section);
+    if (section && section.length > 0) {
+      console.log("data availabe");
+      return (
+        <View>
+          {section.map(item => {
+            return (
+              <View
+                style={{
+                  backgroundColor: Colors.surface,
+                  borderRadius: 20,
+                  marginLeft: 10,
+                  marginTop: 10,
+                  marginRight: 10,
+                  elevation: 1,
+                  padding: 10,
+                  height: 100,
+                  flexDirection: "column"
+                }}
+              >
+                <View
+                  style={{
+                    flex: 1,
+                    flexDirection: "row",
+                    justifyContent: "flex-start"
+                  }}
+                >
+                  <Image
+                    style={{ width: 35, height: 35, borderRadius: 17 }}
+                    source={{ uri: item.profile_pic }}
+                    resizeMode="cover"
+                    onError={error => console.log(error)}
+                  />
+                  <Text style={[styles.name, { flex: 1 }]}>
+                    {item.f_name + " " + item.l_name}
+                  </Text>
+
+                  <Text>{"32 min"}</Text>
+                </View>
+                <Text>{item.extra_info}</Text>
+              </View>
+            );
+          })}
+
+          <Toast
+            ref="toast"
+            style={{ backgroundColor: Colors.onPrimary }}
+            position="bottom"
+            positionValue={200}
+            fadeInDuration={200}
+            fadeOutDuration={200}
+            opacity={0.8}
+            textStyle={{ color: Colors.primary }}
+          />
+        </View>
+      );
+    }
+    return (
+      <View style={styles.noItem}>
+        <Text style={styles.itemText}>{I18n.t("No_birthday_alerts")}</Text>
+      </View>
+    );
+  };
+
   render() {
     const { navigation } = this.props;
     console.log("render", this.state.section);
     if (!this.state.loading)
       return (
-        <DismissKeyboard>
-          <View style={{ width: "100%", height: "100%" }}>
-            <Header
-              title={I18n.t("Notifications")}
-              navigation={navigation}
-              isBack={false}
-            />
-            <KeyboardAvoidingView
-              behavior={Platform.OS === "ios" ? "padding" : null}
-              style={styles.container}
-            >
-              <View style={styles.container}>
-                {this._renderUsers(this.state.birthdays)}
-              </View>
-            </KeyboardAvoidingView>
-          </View>
-        </DismissKeyboard>
+        <View style={{ width: "100%", height: "100%" }}>
+          <Header
+            title={I18n.t("Notifications")}
+            navigation={navigation}
+            isBack={false}
+          />
+          <ScrollView>
+            <DismissKeyboard>
+              <KeyboardAvoidingView
+                behavior={Platform.OS === "ios" ? "padding" : null}
+                style={styles.container}
+              >
+                <View style={styles.container}>
+                  {this.renderNotification(this.state.birthdays)}
+                </View>
+              </KeyboardAvoidingView>
+            </DismissKeyboard>
+          </ScrollView>
+        </View>
       );
     return (
       <DismissKeyboard>
@@ -257,18 +325,25 @@ export default class UserList extends React.Component {
           behavior={Platform.OS === "ios" ? "padding" : null}
           style={styles.container}
         >
-          <View
-            style={{
-              justifyContent: "center",
-              alignItems: "center",
-              padding: 10
-            }}
-          >
-            <ActivityIndicator
-              animating={this.state.loading}
-              size="large"
-              color={Colors.secondaryDark}
+          <View style={{ width: "100%", height: "100%" }}>
+            <Header
+              title={I18n.t("Notifications")}
+              navigation={navigation}
+              isBack={false}
             />
+            <View
+              style={{
+                justifyContent: "center",
+                alignItems: "center",
+                padding: 10
+              }}
+            >
+              <ActivityIndicator
+                animating={this.state.loading}
+                size="large"
+                color={Colors.secondaryDark}
+              />
+            </View>
           </View>
         </KeyboardAvoidingView>
       </DismissKeyboard>
@@ -278,8 +353,7 @@ export default class UserList extends React.Component {
 
 const styles = StyleSheet.create({
   container: {
-    flex: 1,
-    backgroundColor: Colors.surface
+    flex: 1
   },
   bodyHeader: {
     fontSize: 16,
