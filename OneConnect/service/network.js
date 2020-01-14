@@ -1,6 +1,6 @@
 // const BASE_URL = 'http://users.theyounus.com'
 // const BASE_URL = 'http://beta.1connect.in'
-const BASE_URL = "http://beebuckapp.com";
+const BASE_URL = "http://beta.beebuckapp.com";
 
 const Call = (uri, method, data = null, token = null, type = "formData") => {
   let url = BASE_URL + uri;

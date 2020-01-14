@@ -23,7 +23,7 @@ export default class CustomDrawerContentComponent extends React.Component {
     this.url = props.navigation.getParam("url", "/api/profile");
 
     this.state = {
-      switchValue: I18n.locale == "en" ? true : false,
+      switchValue: I18n.locale == "th" ? true : false,
       profile: {},
       loading: true,
       error: false,

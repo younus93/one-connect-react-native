@@ -181,7 +181,7 @@ export default class Feed extends React.Component {
             {this.state.pic != null && (
               <Image
                 style={styles.feedImage}
-                resizeMode="contain"
+                resizeMode="stretch"
                 source={{ uri: this.state.pic }}
               />
             )}
@@ -333,7 +333,7 @@ const styles = StyleSheet.create({
     flexDirection: "row",
     paddingBottom: 10
   },
-  feedImage: { height: 200, width: "100%" }
+  feedImage: { marginTop: "3%", height: 200, width: "100%" }
 });
 const containerStyles = StyleSheet.create({
   container: {
