@@ -8,7 +8,6 @@ import {
   TouchableWithoutFeedback,
   Animated,
   Easing,
-  Modal,
   TextInput
 } from "react-native";
 import { Colors } from "../constants";
@@ -16,9 +15,35 @@ import Icon from "react-native-vector-icons/FontAwesome5";
 import Button from "../custom/button";
 import I18n from "../service/i18n";
 import FacePile from "react-native-face-pile";
+import { Modal } from "react-native";
+import ImageViewer from "react-native-image-zoom-viewer";
 
 let faceData = [];
 let remainingFaces = 0;
+
+const images = [
+  {
+    // Simplest usage.
+    url: "https://avatars2.githubusercontent.com/u/7970947?v=3&s=460",
+
+    // width: number
+    // height: number
+    // Optional, if you know the image size, you can set the optimization performance
+
+    // You can pass props to <Image />.
+    props: {
+      // headers: ...
+    }
+  },
+  {
+    url: "https://avatars2.githubusercontent.com/u/7970947?v=3&s=460",
+    props: {
+      // Or you can set source directory.
+      //source: require('../background.png')
+    }
+  }
+];
+
 export default class Feed extends React.Component {
   constructor(props) {
     super(props);
@@ -27,7 +52,8 @@ export default class Feed extends React.Component {
       likeIconActive: props.data.is_liked,
       likeActivefont: Colors.red,
       commentsCount: props.data.comments_count,
-      pic: props.data.pic
+      pic: props.data.pic,
+      isImageZoomable: false
     };
   }
 
@@ -103,6 +129,10 @@ export default class Feed extends React.Component {
     this.props.instituteCallback();
   };
 
+  onImageClick = () => {
+    this.setState({ isImageZoomable: true });
+  };
+
   // _report = () => {
   //   this.props.reportCallback();
   // }
@@ -136,97 +166,126 @@ export default class Feed extends React.Component {
     let faces = this.props.data.likers;
 
     return (
-      <TouchableWithoutFeedback
-        onPress={this._onPress}
-        hitSlop={{ top: 5, left: 5, bottom: 5, right: 5 }}
-      >
-        <View style={[styles.container, this.transformation]}>
-          <View style={styles.header}>
+      <View>
+        <TouchableWithoutFeedback
+          onPress={this._onPress}
+          hitSlop={{ top: 5, left: 5, bottom: 5, right: 5 }}
+        >
+          <View style={[styles.container, this.transformation]}>
+            <View style={styles.header}>
+              <TouchableWithoutFeedback
+                onPress={this._profile}
+                hitSlop={{ top: 5, left: 5, bottom: 5, right: 5 }}
+              >
+                <View style={styles.paddingHorizontal}>
+                  <Image
+                    style={styles.image}
+                    source={{
+                      uri: data.institution
+                        ? data.institution.profile_pic
+                        : null
+                    }}
+                    defaultSource={require("../resources/dummy_profile.png")}
+                    resizeMode="cover"
+                    onError={error => console.log(error)}
+                  />
+                </View>
+              </TouchableWithoutFeedback>
+              <TouchableWithoutFeedback
+                onPress={this._institute}
+                hitSlop={{ top: 5, left: 5, bottom: 5, right: 5 }}
+              >
+                <View style={styles.paddingHorizontal10}>
+                  <Text style={styles.headerText}>
+                    {data.institution ? data.institution.name : "Institute"}
+                  </Text>
+                  <Text style={styles.headerSubText}>{data.created_at}</Text>
+                </View>
+              </TouchableWithoutFeedback>
+            </View>
             <TouchableWithoutFeedback
-              onPress={this._profile}
+              onPress={this.onImageClick}
               hitSlop={{ top: 5, left: 5, bottom: 5, right: 5 }}
             >
-              <View style={styles.paddingHorizontal}>
-                <Image
-                  style={styles.image}
-                  source={{
-                    uri: data.institution ? data.institution.profile_pic : null
-                  }}
-                  defaultSource={require("../resources/dummy_profile.png")}
-                  resizeMode="cover"
-                  onError={error => console.log(error)}
-                />
+              <View style={styles.paddingVertical20}>
+                <Text style={styles.bodyText}>{data.body}</Text>
+                {this.state.pic != null && (
+                  <Image
+                    style={styles.feedImage}
+                    resizeMode="stretch"
+                    source={{ uri: this.state.pic }}
+                  />
+                )}
               </View>
             </TouchableWithoutFeedback>
-            <TouchableWithoutFeedback
-              onPress={this._institute}
-              hitSlop={{ top: 5, left: 5, bottom: 5, right: 5 }}
-            >
-              <View style={styles.paddingHorizontal10}>
-                <Text style={styles.headerText}>
-                  {data.institution ? data.institution.name : "Institute"}
-                </Text>
-                <Text style={styles.headerSubText}>{data.created_at}</Text>
-              </View>
-            </TouchableWithoutFeedback>
-          </View>
-          <View style={styles.paddingVertical20}>
-            <Text style={styles.bodyText}>{data.body}</Text>
-            {this.state.pic != null && (
-              <Image
-                style={styles.feedImage}
-                resizeMode="stretch"
-                source={{ uri: this.state.pic }}
-              />
-            )}
-          </View>
-          <View style={styles.separator} />
-          <View style={styles.footer}>
-            <Text
-              style={[
-                styles.footerMetaElementText,
-                { color: this.state.likeActiveFont }
-              ]}
-            >
-              {this._likeText()}
-            </Text>
-            <Text
-              style={[
-                styles.footerMetaElementText,
-                { color: this.state.likeActiveFont }
-              ]}
-            >
-              {this._commentText()}
-            </Text>
-          </View>
-          <View style={styles.footer}>
-            <Button onPress={this._liked} style={styles.footerElement}>
-              <Icon
-                name="heart"
-                size={20}
-                color={Colors.red}
-                solid={this.state.likeIconActive}
-              />
+            <View style={styles.separator} />
+            <View style={styles.footer}>
               <Text
                 style={[
-                  styles.footerElementText,
+                  styles.footerMetaElementText,
                   { color: this.state.likeActiveFont }
                 ]}
               >
-                {I18n.t("Like")}
+                {this._likeText()}
               </Text>
-            </Button>
-            <Button onPress={this._comment} style={styles.footerElement}>
-              <Icon name="comment" size={20} color={Colors.onPrimary} />
-              <Text style={styles.footerElementText}>{I18n.t("Comment")}</Text>
-            </Button>
-            <Button onPress={this._report} style={styles.footerElement}>
-              <Icon name="flag" size={20} color={Colors.onPrimary} />
-              <Text style={styles.footerElementText}>Report</Text>
-            </Button>
+              <Text
+                style={[
+                  styles.footerMetaElementText,
+                  { color: this.state.likeActiveFont }
+                ]}
+              >
+                {this._commentText()}
+              </Text>
+            </View>
+            <View style={styles.footer}>
+              <Button onPress={this._liked} style={styles.footerElement}>
+                <Icon
+                  name="heart"
+                  size={20}
+                  color={Colors.red}
+                  solid={this.state.likeIconActive}
+                />
+                <Text
+                  style={[
+                    styles.footerElementText,
+                    { color: this.state.likeActiveFont }
+                  ]}
+                >
+                  {I18n.t("Like")}
+                </Text>
+              </Button>
+              <Button onPress={this._comment} style={styles.footerElement}>
+                <Icon name="comment" size={20} color={Colors.onPrimary} />
+                <Text style={styles.footerElementText}>
+                  {I18n.t("Comment")}
+                </Text>
+              </Button>
+              <Button onPress={this._report} style={styles.footerElement}>
+                <Icon name="flag" size={20} color={Colors.onPrimary} />
+                <Text style={styles.footerElementText}>Report</Text>
+              </Button>
+            </View>
           </View>
-        </View>
-      </TouchableWithoutFeedback>
+        </TouchableWithoutFeedback>
+        {this.state.isImageZoomable ? (
+          <View>
+            <Modal visible={this.state.isImageZoomable} transparent={true}>
+              <ImageViewer
+                imageUrls={images}
+                saveToLocalByLongPress={true}
+                onCancel={() =>
+                  this.setState({
+                    isImageZoomable: false
+                  })
+                }
+                onDoubleClick={onCancel => {
+                  onCancel();
+                }}
+              />
+            </Modal>
+          </View>
+        ) : null}
+      </View>
     );
   }
 }

@@ -12,6 +12,10 @@ import Courses from "../screens/courses";
 import BatchItem from "../screens/batchItem";
 import BatchMates from "../screens/batchmates";
 import Profile from "../screens/profile";
+import ChangePassword from "../screens/changePassword";
+import Privacy from "../screens/privacySetting";
+import Terms from "../screens/termsCondition";
+import I18n from "../service/i18n";
 
 const navigatorConfig = {
   initialRouteName: "NewsFeed",
@@ -54,6 +58,24 @@ const FeedStack = createStackNavigator(
     },
     Profile: {
       screen: Profile
+    },
+    ChangePassword: {
+      screen: ChangePassword,
+      navigationOptions: () => ({
+        title: I18n.t("Change_Password")
+      })
+    },
+    Privacy: {
+      screen: Privacy,
+      navigationOptions: () => ({
+        title: `PRIVACY`
+      })
+    },
+    Terms: {
+      screen: Terms,
+      navigationOptions: () => ({
+        title: `Terms & Conditions`
+      })
     }
   },
   navigatorConfig

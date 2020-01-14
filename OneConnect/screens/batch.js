@@ -151,7 +151,8 @@ export default class Batch extends React.Component {
             alignItems: "center",
             opacity: 1,
             height: "100%",
-            width: "100%"
+            width: "100%",
+            marginBottom: "15%"
           }}
         >
           <Text
