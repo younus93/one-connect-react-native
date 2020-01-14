@@ -21,29 +21,6 @@ import ImageViewer from "react-native-image-zoom-viewer";
 let faceData = [];
 let remainingFaces = 0;
 
-const images = [
-  {
-    // Simplest usage.
-    url: "https://avatars2.githubusercontent.com/u/7970947?v=3&s=460",
-
-    // width: number
-    // height: number
-    // Optional, if you know the image size, you can set the optimization performance
-
-    // You can pass props to <Image />.
-    props: {
-      // headers: ...
-    }
-  },
-  {
-    url: "https://avatars2.githubusercontent.com/u/7970947?v=3&s=460",
-    props: {
-      // Or you can set source directory.
-      //source: require('../background.png')
-    }
-  }
-];
-
 export default class Feed extends React.Component {
   constructor(props) {
     super(props);
@@ -165,6 +142,22 @@ export default class Feed extends React.Component {
     const { data } = this.props;
     let faces = this.props.data.likers;
 
+    const images = [
+      {
+        // Simplest usage.
+        url: this.state.pic,
+
+        // width: number
+        // height: number
+        // Optional, if you know the image size, you can set the optimization performance
+
+        // You can pass props to <Image />.
+        props: {
+          // headers: ...
+        }
+      }
+    ];
+
     return (
       <View>
         <TouchableWithoutFeedback
@@ -267,9 +260,9 @@ export default class Feed extends React.Component {
             </View>
           </View>
         </TouchableWithoutFeedback>
-        {this.state.isImageZoomable ? (
+        {this.state.isImageZoomable && this.state.pic != null ? (
           <View>
-            <Modal visible={this.state.isImageZoomable} transparent={true}>
+            <Modal visible={true} transparent={true}>
               <ImageViewer
                 imageUrls={images}
                 saveToLocalByLongPress={true}
