@@ -11,7 +11,11 @@ I18n.translations = {
   th
 };
 
-I18n.locale = "th";
+I18n.locale =
+  AsyncStorage.getItem("@locale") != null &&
+  AsyncStorage.getItem("@locale") == "th"
+    ? "th"
+    : "en";
 
 export const UpdateLocale = locale => {
   I18n.locale = locale;

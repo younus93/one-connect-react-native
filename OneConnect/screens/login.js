@@ -118,40 +118,7 @@ export default class LoginScreen extends Component<Props> {
       });
   }
 
-  async checkPermission() {
-    const enabled = await firebase.messaging().hasPermission();
-    if (enabled) {
-      this.getToken();
-    } else {
-      this.requestPermission();
-    }
-  }
-
-  async getToken() {
-    let fcmToken = await AsyncStorage.getItem("fcmToken");
-    if (!fcmToken) {
-      fcmToken = await firebase.messaging().getToken();
-      if (fcmToken) {
-        // user has a device token
-        console.log("token", fcmToken);
-        await AsyncStorage.setItem("fcmToken", fcmToken);
-        this.setState({ fcmToken: fcmToken });
-      }
-    }
-  }
-
-  //2
-  async requestPermission() {
-    try {
-      await firebase.messaging().requestPermission();
-      // User has authorised
-      this.getToken();
-    } catch (error) {
-      // User has rejected permissions
-      console.log("permission rejected");
-    }
-  }
-
+  //google sign in
   signIn = async () => {
     try {
       await GoogleSignin.hasPlayServices();
@@ -362,15 +329,6 @@ export default class LoginScreen extends Component<Props> {
     await Clipboard.setString(this.state.textInputText);
     //  console.warn(this.state.textInputText);
   };
-
-  //Create response callback.
-  _responseInfoCallback(error: ?Object, result: ?Object) {
-    if (error) {
-      console.log("Error fetching data: " + error.toString());
-    } else {
-      console.log("Success fetching data: " + result.toString());
-    }
-  }
 
   render() {
     console.log("login render");
@@ -755,8 +713,7 @@ export default class LoginScreen extends Component<Props> {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    backgroundColor: Colors.surface,
-    paddingBottom: 50
+    backgroundColor: Colors.surface
   },
   containerBox: {
     flex: 1,

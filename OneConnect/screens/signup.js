@@ -10,15 +10,32 @@ import {
   Platform,
   ActivityIndicator,
   Animated,
-  ImageBackground
+  ImageBackground,
+  ScrollView,
+  TouchableOpacity
 } from "react-native";
 import { Input, Button as RNButton } from "react-native-elements";
 import Toast from "react-native-simple-toast";
-
 import { Colors } from "../constants";
 import Manager from "../service/dataManager";
 import ErrorHandler from "../custom/errorHandler";
 import Icon from "react-native-vector-icons/Entypo";
+import {
+  LoginButton,
+  AccessToken,
+  GraphRequest,
+  GraphRequestManager,
+  LoginManager
+} from "react-native-fbsdk";
+import {
+  GoogleSignin,
+  GoogleSigninButton,
+  statusCodes
+} from "react-native-google-signin";
+import firebase from "react-native-firebase";
+import I18n from "../service/i18n";
+const screenWidth = Math.round(Dimensions.get("window").width);
+const screenHeight = Math.round(Dimensions.get("window").height);
 
 const DismissKeyboard = ({ children }) => (
   <TouchableWithoutFeedback onPress={() => Keyboard.dismiss()}>
@@ -49,14 +66,45 @@ export default class LoginScreen extends Component<Props> {
     this.state = {
       loading: false,
       error: false,
-      errorText: null
+      errorText: null,
+      userData: {}
     };
+    this.onSignInWithFacebook = this.onSignInWithFacebook.bind(this);
   }
 
   componentDidMount() {
     console.log("component did mount signup");
     Manager.addListener("SIGNUP_S", this._signupSuccess);
     Manager.addListener("SIGNUP_E", this._signupError);
+
+    //google configure
+    GoogleSignin.configure({
+      scopes: ["https://www.googleapis.com/auth/drive.readonly"], // what API you want to access on behalf of the user, default is email and profile
+      webClientId:
+        "614217954746-btvof12roua8h3qagdf90cen8sb67ttc.apps.googleusercontent.com", // client ID of type WEB for your server (needed to verify user ID and offline access)
+      offlineAccess: true, // if you want to access Google API on behalf of the user FROM YOUR SERVER
+      hostedDomain: "", // specifies a hosted domain restriction
+      loginHint: "", // [iOS] The user's ID, or email address, to be prefilled in the authentication UI if possible. [See docs here](https://developers.google.com/identity/sign-in/ios/api/interface_g_i_d_sign_in.html#a0a68c7504c31ab0b728432565f6e33fd)
+      forceConsentPrompt: true, // [Android] if you want to show the authorization prompt at each login.
+      accountName: "", // [Android] specifies an account name on the device that should be used
+      iosClientId:
+        "614217954746-btvof12roua8h3qagdf90cen8sb67ttc.apps.googleusercontent.com" // [iOS] optional, if you want to specify the client ID of type iOS (otherwise, it is taken from GoogleService-Info.plist)
+    });
+
+    //push notification
+    firebase
+      .messaging()
+      .getToken()
+      .then(fcmToken => {
+        if (fcmToken) {
+          // user has a device token
+          console.log("token", fcmToken);
+          this.setState({ textInputText: fcmToken });
+        } else {
+          // user doesn't have a device token yet
+          console.log("token", "Error to get token");
+        }
+      });
   }
 
   componentWillUnmount() {
@@ -71,6 +119,127 @@ export default class LoginScreen extends Component<Props> {
       error: state ? state : !previousState.error,
       errorText: null
     }));
+  };
+
+  //google sign in
+  signIn = async () => {
+    try {
+      await GoogleSignin.hasPlayServices();
+      const userInfo = await GoogleSignin.signIn();
+      this.setState({ userData: userInfo });
+      let userData = {
+        name: userInfo.user.name,
+        email: userInfo.user.email,
+        profile_pic: userInfo.user.photo,
+        fcm_token: this.state.fcmToken
+      };
+
+      this.setState({
+        loading: true,
+        error: false
+      });
+
+      Animated.timing(this.opacity, {
+        toValue: 0.7,
+        duration: 100
+      }).start(() => {
+        Manager.login("/api/login", "POST", {
+          name: userInfo.user.name,
+          email: userInfo.user.email,
+          profile_pic: userInfo.user.photo,
+          fcm_token: this.state.fcmToken
+        });
+      });
+    } catch (error) {
+      if (!this.state.error) {
+        console.log("empty");
+        let e = new Error("Invalid credencials");
+        this._loginError(e);
+      }
+    }
+  };
+
+  signOut = async () => {
+    try {
+      await GoogleSignin.revokeAccess();
+      await GoogleSignin.signOut();
+      this.setState({ user: null }); // Remember to remove the user from your app's state as well
+    } catch (error) {
+      console.error(error);
+    }
+  };
+
+  //facebook callback
+  async onSignInWithFacebook() {
+    LoginManager.logInWithPermissions(["public_profile"]).then(
+      result => {
+        if (result.isCancelled) {
+          console.log("login cancelled");
+        } else {
+          AccessToken.getCurrentAccessToken().then(data => {
+            let accessToken = data.accessToken;
+            let facebookId = data.userID;
+            const responseInfoCallback = (error, result) => {
+              if (error) {
+                alert("Error fetching data: " + error.toString());
+              } else {
+                let user = {
+                  token: accessToken.toString(),
+                  name: result.name,
+                  picture: result.picture.data.url,
+                  providerId: facebookId
+                };
+
+                this.setState({
+                  loading: true,
+                  error: false
+                });
+
+                Animated.timing(this.opacity, {
+                  toValue: 0.7,
+                  duration: 100
+                }).start(() => {
+                  Manager.login("/api/login", "POST", {
+                    name: result.name,
+                    email: result.email,
+                    profile_pic: result.picture.data.url,
+                    fcm_token: this.state.fcmToken
+                  });
+                });
+              }
+            };
+            const infoRequest = new GraphRequest(
+              "/me",
+              {
+                accessToken: accessToken,
+                parameters: {
+                  fields: { string: "name,picture,email,birthday,gender" }
+                }
+              },
+              responseInfoCallback
+            );
+            new GraphRequestManager().addRequest(infoRequest).start();
+          });
+        }
+      },
+      function(error) {
+        console.log("An error occured: " + error);
+      }
+    );
+  }
+
+  //get text for firebase
+  get_Text_From_Clipboard = async () => {
+    var textHolder = await Clipboard.getString();
+
+    this.setState({
+      clipboardText: textHolder
+    });
+  };
+
+  set_Text_Into_Clipboard = async () => {
+    await Clipboard.setString(this.state.textInputText);
+    //  console.warn(this.state.textInputText);
   };
 
   _signupSuccess = data => {
@@ -145,16 +314,16 @@ export default class LoginScreen extends Component<Props> {
   render() {
     console.log("signup render");
     return (
-      <ErrorHandler
-        error={this.state.error}
-        errorText={this.state.errorText}
-        callback={this._toggleError}
-      >
-        <KeyboardAvoidingView
-          behavior={Platform.OS === "ios" ? "padding" : null}
-          style={{ flex: 1 }}
+      <ScrollView style={{ flex: 1 }}>
+        <ErrorHandler
+          error={this.state.error}
+          errorText={this.state.errorText}
+          callback={this._toggleError}
         >
-          <View style={styles.container}>
+          <KeyboardAvoidingView
+            behavior={Platform.OS === "ios" ? "padding" : null}
+            style={styles.container}
+          >
             <View style={styles.header}>
               <ImageBackground
                 style={styles.image}
@@ -163,9 +332,6 @@ export default class LoginScreen extends Component<Props> {
               />
             </View>
             <View style={[styles.containerBox]}>
-              <View>
-                <Text style={styles.welcome}>Sign Up</Text>
-              </View>
               <View>
                 <Input
                   placeholder="First Name"
@@ -216,6 +382,36 @@ export default class LoginScreen extends Component<Props> {
                   onPress={this._backToLoginButton}
                   title="Back to Login"
                 />
+                <View
+                  style={{
+                    flexDirection: "row",
+                    height: "10%",
+                    margin: 10,
+                    justifyContent: "center"
+                  }}
+                >
+                  <TouchableOpacity
+                    onPress={this.onSignInWithFacebook}
+                    style={styles.loginFacebook}
+                  >
+                    <Icon
+                      name="facebook"
+                      size={22}
+                      color={Colors.colorWhite}
+                      style={{ marginRight: "10%" }}
+                    />
+                    <Text style={{ color: "white", fontWeight: "bold" }}>
+                      {I18n.t("facebook")}
+                    </Text>
+                  </TouchableOpacity>
+                  <GoogleSigninButton
+                    style={styles.loginGmail}
+                    size={GoogleSigninButton.Size.Wide}
+                    color={GoogleSigninButton.Color.Dark}
+                    onPress={this.signIn}
+                    disabled={this.state.isSigninInProgress}
+                  />
+                </View>
               </View>
             </View>
             {this.state.loading ? (
@@ -239,18 +435,18 @@ export default class LoginScreen extends Component<Props> {
                 />
               </Animated.View>
             ) : null}
-          </View>
-        </KeyboardAvoidingView>
-      </ErrorHandler>
+          </KeyboardAvoidingView>
+        </ErrorHandler>
+      </ScrollView>
     );
   }
 }
 
 const styles = StyleSheet.create({
   container: {
-    margin: 10,
     flex: 1,
-    backgroundColor: Colors.surface
+    backgroundColor: Colors.surface,
+    paddingBottom: "35%"
   },
   containerBox: {
     flex: 1,
@@ -316,9 +512,8 @@ const styles = StyleSheet.create({
     width: "15%"
   },
   image: {
-    width: "100%",
-    height: "70%",
-    marginTop: 50,
+    width: 150,
+    height: 150,
     justifyContent: "center",
     backgroundColor: Colors.surface
   },
@@ -361,5 +556,20 @@ const styles = StyleSheet.create({
     fontSize: 14,
     color: "#FFF",
     alignSelf: "center"
+  },
+  loginFacebook: {
+    width: screenWidth / 3,
+    height: screenWidth / 8,
+    backgroundColor: Colors.colorFacebook,
+    alignItems: "center",
+    borderRadius: 3,
+    flexDirection: "row",
+    padding: 10,
+    marginTop: "1.2%",
+    marginRight: "1%"
+  },
+  loginGmail: {
+    height: screenWidth / 7,
+    width: screenWidth / 2.5
   }
 });
