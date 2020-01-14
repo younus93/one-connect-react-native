@@ -23,7 +23,12 @@ import { Input, Button as RNButton } from "react-native-elements";
 import AsyncStorage from "@react-native-community/async-storage";
 import Icon from "react-native-vector-icons/Entypo";
 // import GradientButton from 'react-native-gradient-buttons';
-import { LoginButton, AccessToken } from "react-native-fbsdk";
+import {
+  LoginButton,
+  AccessToken,
+  GraphRequest,
+  GraphRequestManager
+} from "react-native-fbsdk";
 import {
   GoogleSignin,
   GoogleSigninButton,
@@ -50,6 +55,8 @@ const isCloseToBottom = ({ layoutMeasurement, contentOffset, contentSize }) => {
     contentSize.height - paddingToBottom
   );
 };
+
+const infoRequest = new GraphRequest("/me", null, this._responseInfoCallback);
 
 const { width, height } = Dimensions.get("window");
 
@@ -275,6 +282,15 @@ export default class LoginScreen extends Component<Props> {
     await Clipboard.setString(this.state.textInputText);
     //  console.warn(this.state.textInputText);
   };
+
+  //Create response callback.
+  _responseInfoCallback(error: ?Object, result: ?Object) {
+    if (error) {
+      console.log("Error fetching data: " + error.toString());
+    } else {
+      console.log("Success fetching data: " + result.toString());
+    }
+  }
 
   render() {
     console.log("login render");
@@ -593,6 +609,9 @@ export default class LoginScreen extends Component<Props> {
                         } else {
                           AccessToken.getCurrentAccessToken().then(data => {
                             console.log(data.accessToken.toString());
+                            new GraphRequestManager()
+                              .addRequest(infoRequest)
+                              .start();
                           });
                         }
                       }}
