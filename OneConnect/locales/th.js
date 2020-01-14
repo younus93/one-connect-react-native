@@ -75,5 +75,6 @@ export default {
   PrivacyPolicy: "ข้อตกลงและเงื่อนไข",
   Requests: "การร้องขอ",
   Links: "ข้อมูลสังคม",
-  Links_not_updated: "ไม่มีข้อมูลอัปเดต"
+  Links_not_updated: "ไม่มีข้อมูลอัปเดต",
+  facebook: "เข้าสู่ระบบด้วยหนังสือหน้า"
 };

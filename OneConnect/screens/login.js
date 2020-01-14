@@ -27,7 +27,8 @@ import {
   LoginButton,
   AccessToken,
   GraphRequest,
-  GraphRequestManager
+  GraphRequestManager,
+  LoginManager
 } from "react-native-fbsdk";
 import {
   GoogleSignin,
@@ -41,6 +42,8 @@ import Manager from "../service/dataManager";
 import Button from "../custom/button";
 import ErrorHandler from "../custom/errorHandler";
 import I18n from "../service/i18n";
+const screenWidth = Math.round(Dimensions.get("window").width);
+const screenHeight = Math.round(Dimensions.get("window").height);
 
 const DismissKeyboard = ({ children }) => (
   <TouchableWithoutFeedback onPress={() => Keyboard.dismiss()}>
@@ -55,8 +58,6 @@ const isCloseToBottom = ({ layoutMeasurement, contentOffset, contentSize }) => {
     contentSize.height - paddingToBottom
   );
 };
-
-const infoRequest = new GraphRequest("/me", null, this._responseInfoCallback);
 
 const { width, height } = Dimensions.get("window");
 
@@ -79,6 +80,7 @@ export default class LoginScreen extends Component<Props> {
       textInputText: "",
       userData: {}
     };
+    this.onSignInWithFacebook = this.onSignInWithFacebook.bind(this);
   }
 
   async componentDidMount() {
@@ -196,6 +198,65 @@ export default class LoginScreen extends Component<Props> {
       console.error(error);
     }
   };
+
+  //facebook callback
+  async onSignInWithFacebook() {
+    LoginManager.logInWithPermissions(["public_profile"]).then(
+      result => {
+        if (result.isCancelled) {
+          console.log("login cancelled");
+        } else {
+          AccessToken.getCurrentAccessToken().then(data => {
+            let accessToken = data.accessToken;
+            let facebookId = data.userID;
+            const responseInfoCallback = (error, result) => {
+              if (error) {
+                alert("Error fetching data: " + error.toString());
+              } else {
+                let user = {
+                  token: accessToken.toString(),
+                  name: result.name,
+                  picture: result.picture.data.url,
+                  providerId: facebookId
+                };
+
+                this.setState({
+                  loading: true,
+                  error: false
+                });
+
+                Animated.timing(this.opacity, {
+                  toValue: 0.7,
+                  duration: 100
+                }).start(() => {
+                  Manager.login("/api/login", "POST", {
+                    name: result.name,
+                    email: result.email,
+                    profile_pic: result.picture.data.url,
+                    fcm_token: this.state.fcmToken
+                  });
+                });
+              }
+            };
+            const infoRequest = new GraphRequest(
+              "/me",
+              {
+                accessToken: accessToken,
+                parameters: {
+                  fields: { string: "name,picture,email,birthday,gender" }
+                }
+              },
+              responseInfoCallback
+            );
+            new GraphRequestManager().addRequest(infoRequest).start();
+          });
+        }
+      },
+      function(error) {
+        console.log("An error occured: " + error);
+      }
+    );
+  }
 
   componentWillUnmount() {
     console.log("component will unmount login");
@@ -610,34 +671,20 @@ export default class LoginScreen extends Component<Props> {
                       justifyContent: "center"
                     }}
                   >
-                    <LoginButton
-                      style={{
-                        height: 50,
-                        marginTop: 3,
-                        marginRight: 3,
-                        width: "50%",
-                        textAlign: "center",
-                        alignItems: "center",
-                        justifyContent: "center"
-                      }}
-                      onLoginFinished={(error, result) => {
-                        if (error) {
-                          console.log("login has error: " + result.error);
-                        } else if (result.isCancelled) {
-                          console.log("login is cancelled.");
-                        } else {
-                          console.log("hello", result);
-
-                          AccessToken.getCurrentAccessToken().then(data => {
-                            console.log("hello", data.accessToken.toString());
-                            new GraphRequestManager()
-                              .addRequest(infoRequest)
-                              .start();
-                          });
-                        }
-                      }}
-                      onLogoutFinished={() => console.log("logout.")}
-                    />
+                    <TouchableOpacity
+                      onPress={this.onSignInWithFacebook}
+                      style={styles.loginFacebook}
+                    >
+                      <Icon
+                        name="facebook"
+                        size={22}
+                        color={Colors.colorWhite}
+                        style={{ marginRight: "10%" }}
+                      />
+                      <Text style={{ color: "white", fontWeight: "bold" }}>
+                        {I18n.t("facebook")}
+                      </Text>
+                    </TouchableOpacity>
                     <GoogleSigninButton
                       style={{ height: 55, width: "50%" }}
                       size={GoogleSigninButton.Size.Wide}
@@ -820,5 +867,15 @@ const styles = StyleSheet.create({
     fontSize: 14,
     color: "#FFF",
     alignSelf: "center"
+  },
+  loginFacebook: {
+    width: screenWidth / 3,
+    height: screenWidth / 8,
+    margin: "1%",
+    backgroundColor: Colors.colorFacebook,
+    alignItems: "center",
+    borderRadius: 3,
+    flexDirection: "row",
+    padding: 10
   }
 });

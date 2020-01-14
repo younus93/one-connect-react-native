@@ -76,5 +76,6 @@ export default {
   PrivacyPolicy: "Terms & Conditions",
   Requests: "Requests",
   Links: "Social Info",
-  Links_not_updated: "No Information Updated"
+  Links_not_updated: "No Information Updated",
+  facebook: "Login with Facebook"
 };
