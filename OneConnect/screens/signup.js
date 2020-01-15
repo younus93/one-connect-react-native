@@ -320,7 +320,7 @@ export default class LoginScreen extends Component<Props> {
 
   render() {
     console.log("signup render");
-    if (this.state.fcmToken != "") {
+    if (this.state.fcmToken == "") {
       //push notification
       firebase
         .messaging()
