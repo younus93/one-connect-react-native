@@ -17,6 +17,19 @@ import Manager from "../service/dataManager";
 import I18n, { SaveLocale } from "../service/i18n";
 import Privacy from "../screens/privacySetting";
 import Terms from "../screens/termsCondition";
+import {
+  LoginButton,
+  AccessToken,
+  GraphRequest,
+  GraphRequestManager,
+  LoginManager
+} from "react-native-fbsdk";
+import {
+  GoogleSignin,
+  GoogleSigninButton,
+  statusCodes
+} from "react-native-google-signin";
+
 export default class CustomDrawerContentComponent extends React.Component {
   constructor(props) {
     super(props);
@@ -81,10 +94,30 @@ export default class CustomDrawerContentComponent extends React.Component {
     this.props.navigation.dispatch(navigateAction);
   };
 
-  _signOut = () => {
+  signOut = async () => {
+    try {
+      await GoogleSignin.revokeAccess();
+      await GoogleSignin.signOut();
+      this.setState({ user: null }); // Remember to remove the user from your app's state as well
+    } catch (error) {
+      console.error(error);
+    }
+  };
+
+  _signOut = async () => {
     AsyncStorage.removeItem("@appKey")
       .then(response => {
         console.log("token successfully removed");
+
+        //gmail log out
+        this.signOut;
+
+        //facebook log out
+        try {
+          LoginManager.logOut();
+        } catch (error) {
+          console.log(error);
+        }
         this.props.navigation.navigate("Login");
         //TODO: log out
       })

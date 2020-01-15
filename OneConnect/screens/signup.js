@@ -67,7 +67,8 @@ export default class LoginScreen extends Component<Props> {
       loading: false,
       error: false,
       errorText: null,
-      userData: {}
+      userData: {},
+      fcmToken: ""
     };
     this.onSignInWithFacebook = this.onSignInWithFacebook.bind(this);
   }
@@ -92,21 +93,6 @@ export default class LoginScreen extends Component<Props> {
       iosClientId:
         "614217954746-btvof12roua8h3qagdf90cen8sb67ttc.apps.googleusercontent.com" // [iOS] optional, if you want to specify the client ID of type iOS (otherwise, it is taken from GoogleService-Info.plist)
     });
-
-    //push notification
-    firebase
-      .messaging()
-      .getToken()
-      .then(fcmToken => {
-        if (fcmToken) {
-          // user has a device token
-          console.log("token", fcmToken);
-          this.setState({ textInputText: fcmToken });
-        } else {
-          // user doesn't have a device token yet
-          console.log("token", "Error to get token");
-        }
-      });
   }
 
   componentWillUnmount() {
@@ -134,7 +120,6 @@ export default class LoginScreen extends Component<Props> {
       let userData = {
         name: userInfo.user.name,
         email: userInfo.user.email,
-        profile_pic: userInfo.user.photo,
         fcm_token: this.state.fcmToken
       };
 
@@ -147,11 +132,11 @@ export default class LoginScreen extends Component<Props> {
         toValue: 0.7,
         duration: 100
       }).start(() => {
+        var tokenVal = this.state.fcmToken;
         Manager.socialSignup("/api/social", "POST", {
-          f_name: userInfo.user.name,
-          l_name: "",
+          name: userInfo.user.name,
           email: userInfo.user.email,
-          fcm_token: this.state.fcmToken
+          fcm_token: tokenVal.toString()
         });
       });
     } catch (error) {
@@ -183,32 +168,30 @@ export default class LoginScreen extends Component<Props> {
           AccessToken.getCurrentAccessToken().then(data => {
             let accessToken = data.accessToken;
             let facebookId = data.userID;
+            console.log(data);
             const responseInfoCallback = (error, result) => {
               if (error) {
-                alert("Error fetching data: " + error.toString());
+                console.log(error);
               } else {
-                let user = {
-                  token: accessToken.toString(),
-                  name: result.name,
-                  picture: result.picture.data.url,
-                  providerId: facebookId
-                };
-
                 this.setState({
                   loading: true,
                   error: false
                 });
 
+                console.log("socialInfo : ", result);
+
                 Animated.timing(this.opacity, {
                   toValue: 0.7,
                   duration: 100
                 }).start(() => {
-                  Manager.socialSignup("/api/social", "POST", {
-                    f_name: result.first_name,
-                    l_name: result.last_name,
+                  var tokenVal = this.state.fcmToken;
+                  let user = {
+                    name: result.name,
                     email: result.email,
-                    fcm_token: this.state.fcmToken
-                  });
+                    fcm_token: tokenVal.toString()
+                  };
+                  console.log("sociallogin : ", user);
+                  Manager.socialSignup("/api/social", "POST", user);
                 });
               }
             };
@@ -217,9 +200,7 @@ export default class LoginScreen extends Component<Props> {
               {
                 accessToken: accessToken,
                 parameters: {
-                  parameters: {
-                    string: "first_name,last_name,email"
-                  }
+                  fields: { string: "name,email" }
                 }
               },
               responseInfoCallback
@@ -269,7 +250,36 @@ export default class LoginScreen extends Component<Props> {
     });
   };
 
+  socialSuccess = data => {
+    console.log("social login successful : ", data);
+    Manager.setToken(
+      data.data.token,
+      "",
+      data.data.user.basic.id,
+      data.data.user.basic.f_name + data.data.user.basic.l_name
+    );
+    // AsyncStorage.setItem('user',data.data.user);
+    Animated.timing(this.opacity, {
+      toValue: 0,
+      duration: 10
+    }).start(() => {
+      this.setState({
+        loading: false,
+        loggedIn: true
+      });
+      this.props.navigation.navigate("Drawer");
+    });
+  };
+
   _signupError = error => {
+    this.setState({
+      loading: false,
+      error: true,
+      errorText: error.message
+    });
+  };
+
+  socialError = error => {
     this.setState({
       loading: false,
       error: true,
@@ -293,11 +303,12 @@ export default class LoginScreen extends Component<Props> {
         toValue: 0.7,
         duration: 100
       }).start(() => {
+        var tokenVal = this.state.fcmToken;
         Manager.signup("/api/sign-up", "POST", {
           f_name: this.firstName,
           l_name: this.lastName,
           email: this.email,
-          fcm_token: this.state.fcmToken
+          fcm_token: tokenVal.toString()
         });
       });
     } else {

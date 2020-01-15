@@ -115,7 +115,6 @@ export default class LoginScreen extends Component<Props> {
       let userData = {
         name: userInfo.user.name,
         email: userInfo.user.email,
-        profile_pic: userInfo.user.photo,
         fcm_token: this.state.fcmToken
       };
 
@@ -127,11 +126,11 @@ export default class LoginScreen extends Component<Props> {
         toValue: 0.7,
         duration: 100
       }).start(() => {
+        var tokenVal = this.state.fcmToken;
         Manager.socialSignup("/api/social", "POST", {
-          f_name: userInfo.user.name,
-          l_name: "",
+          name: userInfo.user.name,
           email: userInfo.user.email,
-          fcm_token: this.state.fcmToken
+          fcm_token: tokenVal.toString()
         });
       });
     } catch (error) {
@@ -163,16 +162,11 @@ export default class LoginScreen extends Component<Props> {
           AccessToken.getCurrentAccessToken().then(data => {
             let accessToken = data.accessToken;
             let facebookId = data.userID;
+            console.log(data);
             const responseInfoCallback = (error, result) => {
               if (error) {
                 console.log(error);
               } else {
-                let user = {
-                  token: accessToken.toString(),
-                  name: result.name,
-                  providerId: facebookId
-                };
-
                 this.setState({
                   loading: true,
                   error: false
@@ -184,12 +178,14 @@ export default class LoginScreen extends Component<Props> {
                   toValue: 0.7,
                   duration: 100
                 }).start(() => {
-                  Manager.socialSignup("/api/social", "POST", {
-                    f_name: result.first_name,
-                    l_name: result.last_name,
+                  var tokenVal = this.state.fcmToken;
+                  let user = {
+                    name: result.name,
                     email: result.email,
-                    fcm_token: this.state.fcmToken
-                  });
+                    fcm_token: tokenVal.toString()
+                  };
+                  console.log("sociallogin : ", user);
+                  Manager.socialSignup("/api/social", "POST", user);
                 });
               }
             };
@@ -198,7 +194,7 @@ export default class LoginScreen extends Component<Props> {
               {
                 accessToken: accessToken,
                 parameters: {
-                  string: "first_name,last_name,email"
+                  fields: { string: "name,email" }
                 }
               },
               responseInfoCallback
@@ -250,7 +246,36 @@ export default class LoginScreen extends Component<Props> {
     });
   };
 
+  socialSuccess = data => {
+    console.log("social login successful : ", data);
+    Manager.setToken(
+      data.data.token,
+      "",
+      data.data.user.basic.id,
+      data.data.user.basic.f_name + data.data.user.basic.l_name
+    );
+    // AsyncStorage.setItem('user',data.data.user);
+    Animated.timing(this.opacity, {
+      toValue: 0,
+      duration: 10
+    }).start(() => {
+      this.setState({
+        loading: false,
+        loggedIn: true
+      });
+      this.props.navigation.navigate("Drawer");
+    });
+  };
+
   _loginError = error => {
+    this.setState({
+      loading: false,
+      error: true,
+      errorText: error.message
+    });
+  };
+
+  socialError = error => {
     this.setState({
       loading: false,
       error: true,
@@ -278,10 +303,11 @@ export default class LoginScreen extends Component<Props> {
         toValue: 0.7,
         duration: 100
       }).start(() => {
+        var tokenVal = this.state.fcmToken;
         Manager.login("/api/login", "POST", {
           email: this.userName,
           password: this.password,
-          fcm_token: this.state.fcmToken
+          fcm_token: tokenVal.toString()
         });
       });
     } else {
