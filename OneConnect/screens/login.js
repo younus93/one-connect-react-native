@@ -78,7 +78,8 @@ export default class LoginScreen extends Component<Props> {
       errorText: null,
       clipboardText: "",
       textInputText: "",
-      userData: {}
+      userData: {},
+      fcmToken: ""
     };
     this.onSignInWithFacebook = this.onSignInWithFacebook.bind(this);
   }
@@ -87,6 +88,8 @@ export default class LoginScreen extends Component<Props> {
     console.log("component did mount login");
     Manager.addListener("LOGIN_S", this._loginSuccess);
     Manager.addListener("LOGIN_E", this._loginError);
+    Manager.addListener("SOCIAL_S", this.socialSuccess);
+    Manager.addListener("SOCIAL_E", this.socialError);
 
     //google configure
     GoogleSignin.configure({
@@ -101,21 +104,6 @@ export default class LoginScreen extends Component<Props> {
       iosClientId:
         "614217954746-btvof12roua8h3qagdf90cen8sb67ttc.apps.googleusercontent.com" // [iOS] optional, if you want to specify the client ID of type iOS (otherwise, it is taken from GoogleService-Info.plist)
     });
-
-    //push notification
-    firebase
-      .messaging()
-      .getToken()
-      .then(fcmToken => {
-        if (fcmToken) {
-          // user has a device token
-          console.log("token", fcmToken);
-          this.setState({ textInputText: fcmToken });
-        } else {
-          // user doesn't have a device token yet
-          console.log("token", "Error to get token");
-        }
-      });
   }
 
   //google sign in
@@ -135,15 +123,14 @@ export default class LoginScreen extends Component<Props> {
         loading: true,
         error: false
       });
-
       Animated.timing(this.opacity, {
         toValue: 0.7,
         duration: 100
       }).start(() => {
-        Manager.login("/api/login", "POST", {
-          name: userInfo.user.name,
+        Manager.socialSignup("/api/social", "POST", {
+          f_name: userInfo.user.name,
+          l_name: "",
           email: userInfo.user.email,
-          profile_pic: userInfo.user.photo,
           fcm_token: this.state.fcmToken
         });
       });
@@ -178,12 +165,11 @@ export default class LoginScreen extends Component<Props> {
             let facebookId = data.userID;
             const responseInfoCallback = (error, result) => {
               if (error) {
-                alert("Error fetching data: " + error.toString());
+                console.log(error);
               } else {
                 let user = {
                   token: accessToken.toString(),
                   name: result.name,
-                  picture: result.picture.data.url,
                   providerId: facebookId
                 };
 
@@ -192,14 +178,16 @@ export default class LoginScreen extends Component<Props> {
                   error: false
                 });
 
+                console.log("socialInfo : ", result);
+
                 Animated.timing(this.opacity, {
                   toValue: 0.7,
                   duration: 100
                 }).start(() => {
-                  Manager.login("/api/login", "POST", {
-                    name: result.name,
+                  Manager.socialSignup("/api/social", "POST", {
+                    f_name: result.first_name,
+                    l_name: result.last_name,
                     email: result.email,
-                    profile_pic: result.picture.data.url,
                     fcm_token: this.state.fcmToken
                   });
                 });
@@ -210,7 +198,7 @@ export default class LoginScreen extends Component<Props> {
               {
                 accessToken: accessToken,
                 parameters: {
-                  fields: { string: "name,picture,email,birthday,gender" }
+                  string: "first_name,last_name,email"
                 }
               },
               responseInfoCallback
@@ -229,6 +217,8 @@ export default class LoginScreen extends Component<Props> {
     console.log("component will unmount login");
     Manager.removeListener("LOGIN_S", this._loginSuccess);
     Manager.removeListener("LOGIN_E", this._loginError);
+    Manager.removeListener("SOCIAL_S", this.socialSuccess);
+    Manager.removeListener("SOCIAL_E", this.socialError);
   }
 
   _toggleError = (state = null) => {
@@ -290,7 +280,8 @@ export default class LoginScreen extends Component<Props> {
       }).start(() => {
         Manager.login("/api/login", "POST", {
           email: this.userName,
-          password: this.password
+          password: this.password,
+          fcm_token: this.state.fcmToken
         });
       });
     } else {
@@ -332,6 +323,23 @@ export default class LoginScreen extends Component<Props> {
 
   render() {
     console.log("login render");
+    if (this.state.fcmToken != "") {
+      //push notification
+      firebase
+        .messaging()
+        .getToken()
+        .then(fcmToken => {
+          if (fcmToken) {
+            // user has a device token
+            console.log("token", fcmToken);
+            this.setState({ textInputText: fcmToken, fcmToken: fcmToken });
+          } else {
+            // user doesn't have a device token yet
+            console.log("token", "Error to get token");
+          }
+        });
+    }
+
     return (
       <ScrollView style={{ flex: 1 }}>
         <ErrorHandler

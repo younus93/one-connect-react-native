@@ -76,6 +76,8 @@ export default class LoginScreen extends Component<Props> {
     console.log("component did mount signup");
     Manager.addListener("SIGNUP_S", this._signupSuccess);
     Manager.addListener("SIGNUP_E", this._signupError);
+    Manager.addListener("SOCIAL_S", this.socialSuccess);
+    Manager.addListener("SOCIAL_E", this.socialError);
 
     //google configure
     GoogleSignin.configure({
@@ -111,6 +113,8 @@ export default class LoginScreen extends Component<Props> {
     console.log("component will unmount signup");
     Manager.removeListener("SIGNUP_S", this._signupSuccess);
     Manager.removeListener("SIGNUP_E", this._signupError);
+    Manager.removeListener("SOCIAL_S", this.socialSuccess);
+    Manager.removeListener("SOCIAL_E", this.socialError);
   }
 
   _toggleError = (state = null) => {
@@ -143,10 +147,10 @@ export default class LoginScreen extends Component<Props> {
         toValue: 0.7,
         duration: 100
       }).start(() => {
-        Manager.login("/api/login", "POST", {
-          name: userInfo.user.name,
+        Manager.socialSignup("/api/social", "POST", {
+          f_name: userInfo.user.name,
+          l_name: "",
           email: userInfo.user.email,
-          profile_pic: userInfo.user.photo,
           fcm_token: this.state.fcmToken
         });
       });
@@ -199,10 +203,10 @@ export default class LoginScreen extends Component<Props> {
                   toValue: 0.7,
                   duration: 100
                 }).start(() => {
-                  Manager.login("/api/login", "POST", {
-                    name: result.name,
+                  Manager.socialSignup("/api/social", "POST", {
+                    f_name: result.first_name,
+                    l_name: result.last_name,
                     email: result.email,
-                    profile_pic: result.picture.data.url,
                     fcm_token: this.state.fcmToken
                   });
                 });
@@ -213,7 +217,9 @@ export default class LoginScreen extends Component<Props> {
               {
                 accessToken: accessToken,
                 parameters: {
-                  fields: { string: "name,picture,email,birthday,gender" }
+                  parameters: {
+                    string: "first_name,last_name,email"
+                  }
                 }
               },
               responseInfoCallback
@@ -290,7 +296,8 @@ export default class LoginScreen extends Component<Props> {
         Manager.signup("/api/sign-up", "POST", {
           f_name: this.firstName,
           l_name: this.lastName,
-          email: this.email
+          email: this.email,
+          fcm_token: this.state.fcmToken
         });
       });
     } else {
@@ -313,6 +320,22 @@ export default class LoginScreen extends Component<Props> {
 
   render() {
     console.log("signup render");
+    if (this.state.fcmToken != "") {
+      //push notification
+      firebase
+        .messaging()
+        .getToken()
+        .then(fcmToken => {
+          if (fcmToken) {
+            // user has a device token
+            console.log("token", fcmToken);
+            this.setState({ textInputText: fcmToken, fcmToken: fcmToken });
+          } else {
+            // user doesn't have a device token yet
+            console.log("token", "Error to get token");
+          }
+        });
+    }
     return (
       <ScrollView style={{ flex: 1 }}>
         <ErrorHandler
