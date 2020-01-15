@@ -239,7 +239,6 @@ export default class UserList extends React.Component {
             return (
               <View
                 style={{
-                  backgroundColor: Colors.surface,
                   borderRadius: 20,
                   marginLeft: 10,
                   marginTop: 10,
@@ -252,24 +251,46 @@ export default class UserList extends React.Component {
               >
                 <View
                   style={{
-                    flex: 1,
                     flexDirection: "row",
                     justifyContent: "flex-start"
                   }}
                 >
                   <Image
                     style={{ width: 35, height: 35, borderRadius: 17 }}
-                    source={{ uri: item.profile_pic }}
+                    source={require("../resources/dummy_profile_2.jpg")}
                     resizeMode="cover"
                     onError={error => console.log(error)}
                   />
-                  <Text style={[styles.name, { flex: 1 }]}>
+                  <Text
+                    style={{
+                      flex: 1,
+                      justifyContent: "center",
+                      alignItems: "center",
+                      fontSize: 20,
+                      fontWeight: "600",
+                      paddingLeft: 10,
+                      flexDirection: "row",
+                      alignSelf: "center"
+                    }}
+                  >
                     {item.f_name + " " + item.l_name}
                   </Text>
 
-                  <Text>{"32 min"}</Text>
+                  <Text
+                    style={{
+                      fontSize: 10,
+                      alignSelf: "center",
+                      paddingRight: 10
+                    }}
+                  >
+                    {"32 min"}
+                  </Text>
                 </View>
-                <Text>{item.extra_info}</Text>
+                <Text style={{ flex: 1, margin: "1%" }}>
+                  {
+                    "Lorem Ipsum is simply dummy text of the printing and typesetting industry."
+                  }
+                </Text>
               </View>
             );
           })}
@@ -311,9 +332,7 @@ export default class UserList extends React.Component {
                 behavior={Platform.OS === "ios" ? "padding" : null}
                 style={styles.container}
               >
-                <View style={styles.container}>
-                  {this.renderNotification(this.state.birthdays)}
-                </View>
+                <View>{this.renderNotification(this.state.birthdays)}</View>
               </KeyboardAvoidingView>
             </DismissKeyboard>
           </ScrollView>
@@ -362,14 +381,12 @@ const styles = StyleSheet.create({
     opacity: 0.4
   },
   sectionBody: {
-    paddingVertical: 20,
-    backgroundColor: Colors.surface
+    paddingVertical: 20
   },
   friendReqSectionBody: {
     paddingVertical: 0
   },
   friendReqBody: {
-    backgroundColor: Colors.surface,
     paddingBottom: 10
   },
   item: {
@@ -396,8 +413,7 @@ const styles = StyleSheet.create({
     flexDirection: "row",
     // justifyContent: 'flex-start',
     alignItems: "center",
-    height: 46,
-    backgroundColor: Colors.surface
+    height: 46
   },
   search: {
     flex: 1,
@@ -445,7 +461,6 @@ const styles = StyleSheet.create({
   separator: {
     width: "100%",
     height: StyleSheet.hairlineWidth,
-    backgroundColor: Colors.background,
     marginTop: 5
   },
   acceptButton: {
