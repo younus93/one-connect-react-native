@@ -15,6 +15,14 @@
       },
       "oauth_client": [
         {
+          "client_id": "614217954746-ejhtqkr8ianjd14f2da4um0okmbogipa.apps.googleusercontent.com",
+          "client_type": 1,
+          "android_info": {
+            "package_name": "com.beebuck",
+            "certificate_hash": "84363d93520b3ee25c2a3575ef77c0844cb101cd"
+          }
+        },
+        {
           "client_id": "614217954746-phtfh95s0636t8c6baundqtvu124h9e5.apps.googleusercontent.com",
           "client_type": 1,
           "android_info": {

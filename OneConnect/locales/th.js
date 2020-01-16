@@ -78,6 +78,9 @@ export default {
   Requests: "การร้องขอ",
   Links: "ข้อมูลสังคม",
   Links_not_updated: "ไม่มีข้อมูลอัปเดต",
-  facebook: "เข้าสู่ระบบด้วยหนังสือหน้า",
-  You: "คุณ"
+  facebook_login: "เข้าสู่ระบบด้วยหนังสือหน้า",
+  You: "คุณ",
+  google_login: "เข้าสู่ระบบด้วย Gmail",
+  facebook_signup: "สมัครสมาชิกด้วย Facebook",
+  google_signup: "ลงทะเบียนด้วย Gmail"
 };

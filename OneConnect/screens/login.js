@@ -22,6 +22,7 @@ import {
 import { Input, Button as RNButton } from "react-native-elements";
 import AsyncStorage from "@react-native-community/async-storage";
 import Icon from "react-native-vector-icons/Entypo";
+import GmailIcon from "react-native-vector-icons/Ionicons";
 // import GradientButton from 'react-native-gradient-buttons';
 import {
   LoginButton,
@@ -96,7 +97,8 @@ export default class LoginScreen extends Component<Props> {
       scopes: ["https://www.googleapis.com/auth/drive.readonly"], // what API you want to access on behalf of the user, default is email and profile
       webClientId:
         "614217954746-btvof12roua8h3qagdf90cen8sb67ttc.apps.googleusercontent.com", // client ID of type WEB for your server (needed to verify user ID and offline access)
-      offlineAccess: true, // if you want to access Google API on behalf of the user FROM YOUR SERVER
+      offlineAccess: false,
+      forceConsentPrompt: true,
       hostedDomain: "", // specifies a hosted domain restriction
       loginHint: "", // [iOS] The user's ID, or email address, to be prefilled in the authentication UI if possible. [See docs here](https://developers.google.com/identity/sign-in/ios/api/interface_g_i_d_sign_in.html#a0a68c7504c31ab0b728432565f6e33fd)
       forceConsentPrompt: true, // [Android] if you want to show the authorization prompt at each login.
@@ -112,6 +114,7 @@ export default class LoginScreen extends Component<Props> {
       await GoogleSignin.hasPlayServices();
       const userInfo = await GoogleSignin.signIn();
       this.setState({ userData: userInfo });
+      //alert(userInfo.toString());
       let userData = {
         name: userInfo.user.name,
         email: userInfo.user.email,
@@ -134,6 +137,8 @@ export default class LoginScreen extends Component<Props> {
         });
       });
     } catch (error) {
+      //alert(error.toString());
+
       if (!this.state.error) {
         console.log("empty");
         let e = new Error("Invalid credencials");
@@ -248,6 +253,7 @@ export default class LoginScreen extends Component<Props> {
 
   socialSuccess = data => {
     console.log("social login successful : ", data);
+    //alert("success");
     Manager.setToken(
       data.data.token,
       "",
@@ -670,19 +676,27 @@ export default class LoginScreen extends Component<Props> {
                         name="facebook"
                         size={22}
                         color={Colors.colorWhite}
-                        style={{ marginRight: "10%" }}
+                        style={{ marginLeft: "18%", marginRight: "5%" }}
                       />
                       <Text style={{ color: "white", fontWeight: "bold" }}>
-                        {I18n.t("facebook")}
+                        {I18n.t("facebook_login")}
                       </Text>
                     </TouchableOpacity>
-                    <GoogleSigninButton
-                      style={styles.loginGmail}
-                      size={GoogleSigninButton.Size.Wide}
-                      color={GoogleSigninButton.Color.Dark}
+
+                    <TouchableOpacity
                       onPress={this.signIn}
-                      disabled={this.state.isSigninInProgress}
-                    />
+                      style={styles.loginGmail}
+                    >
+                      <GmailIcon
+                        name="logo-google"
+                        size={22}
+                        color={Colors.colorWhite}
+                        style={{ marginLeft: "18%", marginRight: "8%" }}
+                      />
+                      <Text style={{ color: "white", fontWeight: "bold" }}>
+                        {I18n.t("google_login")}
+                      </Text>
+                    </TouchableOpacity>
                   </View>
                 </View>
                 <View style={{ marginTop: 3, marginLeft: 10, marginRight: 10 }}>
@@ -696,22 +710,6 @@ export default class LoginScreen extends Component<Props> {
                       By logging in you agree to the EULA and Privacy Policy.
                     </Text>
                   </Button>
-                  <TouchableOpacity
-                    onPress={this.set_Text_Into_Clipboard}
-                    activeOpacity={0.4}
-                    style={{
-                      backgroundColor: Colors.yellowDark,
-                      borderRadius: 20,
-                      width: "50%",
-                      padding: 10,
-                      justifyContent: "center",
-                      alignItems: "center"
-                    }}
-                  >
-                    <Text style={{ textAlign: "center", color: "white" }}>
-                      {"COPY FCM TOKEN"}
-                    </Text>
-                  </TouchableOpacity>
                 </View>
               </View>
               {this.state.loading ? (
@@ -864,11 +862,17 @@ const styles = StyleSheet.create({
     borderRadius: 3,
     flexDirection: "row",
     padding: 10,
-    marginTop: "1.2%",
-    marginRight: "1%"
+    justifyContent: "center",
+    marginRight: "2%"
   },
   loginGmail: {
-    height: screenWidth / 7,
-    width: screenWidth / 2.5
+    height: screenWidth / 8,
+    width: screenWidth / 3,
+    backgroundColor: Colors.colorGmail,
+    alignItems: "center",
+    borderRadius: 3,
+    flexDirection: "row",
+    padding: 10,
+    justifyContent: "center"
   }
 });

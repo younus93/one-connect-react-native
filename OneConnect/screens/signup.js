@@ -20,6 +20,7 @@ import { Colors } from "../constants";
 import Manager from "../service/dataManager";
 import ErrorHandler from "../custom/errorHandler";
 import Icon from "react-native-vector-icons/Entypo";
+import GmailIcon from "react-native-vector-icons/Ionicons";
 import {
   LoginButton,
   AccessToken,
@@ -432,19 +433,26 @@ export default class LoginScreen extends Component<Props> {
                       name="facebook"
                       size={22}
                       color={Colors.colorWhite}
-                      style={{ marginRight: "10%" }}
+                      style={{ marginRight: "5%" }}
                     />
                     <Text style={{ color: "white", fontWeight: "bold" }}>
-                      {I18n.t("facebook")}
+                      {I18n.t("facebook_signup")}
                     </Text>
                   </TouchableOpacity>
-                  <GoogleSigninButton
-                    style={styles.loginGmail}
-                    size={GoogleSigninButton.Size.Wide}
-                    color={GoogleSigninButton.Color.Dark}
+                  <TouchableOpacity
                     onPress={this.signIn}
-                    disabled={this.state.isSigninInProgress}
-                  />
+                    style={styles.loginGmail}
+                  >
+                    <GmailIcon
+                      name="logo-google"
+                      size={22}
+                      color={Colors.colorWhite}
+                      style={{ marginLeft: "18%", marginRight: "8%" }}
+                    />
+                    <Text style={{ color: "white", fontWeight: "bold" }}>
+                      {I18n.t("google_signup")}
+                    </Text>
+                  </TouchableOpacity>
                 </View>
               </View>
             </View>
@@ -599,11 +607,16 @@ const styles = StyleSheet.create({
     borderRadius: 3,
     flexDirection: "row",
     padding: 10,
-    marginTop: "1.2%",
-    marginRight: "1%"
+    marginRight: "2%"
   },
   loginGmail: {
-    height: screenWidth / 7,
-    width: screenWidth / 2.5
+    height: screenWidth / 8,
+    width: screenWidth / 3,
+    backgroundColor: Colors.colorGmail,
+    alignItems: "center",
+    borderRadius: 3,
+    flexDirection: "row",
+    padding: 10,
+    justifyContent: "center"
   }
 });

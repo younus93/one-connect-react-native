@@ -78,6 +78,9 @@ export default {
   Requests: "Requests",
   Links: "Social Info",
   Links_not_updated: "No Information Updated",
-  facebook: "Login with Facebook",
-  You: "You "
+  facebook_login: "Login with Facebook",
+  You: "You ",
+  google_login: "Login with Gmail",
+  facebook_signup: "Signup with Facebook",
+  google_signup: "Signup with Gmail"
 };

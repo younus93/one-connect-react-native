@@ -332,7 +332,7 @@ export default class UserList extends React.Component {
                 behavior={Platform.OS === "ios" ? "padding" : null}
                 style={styles.container}
               >
-                <View>{this.renderNotification(this.state.birthdays)}</View>
+                <View>{this._renderUsers(this.state.birthdays)}</View>
               </KeyboardAvoidingView>
             </DismissKeyboard>
           </ScrollView>

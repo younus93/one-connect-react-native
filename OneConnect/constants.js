@@ -93,6 +93,7 @@ export const Colors = {
   colorWhite: "#fff",
   colorBlack: "#000",
   colorFacebook: "#3b5998",
+  colorGmail: "#D44638",
   colorTheme: "#f4b500",
   background: "#eff1f9",
   primary: "#f7df97",

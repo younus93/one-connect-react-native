@@ -728,7 +728,8 @@ export default class Profile extends React.Component {
                         paddingBottom: 10
                       }}
                     >
-                      {this.state.profile.links.length > 0 ? (
+                      {this.state.profile.links != null &&
+                      this.state.profile.links.length > 0 ? (
                         this.state.profile.links.map(item => {
                           return (
                             <View
