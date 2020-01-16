@@ -15,7 +15,9 @@
       android:usesCleartextTraffic="true"
       tools:ignore="GoogleAppIndexingWarning"
         tools:replace="android:appComponentFactory"
-        android:appComponentFactory="whateverString">
+        android:appComponentFactory="whateverString"
+        android:configChanges="keyboard|keyboardHidden|orientation|screenSize"
+        android:windowSoftInputMode="adjustResize">
       <meta-data android:name="com.facebook.sdk.ApplicationId" android:value="@string/facebook_app_id"/>
 
       <activity
@@ -26,6 +28,7 @@
         <intent-filter>
             <action android:name="android.intent.action.MAIN" />
             <category android:name="android.intent.category.LAUNCHER" />
+            <action android:name="android.intent.action.DOWNLOAD_COMPLETE"/> 
         </intent-filter>
       </activity>
       <activity android:name="com.facebook.react.devsupport.DevSettingsActivity" />

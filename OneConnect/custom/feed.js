@@ -9,7 +9,10 @@ import {
   Animated,
   Easing,
   TextInput,
-  Modal
+  Modal,
+  CameraRoll,
+  PermissionsAndroid,
+  Platform
 } from "react-native";
 import { Colors } from "../constants";
 import Icon from "react-native-vector-icons/FontAwesome5";
@@ -18,9 +21,30 @@ import Button from "../custom/button";
 import I18n from "../service/i18n";
 import FacePile from "react-native-face-pile";
 import ImageViewer from "react-native-image-zoom-viewer";
+import RNFetchBlob from "rn-fetch-blob";
 
 let faceData = [];
 let remainingFaces = 0;
+
+export async function request_storage_runtime_permission() {
+  try {
+    const granted = await PermissionsAndroid.request(
+      PermissionsAndroid.PERMISSIONS.WRITE_EXTERNAL_STORAGE,
+      {
+        title: "ReactNativeCode Storage Permission",
+        message:
+          "ReactNativeCode App needs access to your storage to download Photos."
+      }
+    );
+    if (granted === PermissionsAndroid.RESULTS.GRANTED) {
+      //Alert.alert("Storage Permission Granted.");
+    } else {
+      //Alert.alert("Storage Permission Not Granted");
+    }
+  } catch (err) {
+    console.warn(err);
+  }
+}
 
 export default class Feed extends React.Component {
   constructor(props) {
@@ -138,6 +162,43 @@ export default class Feed extends React.Component {
     // this.props.profileCallback()
   };
 
+  //image save option
+  async componentDidMount() {
+    await request_storage_runtime_permission();
+  }
+
+  //download image from server
+  downloadImage = () => {
+    var date = new Date();
+    var image_URL = this.state.pic;
+    var ext = this.getExtention(image_URL);
+    ext = "." + ext[0];
+    const { config, fs } = RNFetchBlob;
+    let PictureDir = fs.dirs.PictureDir;
+    let options = {
+      fileCache: true,
+      addAndroidDownloads: {
+        useDownloadManager: true,
+        notification: true,
+        path:
+          PictureDir +
+          "/image_" +
+          Math.floor(date.getTime() + date.getSeconds() / 2) +
+          ext,
+        description: "Image"
+      }
+    };
+    config(options)
+      .fetch("GET", image_URL)
+      .then(res => {
+        Alert.alert("Image has been Successfully Downloaded.");
+      });
+  };
+
+  getExtention = filename => {
+    return /[.]/.exec(filename) ? /[^.]+$/.exec(filename) : undefined;
+  };
+
   render() {
     console.log("pic", this.state.pic);
     const { data } = this.props;
@@ -147,12 +208,6 @@ export default class Feed extends React.Component {
       {
         // Simplest usage.
         url: this.state.pic,
-
-        // width: number
-        // height: number
-        // Optional, if you know the image size, you can set the optimization performance
-
-        // You can pass props to <Image />.
         props: {
           // headers: ...
         }
@@ -266,28 +321,40 @@ export default class Feed extends React.Component {
             <Modal visible={true} transparent={true}>
               <View style={{ width: "100%", height: "100%" }}>
                 <ImageViewer imageUrls={images} saveToLocalByLongPress={true} />
-                <TouchableWithoutFeedback
-                  onPress={() =>
-                    this.setState({
-                      isImageZoomable: false
-                    })
-                  }
+                <View
+                  style={{
+                    flexDirection: "row",
+                    right: 20,
+                    top: 20,
+                    color: "red",
+                    position: "absolute"
+                  }}
                 >
-                  <View
-                    style={{
-                      right: 20,
-                      top: 20,
-                      color: "red",
-                      position: "absolute"
-                    }}
+                  <TouchableWithoutFeedback onPress={this.downloadImage}>
+                    <View style={{ marginRight: 7.5 }}>
+                      <CloseIcon
+                        name="md-cloud-download"
+                        size={30}
+                        color={Colors.white}
+                      />
+                    </View>
+                  </TouchableWithoutFeedback>
+                  <TouchableWithoutFeedback
+                    onPress={() =>
+                      this.setState({
+                        isImageZoomable: false
+                      })
+                    }
                   >
-                    <CloseIcon
-                      name="ios-close-circle"
-                      size={30}
-                      color={Colors.white}
-                    />
-                  </View>
-                </TouchableWithoutFeedback>
+                    <View style={{ marginLeft: 7.5 }}>
+                      <CloseIcon
+                        name="ios-close-circle"
+                        size={30}
+                        color={Colors.white}
+                      />
+                    </View>
+                  </TouchableWithoutFeedback>
+                </View>
               </View>
             </Modal>
           </View>

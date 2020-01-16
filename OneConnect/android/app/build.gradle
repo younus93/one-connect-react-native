@@ -149,6 +149,7 @@ android {
 }
 
 dependencies {
+    implementation project(':rn-fetch-blob')
     implementation(project(':react-native-firebase')) {
         transitive = false
     }
