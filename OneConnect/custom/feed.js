@@ -8,7 +8,8 @@ import {
   TouchableWithoutFeedback,
   Animated,
   Easing,
-  TextInput
+  TextInput,
+  Modal
 } from "react-native";
 import { Colors } from "../constants";
 import Icon from "react-native-vector-icons/FontAwesome5";
@@ -16,9 +17,7 @@ import CloseIcon from "react-native-vector-icons/Ionicons";
 import Button from "../custom/button";
 import I18n from "../service/i18n";
 import FacePile from "react-native-face-pile";
-import { Modal } from "react-native";
 import ImageViewer from "react-native-image-zoom-viewer";
-import ImageZoomable from "./ZoomableImage";
 
 let faceData = [];
 let remainingFaces = 0;
