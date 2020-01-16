@@ -12,11 +12,13 @@ import {
 } from "react-native";
 import { Colors } from "../constants";
 import Icon from "react-native-vector-icons/FontAwesome5";
+import CloseIcon from "react-native-vector-icons/Ionicons";
 import Button from "../custom/button";
 import I18n from "../service/i18n";
 import FacePile from "react-native-face-pile";
 import { Modal } from "react-native";
 import ImageViewer from "react-native-image-zoom-viewer";
+import ImageZoomable from "./ZoomableImage";
 
 let faceData = [];
 let remainingFaces = 0;
@@ -263,18 +265,31 @@ export default class Feed extends React.Component {
         {this.state.isImageZoomable && this.state.pic != null ? (
           <View>
             <Modal visible={true} transparent={true}>
-              <ImageViewer
-                imageUrls={images}
-                saveToLocalByLongPress={true}
-                onCancel={() =>
-                  this.setState({
-                    isImageZoomable: false
-                  })
-                }
-                onDoubleClick={onCancel => {
-                  onCancel();
-                }}
-              />
+              <View style={{ width: "100%", height: "100%" }}>
+                <ImageViewer imageUrls={images} saveToLocalByLongPress={true} />
+                <TouchableWithoutFeedback
+                  onPress={() =>
+                    this.setState({
+                      isImageZoomable: false
+                    })
+                  }
+                >
+                  <View
+                    style={{
+                      right: 20,
+                      top: 20,
+                      color: "red",
+                      position: "absolute"
+                    }}
+                  >
+                    <CloseIcon
+                      name="ios-close-circle"
+                      size={30}
+                      color={Colors.white}
+                    />
+                  </View>
+                </TouchableWithoutFeedback>
+              </View>
             </Modal>
           </View>
         ) : null}
