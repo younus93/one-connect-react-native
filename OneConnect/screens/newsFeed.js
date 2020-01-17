@@ -7,17 +7,28 @@ import {
   ScrollView,
   FlatList,
   Alert,
-  Image
+  Image,
+  TextInput,
+  TouchableOpacity
 } from "react-native";
 import { DrawerActions } from "react-navigation-drawer";
 import Feed from "../custom/feed";
 import Header from "../custom/Header";
 import { Colors } from "../constants";
 import Manager from "../service/dataManager";
-import Icon from "react-native-vector-icons/FontAwesome5";
+import Icon from "react-native-vector-icons/MaterialIcons";
 import Button from "../custom/button";
 import I18n from "../service/i18n";
 import Toast from "react-native-simple-toast";
+
+function paddingVal(a, b, c, d) {
+  return {
+    paddingTop: a,
+    paddingRight: b ? b : a,
+    paddingBottom: c ? c : a,
+    paddingLeft: d ? d : b ? b : a
+  };
+}
 
 export default class NewsFeed extends React.Component {
   static navigationOptions = ({ navigation }) => ({
@@ -308,19 +319,127 @@ export default class NewsFeed extends React.Component {
           navigation={navigation}
           isBack={false}
         />
-        <FlatList
-          data={this.state.data}
-          keyExtractor={this._keyExtractor}
-          renderItem={this._renderFeeds}
-          ItemSeparatorComponent={this._itemSeparator}
-          ListEmptyComponent={this._renderEmptyList}
-          ListFooterComponent={this._listFooter}
-          onEndReached={this._loadMore}
-          onEndReachedThreshold={0.7}
-          // onRefresh={this._refresh}
-          refreshing={this.state.refreshing}
-          style={{ backgroundColor: Colors.background }}
-        />
+        <ScrollView>
+          <View
+            style={{
+              flex: 1,
+              height: 130,
+              borderRadius: 10,
+              backgroundColor: Colors.white,
+              elevation: 0.1,
+              marginLeft: "3%",
+              marginRight: "3%",
+              marginTop: "3.5%",
+              marginBottom: "1.5%"
+            }}
+          >
+            <View
+              style={{
+                flex: 1,
+                flexDirection: "column"
+              }}
+            >
+              <View
+                style={{
+                  flexDirection: "row",
+                  marginLeft: "3%",
+                  marginRight: "4%",
+                  marginTop: "4%",
+                  marginBottom: "1.5%"
+                }}
+              >
+                <Image
+                  style={{
+                    width: 40,
+                    height: 40,
+                    position: "absolute",
+                    borderRadius: 20
+                  }}
+                  source={require("../resources/dummy_profile_2.jpg")}
+                />
+                <TextInput
+                  style={{
+                    flex: 1,
+                    marginLeft: "16%",
+                    height: 65,
+                    borderColor: Colors.background,
+                    borderWidth: 1,
+                    borderRadius: 5,
+                    padding: 10,
+                    textAlignVertical: "top"
+                  }}
+                  underlineColorAndroid="transparent"
+                  placeholder="What do you feel?"
+                  placeholderTextColor={Colors.background}
+                  autoCapitalize="none"
+                  editable
+                  maxLength={40}
+                />
+              </View>
+
+              <View
+                style={{
+                  position: "absolute",
+                  bottom: "13%",
+                  left: "5%",
+                  right: "5%",
+                  justifyContent: "space-between",
+                  flexDirection: "row"
+                }}
+              >
+                <TouchableOpacity>
+                  <View
+                    style={{
+                      flexDirection: "row",
+                      paddingLeft: 0,
+                      paddingRight: 10,
+                      paddingTop: 3,
+                      paddingBottom: 3
+                    }}
+                  >
+                    <Icon
+                      name="add-a-photo"
+                      size={22}
+                      color={Colors.primary}
+                      style={{ marginRight: "5%" }}
+                    />
+                  </View>
+                </TouchableOpacity>
+                <TouchableOpacity
+                  style={{
+                    paddingLeft: 10,
+                    paddingRight: 10,
+                    backgroundColor: Colors.primary,
+                    borderRadius: 15,
+                    textAlignVertical: "center",
+                    justifyContent: "center"
+                  }}
+                >
+                  <Text
+                    style={{
+                      color: Colors.white
+                    }}
+                  >
+                    {"CREATE POST"}
+                  </Text>
+                </TouchableOpacity>
+              </View>
+            </View>
+          </View>
+          <FlatList
+            data={this.state.data}
+            keyExtractor={this._keyExtractor}
+            renderItem={this._renderFeeds}
+            ItemSeparatorComponent={this._itemSeparator}
+            ListEmptyComponent={this._renderEmptyList}
+            ListFooterComponent={this._listFooter}
+            onEndReached={this._loadMore}
+            onEndReachedThreshold={0.7}
+            // onRefresh={this._refresh}
+            refreshing={this.state.refreshing}
+            style={{ backgroundColor: Colors.background }}
+          />
+        </ScrollView>
       </View>
     );
   }
@@ -329,7 +448,7 @@ export default class NewsFeed extends React.Component {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    backgroundColor: "transparent"
+    backgroundColor: Colors.background
     //padding: 10
   },
   header: {
@@ -367,5 +486,11 @@ const styles = StyleSheet.create({
     marginLeft: 10,
     marginRight: 5,
     borderRadius: 20
+  },
+  defaultStyle: {
+    paddingTop: 8
+  },
+  customStyle: {
+    padding: 24
   }
 });
