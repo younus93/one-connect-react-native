@@ -20,15 +20,7 @@ import Icon from "react-native-vector-icons/MaterialIcons";
 import Button from "../custom/button";
 import I18n from "../service/i18n";
 import Toast from "react-native-simple-toast";
-
-function paddingVal(a, b, c, d) {
-  return {
-    paddingTop: a,
-    paddingRight: b ? b : a,
-    paddingBottom: c ? c : a,
-    paddingLeft: d ? d : b ? b : a
-  };
-}
+import ImagePicker from "react-native-image-picker";
 
 export default class NewsFeed extends React.Component {
   static navigationOptions = ({ navigation }) => ({
@@ -67,6 +59,10 @@ export default class NewsFeed extends React.Component {
 
     Manager.newsFeeds("/api/newsfeeds?page=1", "GET");
 
+    //post sample api
+    Manager.addListener("LOGIN_S", this._loginSuccess);
+    Manager.addListener("LOGIN_E", this._loginError);
+
     this.props.navigation.setParams({ hamPressed: this._hamPressed });
   }
 
@@ -80,7 +76,103 @@ export default class NewsFeed extends React.Component {
 
     Manager.removeListener("UPDATENEWS", this._updateNews);
     Manager.removeListener("LANG_U", this._updateNews);
+
+    //post sample api
+    Manager.removeListener("LOGIN_S", this._loginSuccess);
+    Manager.removeListener("LOGIN_E", this._loginError);
   }
+
+  _loginSuccess = data => {
+    console.log("login successfull : ", data);
+
+    // AsyncStorage.setItem('user',data.data.user);
+    Animated.timing(this.opacity, {
+      toValue: 0,
+      duration: 10
+    }).start(() => {
+      this.setState({
+        loading: false,
+        loggedIn: true
+      });
+    });
+  };
+
+  _loginError = error => {
+    this.setState({
+      loading: false,
+      error: true,
+      errorText: error.message
+    });
+  };
+
+  _loginButton = () => {
+    console.warn("login button clicked");
+    if (this.state.value == "hi") {
+      this.setState({
+        loading: true,
+        error: false
+      });
+
+      Animated.timing(this.opacity, {
+        toValue: 0.7,
+        duration: 100
+      }).start(() => {
+        var tokenVal = this.state.fcmToken;
+        Manager.login("/api/login", "POST", {
+          email: "this.userName",
+          password: "this.password",
+          fcm_token: "tokenVal.toString()"
+        });
+      });
+    } else {
+      if (!this.state.error) {
+        console.log("empty");
+        let e = new Error("Username/password field empty");
+        this._loginError(e);
+      }
+    }
+  };
+
+  //add photo
+  _addPhoto = () => {
+    console.log("editing photo");
+    const options = {
+      title: "Profile photo",
+      storageOptions: {
+        skipBackup: true,
+        path: "images"
+      }
+    };
+
+    ImagePicker.showImagePicker(options, response => {
+      console.log("Response = ", response);
+
+      if (response.didCancel) {
+        console.log("User cancelled image picker");
+      } else if (response.error) {
+        console.log("ImagePicker Error: ", response.error);
+      } else if (response.customButton) {
+        console.log("User tapped custom button: ", response.customButton);
+      } else {
+        console.log("setting source");
+        // const source = { uri: response.uri };
+        // You can also display the image using data:
+        const source = { uri: "data:image/jpeg;base64," + response.data };
+        console.log("uploading profile pic");
+        // Manager.uploadPic("/api/profile/pic", "POST", {
+        //   type: "profile_pic",
+        //   file: {
+        //     uri:
+        //       Platform.OS === "android"
+        //         ? response.uri
+        //         : response.uri.replace("file://", ""),
+        //     type: response.type ? response.type : "image/jpg",
+        //     name: response.fileName
+        //   }
+        // });
+      }
+    });
+  };
 
   _hamPressed = () => {
     this.props.navigation.dispatch(DrawerActions.toggleDrawer());
@@ -374,6 +466,7 @@ export default class NewsFeed extends React.Component {
                   autoCapitalize="none"
                   editable
                   maxLength={40}
+                  onChangeText={value => this.setState({ value })}
                 />
               </View>
 
@@ -381,13 +474,13 @@ export default class NewsFeed extends React.Component {
                 style={{
                   position: "absolute",
                   bottom: "13%",
-                  left: "5%",
-                  right: "5%",
+                  left: "4%",
+                  right: "4%",
                   justifyContent: "space-between",
                   flexDirection: "row"
                 }}
               >
-                <TouchableOpacity>
+                <TouchableOpacity onPress={this._addPhoto}>
                   <View
                     style={{
                       flexDirection: "row",
@@ -414,13 +507,14 @@ export default class NewsFeed extends React.Component {
                     textAlignVertical: "center",
                     justifyContent: "center"
                   }}
+                  onPress={this._loginButton}
                 >
                   <Text
                     style={{
                       color: Colors.white
                     }}
                   >
-                    {"CREATE POST"}
+                    {"POST"}
                   </Text>
                 </TouchableOpacity>
               </View>

@@ -12,7 +12,8 @@ import {
   Modal,
   CameraRoll,
   PermissionsAndroid,
-  Platform
+  Platform,
+  Dimensions
 } from "react-native";
 import { Colors } from "../constants";
 import Icon from "react-native-vector-icons/FontAwesome5";
@@ -22,6 +23,8 @@ import I18n from "../service/i18n";
 import FacePile from "react-native-face-pile";
 import ImageViewer from "react-native-image-zoom-viewer";
 import RNFetchBlob from "rn-fetch-blob";
+const win = Dimensions.get("window");
+const ratio = win.width / 541; //541 is actual image width
 
 let faceData = [];
 let remainingFaces = 0;
@@ -252,16 +255,13 @@ export default class Feed extends React.Component {
                 </View>
               </TouchableWithoutFeedback>
             </View>
-            <TouchableWithoutFeedback
-              onPress={this.onImageClick}
-              hitSlop={{ top: 5, left: 5, bottom: 5, right: 5 }}
-            >
+            <TouchableWithoutFeedback onPress={this.onImageClick}>
               <View style={styles.paddingVertical20}>
                 <Text style={styles.bodyText}>{data.body}</Text>
                 {this.state.pic != null && (
                   <Image
                     style={styles.feedImage}
-                    resizeMode="stretch"
+                    resizeMode="contain"
                     source={{ uri: this.state.pic }}
                   />
                 )}
@@ -390,7 +390,7 @@ const styles = StyleSheet.create({
     paddingHorizontal: 10
   },
   paddingVertical20: {
-    paddingVertical: 10
+    paddingVertical: 0
   },
   footer: {
     flexDirection: "row",
@@ -460,7 +460,12 @@ const styles = StyleSheet.create({
     flexDirection: "row",
     paddingBottom: 10
   },
-  feedImage: { marginTop: "3%", height: 200, width: "100%" }
+  feedImage: {
+    width: "100%",
+    height: 200,
+    marginTop: 5,
+    marginBottom: 5
+  }
 });
 const containerStyles = StyleSheet.create({
   container: {
