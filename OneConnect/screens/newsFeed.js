@@ -90,28 +90,28 @@ export default class NewsFeed extends React.Component {
       toValue: 0,
       duration: 10
     }).start(() => {
-      this.setState({
-        loading: false,
-        loggedIn: true
-      });
+      // this.setState({
+      //   loading: false,
+      //   loggedIn: true
+      // });
     });
   };
 
   _loginError = error => {
-    this.setState({
-      loading: false,
-      error: true,
-      errorText: error.message
-    });
+    // this.setState({
+    //   loading: false,
+    //   error: true,
+    //   errorText: error.message
+    // });
   };
 
   _loginButton = () => {
     console.warn("login button clicked");
     if (this.state.value == "hi") {
-      this.setState({
-        loading: true,
-        error: false
-      });
+      // this.setState({
+      //   loading: true,
+      //   error: false
+      // });
 
       Animated.timing(this.opacity, {
         toValue: 0.7,
@@ -187,7 +187,7 @@ export default class NewsFeed extends React.Component {
   };
 
   _newsSuccess = data => {
-    console.log("news feed successfull : ");
+    console.log("news_feed : ", data);
     // TODO: FIX IT.
     this.data = [
       ...this.data,
@@ -259,7 +259,9 @@ export default class NewsFeed extends React.Component {
 
   _institute = item => {
     console.log("reached institute callback with ", item);
-    this.props.navigation.navigate("Institution", { item: item.institution });
+    this.props.navigation.navigate("Institution", {
+      item: item.created_by.name
+    });
   };
 
   _renderFeeds = ({ item }) => {
@@ -355,10 +357,12 @@ export default class NewsFeed extends React.Component {
   };
 
   _loadMore = ({ distanceFromEnd }) => {
-    console.log("inside load more");
+    console.log("values1", distanceFromEnd);
     const { currentPage, totalPage, loading } = this.state;
 
-    if (currentPage != totalPage && !loading) {
+    console.log("values", currentPage, totalPage, loading, distanceFromEnd);
+
+    if (currentPage <= totalPage && !loading) {
       console.log("loading more data from ", currentPage + 1);
       Manager.newsFeeds(`/api/newsfeeds?page=${currentPage + 1}`, "GET");
       this.setState(state => ({
@@ -369,16 +373,16 @@ export default class NewsFeed extends React.Component {
 
   _refresh = () => {
     console.log("Calling this when refreshing page!");
-    this.setState({
-      data: [],
-      loading: true,
-      refreshing: true,
-      error: false,
-      totalPage: 0,
-      currentPage: 0,
-      updateToggle: false
-    });
-    Manager.newsFeeds("/api/newsfeeds?page=1", "GET");
+    // this.setState({
+    //   data: [],
+    //   loading: true,
+    //   refreshing: true,
+    //   error: false,
+    //   totalPage: 0,
+    //   currentPage: 0,
+    //   updateToggle: false
+    // });
+    //  Manager.newsFeeds("/api/newsfeeds?page=1", "GET");
   };
 
   _keyExtractor = (item, index) => `nsfd-${Math.random(1)}`;
@@ -403,7 +407,7 @@ export default class NewsFeed extends React.Component {
   render() {
     const { data } = this.state;
     const { navigation } = this.props;
-    console.log("render data is ", data);
+    console.log("render:", data);
     return (
       <View style={styles.container}>
         <Header
@@ -466,7 +470,6 @@ export default class NewsFeed extends React.Component {
                   autoCapitalize="none"
                   editable
                   maxLength={40}
-                  onChangeText={value => this.setState({ value })}
                 />
               </View>
 
@@ -528,7 +531,7 @@ export default class NewsFeed extends React.Component {
             ListEmptyComponent={this._renderEmptyList}
             ListFooterComponent={this._listFooter}
             onEndReached={this._loadMore}
-            onEndReachedThreshold={0.7}
+            onEndReachedThreshold={0.5}
             // onRefresh={this._refresh}
             refreshing={this.state.refreshing}
             style={{ backgroundColor: Colors.background }}

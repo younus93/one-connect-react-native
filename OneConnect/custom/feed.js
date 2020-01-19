@@ -205,6 +205,7 @@ export default class Feed extends React.Component {
   render() {
     console.log("pic", this.state.pic);
     const { data } = this.props;
+    console.log("response", data);
     let faces = this.props.data.likers;
 
     const images = [
@@ -233,8 +234,8 @@ export default class Feed extends React.Component {
                   <Image
                     style={styles.image}
                     source={{
-                      uri: data.institution
-                        ? data.institution.profile_pic
+                      uri: data.created_by.name
+                        ? data.created_by.profile_pic
                         : null
                     }}
                     defaultSource={require("../resources/dummy_profile.png")}
@@ -249,7 +250,7 @@ export default class Feed extends React.Component {
               >
                 <View style={styles.paddingHorizontal10}>
                   <Text style={styles.headerText}>
-                    {data.institution ? data.institution.name : "Institute"}
+                    {data.created_by ? data.created_by.name : "Institute"}
                   </Text>
                   <Text style={styles.headerSubText}>{data.created_at}</Text>
                 </View>
