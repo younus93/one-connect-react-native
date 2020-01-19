@@ -691,9 +691,16 @@ export default class LoginScreen extends Component<Props> {
                         name="logo-google"
                         size={22}
                         color={Colors.colorWhite}
-                        style={{ marginLeft: "18%", marginRight: "8%" }}
+                        style={{ marginLeft: "0%", marginRight: "5%" }}
                       />
-                      <Text style={{ flex : 1, flexWrap : 'wrap', color: "white", fontWeight: "bold" }}>
+                      <Text
+                        style={{
+                          flex: 1,
+                          flexWrap: "wrap",
+                          color: "white",
+                          fontWeight: "bold"
+                        }}
+                      >
                         {I18n.t("google_login")}
                       </Text>
                     </TouchableOpacity>

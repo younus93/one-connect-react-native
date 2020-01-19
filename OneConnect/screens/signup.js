@@ -231,24 +231,34 @@ export default class LoginScreen extends Component<Props> {
   };
 
   _signupSuccess = data => {
-    console.warn("signup successfull : ", data);
-    Manager.setToken(
-      data.data.token,
-      data.data.user.basic.profile_pic,
-      data.data.user.basic.id,
-      data.data.user
-    );
-
-    Animated.timing(this.opacity, {
-      toValue: 0,
-      duration: 10
-    }).start(() => {
-      Toast.showWithGravity(data.message, Toast.LONG, Toast.TOP);
+    console.log("signup: ", data);
+    if (data != null && data.message != null) {
+      console.log("signup", "error");
       this.setState({
-        loading: false
+        loading: false,
+        error: true,
+        errorText: data.message
       });
-      this.props.navigation.navigate("MyProfile");
-    });
+    } else {
+      console.log("signup", "response");
+      Manager.setToken(
+        data.data.token,
+        data.data.user.basic.profile_pic,
+        data.data.user.basic.id,
+        data.data.user
+      );
+
+      Animated.timing(this.opacity, {
+        toValue: 0,
+        duration: 10
+      }).start(() => {
+        Toast.showWithGravity(data.message, Toast.LONG, Toast.TOP);
+        this.setState({
+          loading: false
+        });
+        this.props.navigation.navigate("MyProfile");
+      });
+    }
   };
 
   socialSuccess = data => {
@@ -273,6 +283,7 @@ export default class LoginScreen extends Component<Props> {
   };
 
   _signupError = error => {
+    console.log("signup:", error);
     this.setState({
       loading: false,
       error: true,
@@ -349,12 +360,12 @@ export default class LoginScreen extends Component<Props> {
         });
     }
     return (
-      <ScrollView style={{ flex: 1 }}>
-        <ErrorHandler
-          error={this.state.error}
-          errorText={this.state.errorText}
-          callback={this._toggleError}
-        >
+      <ErrorHandler
+        error={this.state.error}
+        errorText={this.state.errorText}
+        callback={this._toggleError}
+      >
+        <ScrollView style={{ flex: 1 }}>
           <KeyboardAvoidingView
             behavior={Platform.OS === "ios" ? "padding" : null}
             style={styles.container}
@@ -422,7 +433,8 @@ export default class LoginScreen extends Component<Props> {
                     flexDirection: "row",
                     height: "10%",
                     margin: 10,
-                    justifyContent: "center"
+                    justifyContent: "center",
+                    paddingBottom: "20%"
                   }}
                 >
                   <TouchableOpacity
@@ -447,9 +459,16 @@ export default class LoginScreen extends Component<Props> {
                       name="logo-google"
                       size={22}
                       color={Colors.colorWhite}
-                      style={{ marginLeft: "18%", marginRight: "8%" }}
+                      style={{ marginLeft: "1%", marginRight: "5%" }}
                     />
-                    <Text style={{ flex : 1, flexWrap : 'wrap',  color: "white", fontWeight: "bold" }}>
+                    <Text
+                      style={{
+                        flex: 1,
+                        flexWrap: "wrap",
+                        color: "white",
+                        fontWeight: "bold"
+                      }}
+                    >
                       {I18n.t("google_signup")}
                     </Text>
                   </TouchableOpacity>
@@ -478,8 +497,8 @@ export default class LoginScreen extends Component<Props> {
               </Animated.View>
             ) : null}
           </KeyboardAvoidingView>
-        </ErrorHandler>
-      </ScrollView>
+        </ScrollView>
+      </ErrorHandler>
     );
   }
 }
@@ -487,12 +506,10 @@ export default class LoginScreen extends Component<Props> {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    backgroundColor: Colors.surface,
-    paddingBottom: "35%"
+    backgroundColor: Colors.surface
   },
   containerBox: {
-    flex: 1,
-    padding: 10,
+    padding: 5,
     backgroundColor: Colors.surface,
     justifyContent: "center"
   },
@@ -536,7 +553,6 @@ const styles = StyleSheet.create({
   header: {
     backgroundColor: Colors.surface,
     opacity: 0.8,
-    height: "40%",
     alignItems: "center",
     justifyContent: "center"
   },
