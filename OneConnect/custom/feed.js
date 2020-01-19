@@ -144,7 +144,7 @@ export default class Feed extends React.Component {
 
   _likeText = () => {
     if (this.state.likeIconActive) return I18n.t("You") + I18n.t("Like_it");
-    if (this.props.data.likers.length > 0)
+    if (this.props.data.likers != null && this.props.data.likers.length > 0)
       return (
         this.props.data.likers[0].f_name +
         " " +

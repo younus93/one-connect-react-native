@@ -9,7 +9,8 @@ import {
   Alert,
   Image,
   TextInput,
-  TouchableOpacity
+  TouchableOpacity,
+  Animated
 } from "react-native";
 import { DrawerActions } from "react-navigation-drawer";
 import Feed from "../custom/feed";
@@ -21,6 +22,7 @@ import Button from "../custom/button";
 import I18n from "../service/i18n";
 import Toast from "react-native-simple-toast";
 import ImagePicker from "react-native-image-picker";
+import AsyncStorage from "@react-native-community/async-storage";
 
 export default class NewsFeed extends React.Component {
   static navigationOptions = ({ navigation }) => ({
@@ -32,6 +34,8 @@ export default class NewsFeed extends React.Component {
     super(props);
     this.data = [];
     this.props.navigation.setParams({ title: I18n.t("Newsfeed") });
+    this.opacity = new Animated.Value(0);
+
     this.state = {
       data: [],
       loading: true,
@@ -39,7 +43,8 @@ export default class NewsFeed extends React.Component {
       error: false,
       totalPage: 0,
       currentPage: 0,
-      updateToggle: false
+      updateToggle: false,
+      userId: -1
     };
   }
 
@@ -47,6 +52,9 @@ export default class NewsFeed extends React.Component {
     console.log("news feed component did mount");
     Manager.addListener("NEWS_S", this._newsSuccess);
     Manager.addListener("NEWS_E", this._newsError);
+
+    Manager.addListener("POSTCREATION_S", this.postCreationSuccess);
+    Manager.addListener("POSTCREATION_E", this.postCreationError);
 
     Manager.addListener("POST_FLAG_S", this._flagPostSuccess);
     Manager.addListener("POST_FLAG_E", this._flagPostError);
@@ -64,12 +72,26 @@ export default class NewsFeed extends React.Component {
     Manager.addListener("LOGIN_E", this._loginError);
 
     this.props.navigation.setParams({ hamPressed: this._hamPressed });
+
+    AsyncStorage.getItem("@id")
+      .then(res => {
+        console.log("id in comment", res);
+        this.setState({
+          userId: res
+        });
+      })
+      .catch(error => {
+        console.log("id in comment", error);
+      });
   }
 
   componentWillUnmount() {
     console.log("news feed component did un mount");
     Manager.removeListener("NEWS_S", this._newsSuccess);
     Manager.removeListener("NEWS_E", this._newsError);
+
+    Manager.removeListener("POSTCREATION_S", this.postCreationSuccess);
+    Manager.removeListener("POSTCREATION_E", this.postCreationError);
 
     Manager.removeListener("LIKE_S", this._likeSuccess);
     Manager.removeListener("LIKE_E", this._likeError);
@@ -106,31 +128,24 @@ export default class NewsFeed extends React.Component {
   };
 
   _loginButton = () => {
-    console.warn("login button clicked");
-    if (this.state.value == "hi") {
-      // this.setState({
-      //   loading: true,
-      //   error: false
-      // });
+    var userId = this.state.userId;
+    console.log("login button clicked", userId);
+    //if (this.state.value == "hi") {
+    this.setState({
+      loading: true,
+      error: false
+    });
 
-      Animated.timing(this.opacity, {
-        toValue: 0.7,
-        duration: 100
-      }).start(() => {
-        var tokenVal = this.state.fcmToken;
-        Manager.login("/api/login", "POST", {
-          email: "this.userName",
-          password: "this.password",
-          fcm_token: "tokenVal.toString()"
-        });
+    Animated.timing(this.opacity, {
+      toValue: 0.7,
+      duration: 100
+    }).start(() => {
+      Manager.postCreation("/api/newsfeeds", "POST", {
+        user_id: userId,
+        body: this.state.post_content
       });
-    } else {
-      if (!this.state.error) {
-        console.log("empty");
-        let e = new Error("Username/password field empty");
-        this._loginError(e);
-      }
-    }
+    });
+    //}
   };
 
   //add photo
@@ -213,6 +228,31 @@ export default class NewsFeed extends React.Component {
       error: true,
       totalPage: 0,
       currentPage: 0
+    });
+  };
+
+  postCreationSuccess = data => {
+    console.log("data", data.data);
+    Animated.timing(this.opacity, {
+      toValue: 0,
+      duration: 10
+    }).start(() => {
+      Toast.showWithGravity(data.message, Toast.LONG, Toast.TOP);
+      this.setState({
+        loading: false
+      });
+      this.props.navigation.navigate("OpenFeed", {
+        comment: false,
+        item: data.data
+      });
+    });
+  };
+
+  postCreationError = error => {
+    this.setState({
+      loading: false,
+      error: true,
+      errorText: error.message
     });
   };
 
@@ -408,6 +448,7 @@ export default class NewsFeed extends React.Component {
     const { data } = this.state;
     const { navigation } = this.props;
     console.log("render:", data);
+
     return (
       <View style={styles.container}>
         <Header
@@ -424,9 +465,7 @@ export default class NewsFeed extends React.Component {
               backgroundColor: Colors.white,
               elevation: 0.1,
               marginLeft: "3%",
-              marginRight: "3%",
-              marginTop: "3.5%",
-              marginBottom: "1.5%"
+              marginRight: "3%"
             }}
           >
             <View
@@ -470,13 +509,14 @@ export default class NewsFeed extends React.Component {
                   autoCapitalize="none"
                   editable
                   maxLength={40}
+                  onChangeText={post_content => this.setState({ post_content })}
                 />
               </View>
 
               <View
                 style={{
                   position: "absolute",
-                  bottom: "13%",
+                  bottom: "8%",
                   left: "4%",
                   right: "4%",
                   justifyContent: "space-between",
@@ -530,7 +570,7 @@ export default class NewsFeed extends React.Component {
             ItemSeparatorComponent={this._itemSeparator}
             ListEmptyComponent={this._renderEmptyList}
             ListFooterComponent={this._listFooter}
-            onEndReached={this._loadMore}
+            //onEndReached={this._loadMore}
             onEndReachedThreshold={0.5}
             // onRefresh={this._refresh}
             refreshing={this.state.refreshing}

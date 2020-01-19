@@ -123,6 +123,18 @@ class dataManager {
       });
   };
 
+  //post creation
+  postCreation = (uri, method, data = null) => {
+    Call(uri, method, data, this.token)
+      .then(response => {
+        console.log("=================", response);
+        this.eventEmitter.emit("POSTCREATION_S", response);
+      })
+      .catch(error => {
+        this.eventEmitter.emit("POSTCREATION_E", error);
+      });
+  };
+
   socialSignup = (uri, method, data = null) => {
     Call(uri, method, data)
       .then(response => {
