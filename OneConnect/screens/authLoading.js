@@ -31,7 +31,7 @@ export default class AuthLoading extends Component {
     super(props);
     this.loaderTranslateXValue = new Animated.Value(0);
 
-    const action = props.navigation.getParam("action", "login");
+    const action = props.navigation.getParam("action", "Welcome");
     this.state = {
       animatedState: true,
       width: 50,
@@ -65,20 +65,20 @@ export default class AuthLoading extends Component {
           // this.setState({
           //     animatedState: false
           // })
-          this.props.navigation.navigate("Drawer");
+          this.props.navigation.navigate("Welcome");
         } else {
           // this.setState({
           //     animatedState: false
           // })
           UpdateLocale(res[2][1]);
-          this.props.navigation.navigate("Login");
+          this.props.navigation.navigate("Welcome");
         }
       })
       .catch(error => {
         // this.setState({
         //     animatedState: false
         // })
-        this.props.navigation.navigate("Login");
+        this.props.navigation.navigate("Welcome");
       });
   };
 

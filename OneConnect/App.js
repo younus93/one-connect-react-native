@@ -8,6 +8,7 @@ import LoginScreen from "./screens/login";
 import SignUpScreen from "./screens/signup";
 import AuthLoading from "./screens/authLoading";
 import ForgotPassword from "./screens/forgotPassword";
+import WelcomeScreen from "./screens/WelcomeScreen/WelcomeScreen";
 import { mapping, light as lightTheme } from "@eva-design/eva";
 import { ApplicationProvider, Layout } from "react-native-ui-kitten";
 
@@ -31,17 +32,20 @@ const RootNavigator = createSwitchNavigator(
     AuthLoading: {
       screen: AuthLoading
     },
+    Welcome: {
+      screen: WelcomeScreen
+    },
     Login: {
       screen: LoginScreen
     },
-    SignUp : {
+    SignUp: {
       screen: SignUpScreen
     },
     Drawer: {
       screen: Drawer
     },
     ForgotPassword: {
-        screen: ForgotPassword
+      screen: ForgotPassword
     }
   },
   navigatorConfig
