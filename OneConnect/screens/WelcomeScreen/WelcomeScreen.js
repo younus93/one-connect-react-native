@@ -54,7 +54,7 @@ export default class WelcomeScreen extends Component {
           //     animatedState: false
           // })
           UpdateLocale(res[2][1]);
-          this.props.navigation.navigate("Welcome");
+          this.props.navigation.navigate("Login");
         }
       })
       .catch(error => {
@@ -87,7 +87,7 @@ export default class WelcomeScreen extends Component {
         // this.setState({
         //     animatedState: false
         // })
-        this.props.navigation.navigate("Login");
+        this.props.navigation.navigate("Drawer");
       });
   };
 

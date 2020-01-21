@@ -42,6 +42,8 @@ import Lightbox from "react-native-lightbox";
 import { TabView, SceneMap } from "react-native-tab-view";
 import Toast from "react-native-simple-toast";
 import Header from "../custom/Header";
+import AsyncStorage from "@react-native-community/async-storage";
+import { UpdateLocale, SaveLocale } from "../service/i18n";
 
 const UUID = require("uuid");
 
@@ -285,7 +287,7 @@ export default class Profile extends React.Component {
   };
 
   _profilePicSuccess = data => {
-    console.log("Profile pic is success", data);
+    console.log("Profile:", data);
     this.setState({
       profile: data.data
     });

@@ -233,19 +233,12 @@ export default class NewsFeed extends React.Component {
 
   postCreationSuccess = data => {
     console.log("data", data.data);
-    Animated.timing(this.opacity, {
-      toValue: 0,
-      duration: 10
-    }).start(() => {
-      Toast.showWithGravity(data.message, Toast.LONG, Toast.TOP);
-      this.setState({
-        loading: false
-      });
-      this.props.navigation.navigate("OpenFeed", {
-        comment: false,
-        item: data.data
-      });
+
+    Toast.showWithGravity(data.message, Toast.LONG, Toast.TOP);
+    this.setState({
+      loading: false
     });
+    this._openFeed(data.data);
   };
 
   postCreationError = error => {
@@ -304,6 +297,13 @@ export default class NewsFeed extends React.Component {
     });
   };
 
+  _profile = item => {
+    this.props.navigation.navigate("Profile", {
+      url: `/api/professionals/${item.created_by.id}`,
+      title: "View profile"
+    });
+  };
+
   _renderFeeds = ({ item }) => {
     return (
       <Feed
@@ -311,6 +311,7 @@ export default class NewsFeed extends React.Component {
         callback={() => this._openFeed(item)}
         commentCallback={() => this._comment(item)}
         instituteCallback={() => this._institute(item)}
+        profileCallback={() => this._profile(item)}
         likeCallback={() => this._like(item)}
         reportCallback={() => this._flag(item)}
         touchable
@@ -457,6 +458,124 @@ export default class NewsFeed extends React.Component {
           isBack={false}
         />
         <ScrollView>
+          <View
+            style={{
+              flex: 1,
+              height: 130,
+              borderRadius: 10,
+              backgroundColor: Colors.white,
+              elevation: 0.1,
+              marginLeft: "3%",
+              marginRight: "3%"
+            }}
+          >
+            <View
+              style={{
+                flex: 1,
+                flexDirection: "column"
+              }}
+            >
+              <View
+                style={{
+                  flexDirection: "row",
+                  marginLeft: "3%",
+                  marginRight: "4%",
+                  marginTop: "4%",
+                  marginBottom: "1.5%"
+                }}
+              >
+                <Image
+                  style={{
+                    width: 40,
+                    height: 40,
+                    position: "absolute",
+                    borderRadius: 20
+                  }}
+                  source={{
+                    uri: Manager.profilePicUrl
+                  }}
+                />
+                <Image
+                  style={{
+                    width: 40,
+                    height: 40,
+                    position: "absolute"
+                  }}
+                  source={require("../resources/ic_white_hex.png")}
+                />
+                <TextInput
+                  style={{
+                    flex: 1,
+                    marginLeft: "16%",
+                    height: 65,
+                    borderColor: Colors.background,
+                    borderWidth: 1,
+                    borderRadius: 5,
+                    padding: 10,
+                    textAlignVertical: "top"
+                  }}
+                  underlineColorAndroid="transparent"
+                  placeholder="What do you feel?"
+                  placeholderTextColor={Colors.background}
+                  autoCapitalize="none"
+                  editable
+                  maxLength={40}
+                  onChangeText={post_content => this.setState({ post_content })}
+                />
+              </View>
+
+              <View
+                style={{
+                  position: "absolute",
+                  bottom: "8%",
+                  left: "4%",
+                  right: "4%",
+                  justifyContent: "space-between",
+                  flexDirection: "row"
+                }}
+              >
+                <TouchableOpacity onPress={this._addPhoto}>
+                  <View
+                    style={{
+                      flexDirection: "row",
+                      paddingLeft: 0,
+                      paddingRight: 10,
+                      paddingTop: 3,
+                      paddingBottom: 3
+                    }}
+                  >
+                    <Icon
+                      name="add-a-photo"
+                      size={0}
+                      color={Colors.primary}
+                      style={{ marginRight: "5%" }}
+                    />
+                  </View>
+                </TouchableOpacity>
+                <TouchableOpacity
+                  style={{
+                    paddingLeft: 10,
+                    paddingRight: 10,
+                    paddingTop: 3,
+                    paddingBottom: 3,
+                    backgroundColor: Colors.primary,
+                    borderRadius: 15,
+                    textAlignVertical: "center",
+                    justifyContent: "center"
+                  }}
+                  onPress={this._loginButton}
+                >
+                  <Text
+                    style={{
+                      color: Colors.white
+                    }}
+                  >
+                    {"POST"}
+                  </Text>
+                </TouchableOpacity>
+              </View>
+            </View>
+          </View>
           <FlatList
             data={this.state.data}
             keyExtractor={this._keyExtractor}

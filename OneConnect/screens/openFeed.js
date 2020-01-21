@@ -20,7 +20,7 @@ import Manager from "../service/dataManager";
 import Button from "../custom/button";
 import I18n from "../service/i18n";
 import AsyncStorage from "@react-native-community/async-storage";
-import Toast from 'react-native-simple-toast';
+import Toast from "react-native-simple-toast";
 const { State: TextInputState } = TextInput;
 const textFontSize = 14;
 
@@ -94,7 +94,9 @@ export default class OpenFeed extends React.Component {
   };
 
   _commentsLoadingSuccess = data => {
-    this.comments = data.data.filter((item)=>{ return !item.is_flagged });
+    this.comments = data.data.filter(item => {
+      return !item.is_flagged;
+    });
     this.data.comments_count = this.comments.length;
     console.log("feed comment data : ", this.comments);
     this.setState({
@@ -187,8 +189,8 @@ export default class OpenFeed extends React.Component {
           style={{
             backgroundColor: Colors.background,
             padding: 10,
-            margin : 10,
-            borderRadius : 10,
+            margin: 10,
+            borderRadius: 10,
             justifyContent: "center",
             alignItems: "center"
           }}
@@ -207,17 +209,17 @@ export default class OpenFeed extends React.Component {
     }
 
     return this.comments.map(item => {
-      if(!item.is_flagged)
-      return (
-        <Comments
-          key={`cs-${Math.random(1)}`}
-          data={item}
-          callback={() => this._profile(item)}
-          userId={this.state.id}
-          _deleteComment={this._deleteComment}
-          _flagComment={this._flagComment}
-        />
-      );
+      if (!item.is_flagged)
+        return (
+          <Comments
+            key={`cs-${Math.random(1)}`}
+            data={item}
+            callback={() => this._profile(item)}
+            userId={this.state.id}
+            _deleteComment={this._deleteComment}
+            _flagComment={this._flagComment}
+          />
+        );
     });
   };
   _deleteComment = id => {
@@ -234,10 +236,13 @@ export default class OpenFeed extends React.Component {
     this.setState({
       commentLoading: true
     });
-    Manager.flagComment(`${this.data["resource_url"]}/comments/${id}/flag`,'POST');
-    Toast.showWithGravity("Thanks for reporting!", Toast.SHORT, Toast.TOP) 
+    Manager.flagComment(
+      `${this.data["resource_url"]}/comments/${id}/flag`,
+      "POST"
+    );
+    Toast.showWithGravity("Thanks for reporting!", Toast.SHORT, Toast.TOP);
     console.log("Comment to flag has id", id);
-  }
+  };
 
   _institute = () => {
     // console.log("reached institute callback with ", item)
@@ -246,20 +251,27 @@ export default class OpenFeed extends React.Component {
     });
   };
 
+  _profile = item => {
+    this.props.navigation.navigate("Profile", {
+      url: `/api/professionals/${item.created_by.id}`,
+      title: "View profile"
+    });
+  };
+
   _like = item => {
     console.log("item after like: ", item);
     Manager.like(item.resource_url + "/likes", "POST", { body: item.likes });
   };
 
-  _flag = (item) => {
+  _flag = item => {
     console.log("Item to be flagged", item);
-    Manager.flagPost(`${item.resource_url}/flag`,'POST');
+    Manager.flagPost(`${item.resource_url}/flag`, "POST");
     // var data = this.state.data.filter((data)=>{ return data.resource_url != item.resource_url })
     // this.setState({ data: data })
     // console.log("State is :", this.state.data);
-    Toast.showWithGravity("Thanks for reporting!", Toast.SHORT, Toast.TOP)
+    Toast.showWithGravity("Thanks for reporting!", Toast.SHORT, Toast.TOP);
     // this.props.navigation.navigate('FeedStack')
-}
+  };
 
   render() {
     return (
@@ -269,8 +281,9 @@ export default class OpenFeed extends React.Component {
             data={this.data}
             commentCallback={this._focusCommentBox}
             instituteCallback={() => this._institute()}
+            profileCallback={() => this._profile(this.data)}
             likeCallback={() => this._like(this.data)}
-            reportCallback={()=> this._flag(this.data)}
+            reportCallback={() => this._flag(this.data)}
           />
           <View style={{ height: 1, backgroundColor: Colors.background }} />
           {this._renderComments()}
@@ -300,12 +313,9 @@ export default class OpenFeed extends React.Component {
             <Button
               style={styles.button}
               onPress={this._postComment}
-              color={Colors.alternative}>
-              <Icon
-                name="send-o"
-                size={20}
-                color={Colors.primaryDark}
-              />
+              color={Colors.alternative}
+            >
+              <Icon name="send-o" size={20} color={Colors.primaryDark} />
             </Button>
           </View>
         </Animated.View>

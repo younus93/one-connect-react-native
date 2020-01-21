@@ -134,6 +134,10 @@ export default class Feed extends React.Component {
     this.props.instituteCallback();
   };
 
+  _profile = () => {
+    this.props.profileCallback();
+  };
+
   onImageClick = () => {
     this.setState({ isImageZoomable: true });
   };
@@ -159,10 +163,6 @@ export default class Feed extends React.Component {
 
   _commentText = () => {
     return this.state.commentsCount + " " + I18n.t("Comment");
-  };
-
-  _profile = () => {
-    // this.props.profileCallback()
   };
 
   //image save option
@@ -204,7 +204,7 @@ export default class Feed extends React.Component {
 
   render() {
     console.log("pic", this.state.pic);
-    const { data } = this.props;
+    const { data, navigation } = this.props;
     console.log("response", data);
     let faces = this.props.data.likers;
 
@@ -227,7 +227,14 @@ export default class Feed extends React.Component {
           <View style={[styles.container, this.transformation]}>
             <View style={styles.header}>
               <TouchableWithoutFeedback
-                onPress={this._profile}
+                onPress={
+                  data.created_by != null && data.created_by.type == "User"
+                    ? this._profile
+                    : data.created_by != null &&
+                      data.created_by.type == "Institution"
+                    ? this._institute
+                    : null
+                }
                 hitSlop={{ top: 5, left: 5, bottom: 5, right: 5 }}
               >
                 <View style={styles.paddingHorizontal}>
@@ -245,7 +252,14 @@ export default class Feed extends React.Component {
                 </View>
               </TouchableWithoutFeedback>
               <TouchableWithoutFeedback
-                onPress={this._institute}
+                onPress={
+                  data.created_by != null && data.created_by.type == "User"
+                    ? this._profile
+                    : data.created_by != null &&
+                      data.created_by.type == "Institution"
+                    ? this._institute
+                    : null
+                }
                 hitSlop={{ top: 5, left: 5, bottom: 5, right: 5 }}
               >
                 <View style={styles.paddingHorizontal10}>

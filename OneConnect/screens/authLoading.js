@@ -65,7 +65,7 @@ export default class AuthLoading extends Component {
           // this.setState({
           //     animatedState: false
           // })
-          this.props.navigation.navigate("Welcome");
+          this.props.navigation.navigate("Drawer");
         } else {
           // this.setState({
           //     animatedState: false
