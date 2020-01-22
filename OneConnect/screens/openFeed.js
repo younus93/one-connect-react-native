@@ -23,11 +23,13 @@ import I18n from "../service/i18n";
 import AsyncStorage from "@react-native-community/async-storage";
 import Toast from "react-native-simple-toast";
 const { State: TextInputState } = TextInput;
+import Header from "../custom/Header";
 const textFontSize = 14;
 
 export default class OpenFeed extends React.Component {
   static navigationOptions = ({ navigation }) => ({
-    title: navigation.getParam("title")
+    title: navigation.getParam("title"),
+    header: null
   });
 
   constructor(props) {
@@ -177,11 +179,11 @@ export default class OpenFeed extends React.Component {
     }
   };
 
-  _profile = item => {
-    this.props.navigation.navigate("Profile", {
-      url: item.poster.resource_url
-    });
-  };
+  // _profile = item => {
+  //   this.props.navigation.navigate("Profile", {
+  //     url: item.poster.resource_url
+  //   });
+  // };
 
   _renderComments = () => {
     if (this.state.commentLoading) {
@@ -253,10 +255,18 @@ export default class OpenFeed extends React.Component {
   };
 
   _profile = item => {
-    this.props.navigation.navigate("Profile", {
-      url: `/api/professionals/${item.created_by.id}`,
-      title: "View profile"
-    });
+    console.log("selected_profile:", item);
+    if (item.created_by != null) {
+      this.props.navigation.navigate("Profile", {
+        url: `/api/professionals/${item.created_by.id}`,
+        title: "View profile"
+      });
+    } else {
+      this.props.navigation.navigate("Profile", {
+        url: `/api/professionals/${item.poster.id}`,
+        title: "View profile"
+      });
+    }
   };
 
   _like = item => {
@@ -275,8 +285,11 @@ export default class OpenFeed extends React.Component {
   };
 
   render() {
+    const { navigation } = this.props;
+
     return (
       <View style={styles.container}>
+        <Header title={I18n.t("POST")} navigation={navigation} isBack={true} />
         <ScrollView
           alwaysBounceVertical={false}
           bounces={false}
