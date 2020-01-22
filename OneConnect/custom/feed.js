@@ -237,9 +237,12 @@ export default class Feed extends React.Component {
                 }
                 hitSlop={{ top: 5, left: 5, bottom: 5, right: 5 }}
               >
-                <View style={styles.paddingHorizontal}>
+                <View>
                   <Image
-                    style={styles.image}
+                    style={{
+                      width: 60,
+                      height: 60
+                    }}
                     source={{
                       uri: data.created_by.name
                         ? data.created_by.profile_pic
@@ -248,6 +251,14 @@ export default class Feed extends React.Component {
                     defaultSource={require("../resources/dummy_profile.png")}
                     resizeMode="cover"
                     onError={error => console.log(error)}
+                  />
+                  <Image
+                    style={{
+                      width: 60,
+                      height: 60,
+                      position: "absolute"
+                    }}
+                    source={require("../resources/ic_white_hex.png")}
                   />
                 </View>
               </TouchableWithoutFeedback>
@@ -264,24 +275,31 @@ export default class Feed extends React.Component {
               >
                 <View style={styles.paddingHorizontal10}>
                   <Text style={styles.headerText}>
-                    {data.created_by ? data.created_by.name : "Institute"}
+                    {data.created_by != null &&
+                    data.created_by.name != null &&
+                    data.created_by.name != undefined
+                      ? data.created_by.name
+                      : "Institute"}
                   </Text>
                   <Text style={styles.headerSubText}>{data.created_at}</Text>
                 </View>
               </TouchableWithoutFeedback>
             </View>
-            <TouchableWithoutFeedback onPress={this.onImageClick}>
-              <View style={styles.paddingVertical20}>
-                <Text style={styles.bodyText}>{data.body}</Text>
-                {this.state.pic != null && (
-                  <Image
-                    style={styles.feedImage}
-                    resizeMode="contain"
-                    source={{ uri: this.state.pic }}
-                  />
-                )}
-              </View>
-            </TouchableWithoutFeedback>
+
+            <View style={styles.paddingVertical20}>
+              <Text style={styles.bodyText}>{data.body}</Text>
+              <TouchableWithoutFeedback onPress={this.onImageClick}>
+                <View>
+                  {this.state.pic != null && (
+                    <Image
+                      style={styles.feedImage}
+                      resizeMode="contain"
+                      source={{ uri: this.state.pic }}
+                    />
+                  )}
+                </View>
+              </TouchableWithoutFeedback>
+            </View>
             <View style={styles.separator} />
             <View style={styles.footer}>
               <Text
@@ -405,7 +423,7 @@ const styles = StyleSheet.create({
     paddingHorizontal: 10
   },
   paddingVertical20: {
-    paddingVertical: 0
+    paddingVertical: 10
   },
   footer: {
     flexDirection: "row",

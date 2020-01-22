@@ -23,6 +23,7 @@ import I18n from "../service/i18n";
 import Toast from "react-native-simple-toast";
 import ImagePicker from "react-native-image-picker";
 import AsyncStorage from "@react-native-community/async-storage";
+import ProfileImage from "../custom/profileImage";
 
 export default class NewsFeed extends React.Component {
   static navigationOptions = ({ navigation }) => ({
@@ -112,19 +113,19 @@ export default class NewsFeed extends React.Component {
       toValue: 0,
       duration: 10
     }).start(() => {
-      // this.setState({
-      //   loading: false,
-      //   loggedIn: true
-      // });
+      this.setState({
+        loading: false,
+        loggedIn: true
+      });
     });
   };
 
   _loginError = error => {
-    // this.setState({
-    //   loading: false,
-    //   error: true,
-    //   errorText: error.message
-    // });
+    this.setState({
+      loading: false,
+      error: true,
+      errorText: error.message
+    });
   };
 
   _loginButton = () => {
@@ -233,8 +234,6 @@ export default class NewsFeed extends React.Component {
 
   postCreationSuccess = data => {
     console.log("data", data.data);
-
-    Toast.showWithGravity(data.message, Toast.LONG, Toast.TOP);
     this.setState({
       loading: false
     });
@@ -446,152 +445,147 @@ export default class NewsFeed extends React.Component {
   };
 
   render() {
-    const { data } = this.state;
+    const { data, loading } = this.state;
     const { navigation } = this.props;
     console.log("render:", data);
-
-    return (
-      <View style={styles.container}>
-        <Header
-          title={I18n.t("Newsfeed")}
-          navigation={navigation}
-          isBack={false}
-        />
-        <ScrollView>
-          <View
-            style={{
-              flex: 1,
-              height: 130,
-              borderRadius: 10,
-              backgroundColor: Colors.white,
-              elevation: 0.1,
-              marginLeft: "3%",
-              marginRight: "3%"
-            }}
-          >
+    if (!loading && data) {
+      return (
+        <View style={styles.container}>
+          <Header
+            title={I18n.t("Newsfeed")}
+            navigation={navigation}
+            isBack={false}
+          />
+          <ScrollView>
             <View
               style={{
                 flex: 1,
-                flexDirection: "column"
+                height: 130,
+                borderRadius: 10,
+                backgroundColor: Colors.white,
+                elevation: 0.1,
+                marginLeft: "3%",
+                marginRight: "3%",
+                marginTop: "2%",
+                marginBottom: "1.7%"
               }}
             >
               <View
                 style={{
-                  flexDirection: "row",
-                  marginLeft: "3%",
-                  marginRight: "4%",
-                  marginTop: "4%",
-                  marginBottom: "1.5%"
+                  flex: 1,
+                  flexDirection: "column"
                 }}
               >
-                <Image
+                <View
                   style={{
-                    width: 40,
-                    height: 40,
-                    position: "absolute",
-                    borderRadius: 20
+                    flexDirection: "row",
+                    marginLeft: "3%",
+                    marginRight: "4%",
+                    marginTop: "4%",
+                    marginBottom: "1.5%"
                   }}
-                  source={{
-                    uri: Manager.profilePicUrl
-                  }}
-                />
-                <Image
-                  style={{
-                    width: 40,
-                    height: 40,
-                    position: "absolute"
-                  }}
-                  source={require("../resources/ic_white_hex.png")}
-                />
-                <TextInput
-                  style={{
-                    flex: 1,
-                    marginLeft: "16%",
-                    height: 65,
-                    borderColor: Colors.background,
-                    borderWidth: 1,
-                    borderRadius: 5,
-                    padding: 10,
-                    textAlignVertical: "top"
-                  }}
-                  underlineColorAndroid="transparent"
-                  placeholder="What do you feel?"
-                  placeholderTextColor={Colors.background}
-                  autoCapitalize="none"
-                  editable
-                  maxLength={40}
-                  onChangeText={post_content => this.setState({ post_content })}
-                />
-              </View>
+                >
+                  <View>
+                    <ProfileImage width={40} height={40} borderRadius={20} />
 
-              <View
-                style={{
-                  position: "absolute",
-                  bottom: "8%",
-                  left: "4%",
-                  right: "4%",
-                  justifyContent: "space-between",
-                  flexDirection: "row"
-                }}
-              >
-                <TouchableOpacity onPress={this._addPhoto}>
-                  <View
-                    style={{
-                      flexDirection: "row",
-                      paddingLeft: 0,
-                      paddingRight: 10,
-                      paddingTop: 3,
-                      paddingBottom: 3
-                    }}
-                  >
-                    <Icon
-                      name="add-a-photo"
-                      size={0}
-                      color={Colors.primary}
-                      style={{ marginRight: "5%" }}
+                    <Image
+                      style={{
+                        width: 40,
+                        height: 40,
+                        position: "absolute"
+                      }}
+                      source={require("../resources/ic_white_hex.png")}
                     />
                   </View>
-                </TouchableOpacity>
-                <TouchableOpacity
-                  style={{
-                    paddingLeft: 10,
-                    paddingRight: 10,
-                    paddingTop: 3,
-                    paddingBottom: 3,
-                    backgroundColor: Colors.primary,
-                    borderRadius: 15,
-                    textAlignVertical: "center",
-                    justifyContent: "center"
-                  }}
-                  onPress={this._loginButton}
-                >
+                  <TextInput
+                    style={{
+                      flex: 1,
+                      marginLeft: "3%",
+                      height: 65,
+                      borderColor: Colors.background,
+                      borderWidth: 1,
+                      borderRadius: 5,
+                      padding: 10,
+                      textAlignVertical: "top"
+                    }}
+                    underlineColorAndroid="transparent"
+                    placeholder="What do you feel?"
+                    placeholderTextColor={Colors.background}
+                    autoCapitalize="none"
+                    editable
+                    maxLength={40}
+                    onChangeText={post_content =>
+                      this.setState({ post_content })
+                    }
+                  />
+                </View>
+
+                <TouchableOpacity onPress={this._loginButton}>
                   <Text
                     style={{
+                      backgroundColor: Colors.primary,
+                      borderRadius: 15,
+                      width: "15%",
+                      textAlign: "center",
+                      alignSelf: "flex-end",
+                      marginTop: "1.5%",
+                      marginRight: "3%",
+                      paddingLeft: 5,
+                      paddingRight: 0,
+                      paddingTop: 3,
+                      paddingBottom: 3,
                       color: Colors.white
                     }}
                   >
-                    {"POST"}
+                    {I18n.t("POST")}
                   </Text>
                 </TouchableOpacity>
               </View>
             </View>
-          </View>
-          <FlatList
-            data={this.state.data}
-            keyExtractor={this._keyExtractor}
-            renderItem={this._renderFeeds}
-            ItemSeparatorComponent={this._itemSeparator}
-            ListEmptyComponent={this._renderEmptyList}
-            ListFooterComponent={this._listFooter}
-            //onEndReached={this._loadMore}
-            onEndReachedThreshold={0.5}
-            // onRefresh={this._refresh}
-            refreshing={this.state.refreshing}
-            style={{ backgroundColor: Colors.background }}
+            <FlatList
+              data={this.state.data}
+              keyExtractor={this._keyExtractor}
+              renderItem={this._renderFeeds}
+              ItemSeparatorComponent={this._itemSeparator}
+              ListEmptyComponent={this._renderEmptyList}
+              ListFooterComponent={this._listFooter}
+              //onEndReached={this._loadMore}
+              onEndReachedThreshold={0.5}
+              // onRefresh={this._refresh}
+              refreshing={this.state.refreshing}
+              style={{ backgroundColor: Colors.background }}
+            />
+          </ScrollView>
+        </View>
+      );
+    } else {
+      return (
+        <View style={styles.container}>
+          <Header
+            title={I18n.t("Newsfeed")}
+            navigation={navigation}
+            isBack={false}
           />
-        </ScrollView>
-      </View>
-    );
+
+          <View
+            style={{
+              flex: 1,
+              backgroundColor: Colors.background,
+              padding: 10,
+              paddingTop: 20,
+              justifyContent: "center",
+              alignItems: "center"
+            }}
+          >
+            <ActivityIndicator
+              animating={this.state.loading}
+              size="large"
+              color={Colors.primary}
+            />
+          </View>
+        </View>
+      );
+    }
   }
 }
 

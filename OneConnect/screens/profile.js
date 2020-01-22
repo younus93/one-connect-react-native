@@ -287,7 +287,6 @@ export default class Profile extends React.Component {
   };
 
   _profilePicSuccess = data => {
-    console.log("Profile:", data);
     this.setState({
       profile: data.data
     });
@@ -518,7 +517,7 @@ export default class Profile extends React.Component {
   };
 
   _renderProfile() {
-    console.log("profile", this.state.profile);
+    console.log("profile", this.state.profile.basic.profile_pic);
     if (this.state.profile && this.state.profile.basic)
       return (
         <ScrollView style={{ backgroundColor: Colors.background }}>
@@ -1144,8 +1143,20 @@ export default class Profile extends React.Component {
     );
   }
 
+  storeData = async () => {
+    try {
+      await AsyncStorage.setItem(
+        "@profilePic",
+        this.state.profile.basic.profile_pic
+      );
+    } catch (e) {
+      // saving error
+    }
+  };
+
   render() {
     const { navigation } = this.props;
+    this.storeData();
 
     return (
       <View style={{ width: "100%", height: "100%" }}>

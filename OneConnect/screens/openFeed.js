@@ -9,7 +9,8 @@ import {
   Dimensions,
   UIManager,
   TextInput,
-  ActivityIndicator
+  ActivityIndicator,
+  Image
 } from "react-native";
 import Icon from "react-native-vector-icons/FontAwesome";
 import Comments from "../custom/comments";
@@ -276,7 +277,11 @@ export default class OpenFeed extends React.Component {
   render() {
     return (
       <View style={styles.container}>
-        <ScrollView alwaysBounceVertical={false} bounces={false}>
+        <ScrollView
+          alwaysBounceVertical={false}
+          bounces={false}
+          style={{ marginTop: "1.5%" }}
+        >
           <Feed
             data={this.data}
             commentCallback={this._focusCommentBox}
@@ -295,7 +300,13 @@ export default class OpenFeed extends React.Component {
           ]}
         >
           <View style={{ justifyContent: "flex-start" }}>
-            <ProfileImage width={40} height={40} borderRadius={20} />
+            <Image
+              style={{ width: 40, height: 40, borderRadius: 20 }}
+              source={{ uri: this.data.created_by.profile_pic }}
+              resizeMode="cover"
+              defaultSource={require("../resources/dummy_profile.png")}
+              onError={error => console.log(eror)}
+            />
           </View>
           <View style={{ flex: 1, justifyContent: "center" }}>
             <TextInput

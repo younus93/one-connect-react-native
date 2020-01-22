@@ -98,7 +98,7 @@ export default class WelcomeScreen extends Component {
           style={{width: '100%', height: 150}}
           source={{uri: 'https://cdn.vox-cdn.com/thumbor/8tLchaDMIEDNzUD3mYQ7v1ZQL84=/0x0:2012x1341/920x613/filters:focal(0x0:2012x1341):format(webp)/cdn.vox-cdn.com/uploads/chorus_image/image/47070706/google2.0.0.jpg'}}
         /> */}
-        <Image style={{ width: "100%", height: "95%" }} source={item.image} />
+        <Image style={{ width: "90%", height: "95%" }} source={item.image} />
       </View>
     );
   };
