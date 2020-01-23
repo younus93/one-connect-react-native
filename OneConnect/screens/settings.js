@@ -54,18 +54,19 @@ export default class Settings extends React.Component {
   }
 
   _profileSuccess = data => {
-    console.log("settings successful, data received :", data);
     this.data = data.data;
-    this.editable = null;
+    this.editable = {};
     this.setState({
-      user: data.data,
       loading: false,
-      error: true,
+      error: false,
+      user: data.data,
       errorText: "Setting saved successfully",
       modalBackground: Colors.safeDark
     });
+    console.log(this.state);
+    //alert(I18n.t("profile_updated"));
     setTimeout(() => {
-      this.props.navigation.navigate('MyProfile', '/api/profile');
+      this.props.navigation.navigate("MyProfile", "/api/profile");
     }, 2000);
   };
 
@@ -229,11 +230,11 @@ class ImageView extends React.Component {
                 fontSize: 14
               }}
             >
-              {this.data.current_company ? (
-                this.data.current_company.designation +
-                " at " +
-                this.data.current_company.name
-              ) : null}
+              {this.data.current_company
+                ? this.data.current_company.designation +
+                  " at " +
+                  this.data.current_company.name
+                : null}
             </Text>
           </View>
         </SafeAreaView>
@@ -259,7 +260,7 @@ class ProfileList extends React.Component {
     this.state = {
       user: data,
       isDateTimePickerVisible: false,
-      dob: data.basic.dob ? data.basic.dob.split("T")[0] : '',
+      dob: data.basic.dob ? data.basic.dob.split("T")[0] : "",
       gender: data.basic.gender,
       isGenderPickerVisible: false
     };
@@ -354,9 +355,9 @@ class ProfileList extends React.Component {
           style={{ marginVertical: 3 }}
           leftIcon={
             <Icon
-              name='user-tag'
+              name="user-tag"
               size={24}
-              color='black'
+              color="black"
               style={{ marginRight: 10 }}
             />
           }
@@ -370,9 +371,9 @@ class ProfileList extends React.Component {
           style={{ marginVertical: 3 }}
           leftIcon={
             <Icon
-              name='address-card'
+              name="address-card"
               size={24}
-              color='black'
+              color="black"
               style={{ marginRight: 10 }}
             />
           }
@@ -386,9 +387,9 @@ class ProfileList extends React.Component {
           style={{ marginVertical: 3 }}
           leftIcon={
             <Icon
-              name='address-card'
+              name="address-card"
               size={24}
-              color='black'
+              color="black"
               style={{ marginRight: 10 }}
             />
           }
@@ -402,9 +403,9 @@ class ProfileList extends React.Component {
           style={{ marginVertical: 3 }}
           leftIcon={
             <Entypo
-              name='email'
+              name="email"
               size={24}
-              color='black'
+              color="black"
               style={{ marginRight: 10 }}
             />
           }
@@ -418,9 +419,9 @@ class ProfileList extends React.Component {
           style={{ marginVertical: 3 }}
           leftIcon={
             <Icon
-              name='phone'
+              name="phone"
               size={24}
-              color='black'
+              color="black"
               style={{ marginRight: 10 }}
             />
           }
@@ -434,9 +435,9 @@ class ProfileList extends React.Component {
           style={{ marginVertical: 3 }}
           leftIcon={
             <Icon
-              name='smile'
+              name="smile"
               size={24}
-              color='black'
+              color="black"
               style={{ marginRight: 10 }}
             />
           }
@@ -450,9 +451,9 @@ class ProfileList extends React.Component {
           style={{ marginVertical: 3 }}
           leftIcon={
             <Icon
-              name='calendar-alt'
+              name="calendar-alt"
               size={24}
-              color='black'
+              color="black"
               style={{ marginRight: 10 }}
             />
           }
@@ -466,9 +467,9 @@ class ProfileList extends React.Component {
           style={{ marginVertical: 3 }}
           leftIcon={
             <Icon
-              name='male'
+              name="male"
               size={24}
-              color='black'
+              color="black"
               style={{ marginRight: 10 }}
             />
           }
@@ -482,9 +483,9 @@ class ProfileList extends React.Component {
           style={{ marginVertical: 3 }}
           leftIcon={
             <Entypo
-              name='network'
+              name="network"
               size={24}
-              color='black'
+              color="black"
               style={{ marginRight: 10 }}
             />
           }
@@ -498,7 +499,8 @@ class ProfileList extends React.Component {
   };
 
   _handleDatePicked = date => {
-    dob = date.getFullYear() + "-" + (date.getMonth() + 1) + "-" + date.getDate();
+    dob =
+      date.getFullYear() + "-" + (date.getMonth() + 1) + "-" + date.getDate();
     this.setState({
       isDateTimePickerVisible: false,
       dob: dob
@@ -617,7 +619,7 @@ const styles = StyleSheet.create({
     borderTopWidth: 3,
     borderTopColor: Colors.yellowDark,
     // height : 600,
-    backgroundColor: 'white',
+    backgroundColor: "white"
   },
   banner: {
     // width: '100%',
@@ -644,7 +646,7 @@ const styles = StyleSheet.create({
   header: {
     fontSize: 16,
     fontWeight: "600",
-    color: Colors.onSurface,
+    color: Colors.onSurface
     // opacity: 0.4
   },
   sectionText: {

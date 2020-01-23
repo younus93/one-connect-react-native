@@ -135,6 +135,19 @@ class dataManager {
       });
   };
 
+  changePass = (uri, method, data = null) => {
+    Call(uri, method, data)
+      .then(response => {
+        if (!response.data.login) {
+          throw Error(response.data.message);
+        }
+        this.eventEmitter.emit("CHANGE_PASSWORD_S", response);
+      })
+      .catch(error => {
+        this.eventEmitter.emit("CHANGE_PASSWORD_E", error);
+      });
+  };
+
   socialSignup = (uri, method, data = null) => {
     Call(uri, method, data)
       .then(response => {

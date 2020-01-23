@@ -82,5 +82,8 @@ export default {
   You: "คุณ",
   google_login: "เข้าสู่ระบบด้วย Gmail",
   facebook_signup: "สมัครสมาชิกด้วย Facebook",
-  google_signup: "ลงทะเบียนด้วย Gmail"
+  google_signup: "ลงทะเบียนด้วย Gmail",
+  Change_pass_error: "กรุณากรอกรายละเอียดที่ถูกต้อง",
+  password_changed: "เปลี่ยนรหัสผ่านสำเร็จแล้ว",
+  profile_updated: "อัปเดตโปรไฟล์สำเร็จแล้ว"
 };

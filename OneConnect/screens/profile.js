@@ -272,7 +272,7 @@ export default class Profile extends React.Component {
 
   _navigateToSettings = () => {
     console.log("navigateing to settings");
-    this.props.navigation.navigate("Settings", {
+    this.props.navigation.navigate("SettingsScreen", {
       data: this.state.profile,
       callback: this._needsUpdate
     });
@@ -517,7 +517,7 @@ export default class Profile extends React.Component {
   };
 
   _renderProfile() {
-    console.log("profile", this.state.profile.basic.profile_pic);
+    console.log("profile", this.state.profile);
     if (this.state.profile && this.state.profile.basic)
       return (
         <ScrollView style={{ backgroundColor: Colors.background }}>

@@ -82,5 +82,8 @@ export default {
   You: "You ",
   google_login: "Login with Gmail",
   facebook_signup: "Signup with Facebook",
-  google_signup: "Signup with Gmail"
+  google_signup: "Signup with Gmail",
+  Change_pass_error: "Please Enter Valid details",
+  password_changed: "Password has been changed successfully",
+  profile_updated: "Profile updated successfully"
 };

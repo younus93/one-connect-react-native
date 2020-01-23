@@ -18,7 +18,7 @@ import Terms from "../screens/termsCondition";
 import I18n from "../service/i18n";
 
 const navigatorConfig = {
-  initialRouteName: "NewsFeed",
+  initialRouteName: "Profile",
   defaultNavigationOptions: {
     headerStyle: {
       backgroundColor: Colors.primary,
