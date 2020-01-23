@@ -31,6 +31,30 @@ import I18n from "../service/i18n";
 import Header from "../custom/Header";
 
 export default class AddEducation extends React.Component {
+  static navigationOptions = ({ navigation }) => {
+    const accessLevel = navigation.getParam("accessLevel", 0);
+    let options = {
+      title: navigation.getParam("title"),
+      header: null
+    };
+    if (accessLevel) {
+      options["headerLeft"] = (
+        <View style={{ flexDirection: "row" }}>
+          <Button
+            style={{ borderRadius: 20 }}
+            onPress={navigation.getParam("hamPressed")}
+          >
+            <Image
+              style={{ width: 22, height: 22, padding: 10 }}
+              source={require("../resources/ic_logo_trans.png")}
+            />
+          </Button>
+        </View>
+      );
+    }
+    return options;
+  };
+
   constructor(props) {
     super(props);
     this.formData = {};
@@ -133,9 +157,15 @@ export default class AddEducation extends React.Component {
   };
 
   render() {
+    const { navigation } = this.props;
+
     return (
       <View style={{ width: "100%", height: "100%" }}>
-        <Header navigation={navigation} isBack={true} />
+        <Header
+          title={I18n.t("addEducation")}
+          navigation={navigation}
+          isBack={true}
+        />
 
         <ErrorHandler
           backgroundColor={this.state.modalBackground}

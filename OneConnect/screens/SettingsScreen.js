@@ -24,8 +24,32 @@ import Entypo from "react-native-vector-icons/Entypo";
 import DateTimePicker from "react-native-modal-datetime-picker";
 import ErrorHandler from "../custom/errorHandler";
 import I18n from "../service/i18n";
+import Header from "../custom/Header";
 
 export default class SettingsScreen extends React.Component {
+  static navigationOptions = ({ navigation }) => {
+    const accessLevel = navigation.getParam("accessLevel", 0);
+    let options = {
+      title: navigation.getParam("title"),
+      header: null
+    };
+    if (accessLevel) {
+      options["headerLeft"] = (
+        <View style={{ flexDirection: "row" }}>
+          <Button
+            style={{ borderRadius: 20 }}
+            onPress={navigation.getParam("hamPressed")}
+          >
+            <Image
+              style={{ width: 22, height: 22, padding: 10 }}
+              source={require("../resources/ic_logo_trans.png")}
+            />
+          </Button>
+        </View>
+      );
+    }
+    return options;
+  };
   constructor(props) {
     super(props);
     this.data = this.props.navigation.getParam("data");
@@ -399,9 +423,10 @@ export default class SettingsScreen extends React.Component {
 
   render() {
     let { user, editUser } = this.state;
+    const { navigation } = this.props;
     console.log("hello", user, this.state.editUser, this.state.isLoop);
     if (this.state.isLoop > 2) {
-      this.props.navigation.navigate("MyProfile", "/api/profile");
+      navigation.navigate("MyProfile", "/api/profile");
       alert(I18n.t("profile_updated"));
     }
     if (this.state.isEditUser) {
@@ -463,6 +488,11 @@ export default class SettingsScreen extends React.Component {
           behavior={Platform.OS === "ios" ? "padding" : null}
           style={{ flex: 1 }}
         >
+          <Header
+            title={I18n.t("Settings")}
+            navigation={navigation}
+            isBack={true}
+          />
           <View style={styles.container}>
             <ScrollView alwaysBounceVertical={false} bounces={false}>
               <View style={{ justifyContent: "space-between" }}>

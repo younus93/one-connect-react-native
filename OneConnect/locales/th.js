@@ -85,5 +85,7 @@ export default {
   google_signup: "ลงทะเบียนด้วย Gmail",
   Change_pass_error: "กรุณากรอกรายละเอียดที่ถูกต้อง",
   password_changed: "เปลี่ยนรหัสผ่านสำเร็จแล้ว",
-  profile_updated: "อัปเดตโปรไฟล์สำเร็จแล้ว"
+  profile_updated: "อัปเดตโปรไฟล์สำเร็จแล้ว",
+  addCompany: "เพิ่ม บริษัท",
+  addEducation: "เพิ่มการศึกษา"
 };

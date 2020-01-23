@@ -85,5 +85,7 @@ export default {
   google_signup: "Signup with Gmail",
   Change_pass_error: "Please Enter Valid details",
   password_changed: "Password has been changed successfully",
-  profile_updated: "Profile updated successfully"
+  profile_updated: "Profile updated successfully",
+  addCompany: "Add Company",
+  addEducation: "Add Education"
 };
