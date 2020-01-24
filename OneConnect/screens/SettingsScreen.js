@@ -768,7 +768,7 @@ export default class SettingsScreen extends React.Component {
                 onPress={this._onSave}
                 style={styles.saveButton}
                 title={I18n.t("Save")}
-                color={Colors.alternative}
+                color={Colors.white}
               />
             </View>
             {this.state.loading ? (
@@ -882,7 +882,7 @@ const styles = StyleSheet.create({
   saveButton: {
     justifyContent: "center",
     alignItems: "center",
-    backgroundColor: Colors.secondaryDark,
+    backgroundColor: Colors.primary,
     borderRadius: 30,
     paddingVertical: 15,
     marginHorizontal: 15,

@@ -317,7 +317,7 @@ export default class AddCompany extends React.Component {
                 }}
                 style={styles.button}
                 title={I18n.t("Save")}
-                color={Colors.alternative}
+                color={Colors.white}
               ></Button>
             </View>
             <DateTimePicker
@@ -535,7 +535,7 @@ const styles = StyleSheet.create({
     borderRadius: 5
   },
   button: {
-    backgroundColor: Colors.secondaryDark,
+    backgroundColor: Colors.primary,
     justifyContent: "center",
     alignItems: "center",
     borderRadius: 30,
