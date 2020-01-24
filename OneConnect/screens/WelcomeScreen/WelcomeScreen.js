@@ -12,7 +12,7 @@ import {
   TouchableOpacity,
   TouchableHighlight
 } from "react-native";
-
+import { Colors } from "../../constants";
 import AppIntroSlider from "./ReactnativeappIntroSlider/AppIntroSlider";
 // import { TouchableOpacity } from 'react-native-gesture-handler';
 import Icon from "react-native-vector-icons/Feather";
@@ -93,12 +93,16 @@ export default class WelcomeScreen extends Component {
 
   _renderItem = ({ item, index }) => {
     return (
-      <View style={styles.slides}>
+      <View style={{ alignItems: "center", backgroundColor: Colors.white }}>
         {/* <Image
           style={{width: '100%', height: 150}}
           source={{uri: 'https://cdn.vox-cdn.com/thumbor/8tLchaDMIEDNzUD3mYQ7v1ZQL84=/0x0:2012x1341/920x613/filters:focal(0x0:2012x1341):format(webp)/cdn.vox-cdn.com/uploads/chorus_image/image/47070706/google2.0.0.jpg'}}
         /> */}
-        <Image style={{ width: "90%", height: "95%" }} source={item.image} />
+        <Image
+          style={{ width: "85%", height: "85%", marginTop: "10%" }}
+          resizeMode={"cover"}
+          source={item.image}
+        />
       </View>
     );
   };

@@ -89,5 +89,8 @@ export default {
   addCompany: "Add Company",
   addEducation: "Add Education",
   Institute: "Institute",
-  Report: "Report"
+  Report: "Report",
+  storage_permission_title: "Storage Permission",
+  storage_permission_message:
+    "Beebuck App needs access to your storage to download Photos."
 };

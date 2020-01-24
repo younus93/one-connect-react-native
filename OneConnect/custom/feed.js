@@ -30,6 +30,7 @@ import AsyncStorage from "@react-native-community/async-storage";
 let faceData = [];
 let remainingFaces = 0;
 let userId = -1;
+var isPermissionGranted = false;
 
 //convert camel case format
 function ConvertCamelCase(str) {
@@ -45,15 +46,16 @@ export async function request_storage_runtime_permission() {
     const granted = await PermissionsAndroid.request(
       PermissionsAndroid.PERMISSIONS.WRITE_EXTERNAL_STORAGE,
       {
-        title: "ReactNativeCode Storage Permission",
-        message:
-          "ReactNativeCode App needs access to your storage to download Photos."
+        title: I18n.t("storage_permission_title"),
+        message: I18n.t("storage_permission_message")
       }
     );
     if (granted === PermissionsAndroid.RESULTS.GRANTED) {
       //Alert.alert("Storage Permission Granted.");
+      isPermissionGranted = true;
     } else {
       //Alert.alert("Storage Permission Not Granted");
+      isPermissionGranted = false;
     }
   } catch (err) {
     console.warn(err);
@@ -149,6 +151,10 @@ export default class Feed extends React.Component {
     this.props.profileCallback();
   };
 
+  _isOnBackPress = () => {
+    this.props.onBackPressCallback();
+  };
+
   onImageClick = () => {
     this.setState({ isImageZoomable: true });
   };
@@ -190,31 +196,35 @@ export default class Feed extends React.Component {
   }
 
   //download image from server
-  downloadImage = () => {
-    var date = new Date();
-    var image_URL = this.state.pic;
-    var ext = this.getExtention(image_URL);
-    ext = "." + ext[0];
-    const { config, fs } = RNFetchBlob;
-    let PictureDir = fs.dirs.PictureDir;
-    let options = {
-      fileCache: true,
-      addAndroidDownloads: {
-        useDownloadManager: true,
-        notification: true,
-        path:
-          PictureDir +
-          "/image_" +
-          Math.floor(date.getTime() + date.getSeconds() / 2) +
-          ext,
-        description: "Image"
-      }
-    };
-    config(options)
-      .fetch("GET", image_URL)
-      .then(res => {
-        Alert.alert("Image has been Successfully Downloaded.");
-      });
+  downloadImage = async () => {
+    if (!isPermissionGranted) {
+      await request_storage_runtime_permission();
+    } else {
+      var date = new Date();
+      var image_URL = this.state.pic;
+      var ext = this.getExtention(image_URL);
+      ext = "." + ext[0];
+      const { config, fs } = RNFetchBlob;
+      let PictureDir = fs.dirs.PictureDir;
+      let options = {
+        fileCache: true,
+        addAndroidDownloads: {
+          useDownloadManager: true,
+          notification: true,
+          path:
+            PictureDir +
+            "/image_" +
+            Math.floor(date.getTime() + date.getSeconds() / 2) +
+            ext,
+          description: "Image"
+        }
+      };
+      config(options)
+        .fetch("GET", image_URL)
+        .then(res => {
+          Alert.alert("Image has been Successfully Downloaded.");
+        });
+    }
   };
 
   getExtention = filename => {

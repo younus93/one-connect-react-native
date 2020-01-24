@@ -89,5 +89,8 @@ export default {
   addCompany: "เพิ่ม บริษัท",
   addEducation: "เพิ่มการศึกษา",
   Institute: "สถาบัน",
-  Report: "รายงาน"
+  Report: "รายงาน",
+  storage_permission_title: "การอนุญาตให้เก็บรักษา",
+  storage_permission_message:
+    "แอป Beebuck ต้องการเข้าถึงที่เก็บข้อมูลของคุณเพื่อดาวน์โหลดรูปภาพ"
 };

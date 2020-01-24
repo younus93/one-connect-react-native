@@ -10,7 +10,9 @@ import {
   Image,
   TextInput,
   TouchableOpacity,
-  Animated
+  Animated,
+  BackHandler,
+  ToastAndroid
 } from "react-native";
 import { DrawerActions } from "react-navigation-drawer";
 import Feed from "../custom/feed";
@@ -36,6 +38,7 @@ export default class NewsFeed extends React.Component {
     this.data = [];
     this.props.navigation.setParams({ title: I18n.t("Newsfeed") });
     this.opacity = new Animated.Value(0);
+    let isBackPress = false;
 
     this.state = {
       data: [],
@@ -84,6 +87,8 @@ export default class NewsFeed extends React.Component {
       .catch(error => {
         console.log("id in comment", error);
       });
+
+    BackHandler.addEventListener("hardwareBackPress", this.handleBackButton);
   }
 
   componentWillUnmount() {
@@ -103,6 +108,12 @@ export default class NewsFeed extends React.Component {
     //post sample api
     Manager.removeListener("LOGIN_S", this._loginSuccess);
     Manager.removeListener("LOGIN_E", this._loginError);
+    BackHandler.removeEventListener("hardwareBackPress", this.handleBackButton);
+  }
+
+  handleBackButton() {
+    ToastAndroid.show("Back button is pressed", ToastAndroid.SHORT);
+    return true;
   }
 
   _loginSuccess = data => {
@@ -289,6 +300,10 @@ export default class NewsFeed extends React.Component {
     Toast.showWithGravity("Thanks for reporting!", Toast.SHORT, Toast.TOP);
   };
 
+  _onBackPress = isOnBackPress => {
+    alert(isOnBackPress);
+  };
+
   _institute = item => {
     console.log("reached institute callback with ", item);
     this.props.navigation.navigate("Institution", {
@@ -313,6 +328,7 @@ export default class NewsFeed extends React.Component {
         profileCallback={() => this._profile(item)}
         likeCallback={() => this._like(item)}
         reportCallback={() => this._flag(item)}
+        onBackPressCallback={() => this._onBackPress()}
         touchable
       />
     );
