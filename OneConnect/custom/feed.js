@@ -319,7 +319,11 @@ export default class Feed extends React.Component {
             <View style={styles.paddingVertical20}>
               <Text style={styles.bodyText}>{data.body}</Text>
               <TouchableWithoutFeedback onPress={this.onImageClick}>
-                <View>
+                <View
+                  style={{
+                    alignItems: "center"
+                  }}
+                >
                   {this.state.pic != null && (
                     <AutoHeightImage
                       width={win.width / 1.125}
