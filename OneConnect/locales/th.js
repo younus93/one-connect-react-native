@@ -87,5 +87,7 @@ export default {
   password_changed: "เปลี่ยนรหัสผ่านสำเร็จแล้ว",
   profile_updated: "อัปเดตโปรไฟล์สำเร็จแล้ว",
   addCompany: "เพิ่ม บริษัท",
-  addEducation: "เพิ่มการศึกษา"
+  addEducation: "เพิ่มการศึกษา",
+  Institute: "สถาบัน",
+  Report: "รายงาน"
 };

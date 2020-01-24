@@ -25,9 +25,20 @@ import ImageViewer from "react-native-image-zoom-viewer";
 import RNFetchBlob from "rn-fetch-blob";
 const win = Dimensions.get("window");
 const ratio = win.width / 541; //541 is actual image width
+import AsyncStorage from "@react-native-community/async-storage";
 
 let faceData = [];
 let remainingFaces = 0;
+let userId = -1;
+
+//convert camel case format
+function ConvertCamelCase(str) {
+  return (" " + str)
+    .toLowerCase()
+    .replace(/[^a-zA-ZÀ-ÖØ-öø-ÿ0-9]+(.)/g, function(match, chr) {
+      return chr.toUpperCase();
+    });
+}
 
 export async function request_storage_runtime_permission() {
   try {
@@ -168,6 +179,14 @@ export default class Feed extends React.Component {
   //image save option
   async componentDidMount() {
     await request_storage_runtime_permission();
+    AsyncStorage.getItem("@id")
+      .then(res => {
+        console.log("id in comment", res);
+        userId = res;
+      })
+      .catch(error => {
+        console.log("id in comment", error);
+      });
   }
 
   //download image from server
@@ -278,8 +297,8 @@ export default class Feed extends React.Component {
                     {data.created_by != null &&
                     data.created_by.name != null &&
                     data.created_by.name != undefined
-                      ? data.created_by.name
-                      : "Institute"}
+                      ? ConvertCamelCase(data.created_by.name)
+                      : I18n.t("Institute")}
                   </Text>
                   <Text style={styles.headerSubText}>{data.created_at}</Text>
                 </View>
@@ -342,10 +361,14 @@ export default class Feed extends React.Component {
                   {I18n.t("Comment")}
                 </Text>
               </Button>
-              <Button onPress={this._report} style={styles.footerElement}>
-                <Icon name="flag" size={20} color={Colors.onPrimary} />
-                <Text style={styles.footerElementText}>Report</Text>
-              </Button>
+              {userId != data.created_by.id ? (
+                <Button onPress={this._report} style={styles.footerElement}>
+                  <Icon name="flag" size={20} color={Colors.onPrimary} />
+                  <Text style={styles.footerElementText}>
+                    {I18n.t("Report")}
+                  </Text>
+                </Button>
+              ) : null}
             </View>
           </View>
         </TouchableWithoutFeedback>
