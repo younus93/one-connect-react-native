@@ -136,14 +136,13 @@ class dataManager {
   };
 
   changePass = (uri, method, data = null) => {
-    Call(uri, method, data)
+    Call(uri, method, data, this.token)
       .then(response => {
-        if (!response.data.login) {
-          throw Error(response.data.message);
-        }
+        console.log("======================success", response);
         this.eventEmitter.emit("CHANGE_PASSWORD_S", response);
       })
       .catch(error => {
+        console.log("======================error", error);
         this.eventEmitter.emit("CHANGE_PASSWORD_E", error);
       });
   };

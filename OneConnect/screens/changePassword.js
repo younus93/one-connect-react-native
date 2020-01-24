@@ -6,6 +6,7 @@ import I18n from "../service/i18n";
 import Manager from "../service/dataManager";
 import Header from "../custom/Header";
 import ErrorHandler from "../custom/errorHandler";
+import AsyncStorage from "@react-native-community/async-storage";
 
 export default class ChangePassword extends React.Component {
   static navigationOptions = ({ navigation }) => ({
@@ -60,7 +61,7 @@ export default class ChangePassword extends React.Component {
         error: true,
         errorText: I18n.t("password_changed")
       });
-      this.props.navigation.getBack(null);
+      this.props.navigation.navigate("NewsFeed");
     });
   };
 
@@ -74,19 +75,32 @@ export default class ChangePassword extends React.Component {
 
   onChangePass = () => {
     console.log("change password clicked");
-    if (this.state.pass && this.state.confirmPass) {
+    if (
+      this.state.pass &&
+      this.state.confirmPass &&
+      this.state.pass == this.state.confirmPass
+    ) {
       this.setState({
         loading: true,
         error: false
       });
+
+      var userId = -1;
+      AsyncStorage.getItem("@id")
+        .then(res => {
+          console.log("id in comment", res);
+          userId = res;
+        })
+        .catch(error => {
+          console.log("id in comment", error);
+        });
       Animated.timing(this.opacity, {
         toValue: 0.7,
         duration: 100
       }).start(() => {
-        var tokenVal = this.state.fcmToken;
         Manager.changePass("/api/profile/password", "POST", {
           password: this.state.pass,
-          password_confirmation: this.state.confirmPass
+          id: userId
         });
       });
     } else {
@@ -103,7 +117,7 @@ export default class ChangePassword extends React.Component {
     return (
       <View style={styles.container}>
         <Header
-          title={I18n.t("Batches")}
+          title={I18n.t("Change_Password")}
           navigation={navigation}
           isBack={true}
         />

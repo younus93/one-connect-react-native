@@ -425,8 +425,8 @@ export default class SettingsScreen extends React.Component {
     let { user, editUser } = this.state;
     const { navigation } = this.props;
     console.log("hello", user, this.state.editUser, this.state.isLoop);
-    if (this.state.isLoop > 2) {
-      navigation.navigate("MyProfile", "/api/profile");
+    if (this.state.isLoop > 0) {
+      this.props.navigation.navigate("MyProfile", "/api/profile");
       alert(I18n.t("profile_updated"));
     }
     if (this.state.isEditUser) {

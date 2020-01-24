@@ -706,7 +706,7 @@ export default class Profile extends React.Component {
                   ) : null}
                 </View>
               </View>
-              <View style={styles.container}>
+              <View style={[styles.container, { width: 0, height: 0 }]}>
                 <View style={styles.bio}>
                   <View style={{ flexDirection: "row" }}>
                     <Text
@@ -835,7 +835,7 @@ export default class Profile extends React.Component {
                   ) : null}
                 </View>
               </View>
-              <View style={styles.container}>
+              <View style={[styles.container, { marginTop: -13 }]}>
                 <View style={styles.bio}>
                   <View style={{ flexDirection: "row" }}>
                     <Text
