@@ -26,6 +26,7 @@ import RNFetchBlob from "rn-fetch-blob";
 const win = Dimensions.get("window");
 const ratio = win.width / 541; //541 is actual image width
 import AsyncStorage from "@react-native-community/async-storage";
+import AutoHeightImage from "./autoHeightImage/autoHeightImageWithErrorFallback";
 
 let faceData = [];
 let remainingFaces = 0;
@@ -320,9 +321,8 @@ export default class Feed extends React.Component {
               <TouchableWithoutFeedback onPress={this.onImageClick}>
                 <View>
                   {this.state.pic != null && (
-                    <Image
-                      style={styles.feedImage}
-                      resizeMode="contain"
+                    <AutoHeightImage
+                      width={win.width / 1.125}
                       source={{ uri: this.state.pic }}
                     />
                   )}
@@ -505,7 +505,8 @@ const styles = StyleSheet.create({
     color: Colors.onSurface,
     fontSize: 17,
     fontWeight: "500",
-    opacity: 0.7
+    opacity: 0.7,
+    marginBottom: 5
   },
   image: {
     borderRadius: 20,
