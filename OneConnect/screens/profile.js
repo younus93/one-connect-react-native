@@ -1156,7 +1156,11 @@ export default class Profile extends React.Component {
 
   render() {
     const { navigation } = this.props;
-    this.storeData();
+
+    //below if condition stops other user profile saving
+    if (this.state.profile.editable) {
+      this.storeData();
+    }
 
     return (
       <View style={{ width: "100%", height: "100%" }}>
