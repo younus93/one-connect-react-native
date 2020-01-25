@@ -24,6 +24,7 @@ import AsyncStorage from "@react-native-community/async-storage";
 import Toast from "react-native-simple-toast";
 const { State: TextInputState } = TextInput;
 import Header from "../custom/Header";
+
 const textFontSize = 14;
 
 export default class OpenFeed extends React.Component {
@@ -286,7 +287,7 @@ export default class OpenFeed extends React.Component {
 
   render() {
     const { navigation } = this.props;
-
+    console.log("data123", this.data);
     return (
       <View style={styles.container}>
         <Header title={I18n.t("POST")} navigation={navigation} isBack={true} />
@@ -312,14 +313,15 @@ export default class OpenFeed extends React.Component {
             { transform: [{ translateY: this.shift }] }
           ]}
         >
-          <View style={{ justifyContent: "flex-start" }}>
-            <Image
-              style={{ width: 40, height: 40, borderRadius: 20 }}
-              source={{ uri: this.data.created_by.profile_pic }}
-              resizeMode="cover"
-              defaultSource={require("../resources/dummy_profile.png")}
-              onError={error => console.log(eror)}
-            />
+          <View
+            style={{
+              justifyContent: "flex-start",
+              paddingHorizontal: 10,
+              marginVertical: 0,
+              paddingVertical: 8
+            }}
+          >
+            <ProfileImage width={40} height={40} borderRadius={20} />
           </View>
           <View style={{ flex: 1, justifyContent: "center" }}>
             <TextInput
@@ -333,7 +335,11 @@ export default class OpenFeed extends React.Component {
               autoFocus={this.state.commentBoxFocus}
             />
           </View>
-          <View style={{ justifyContent: "flex-end" }}>
+          <View
+            style={{
+              justifyContent: "center"
+            }}
+          >
             <Button
               style={styles.button}
               onPress={this._postComment}
@@ -368,7 +374,9 @@ const styles = StyleSheet.create({
   commentInput: {
     fontSize: textFontSize,
     fontWeight: "400",
-    paddingHorizontal: 10
+    paddingHorizontal: 10,
+    marginVertical: 0,
+    paddingVertical: 8
   },
   button: {
     borderRadius: 5,

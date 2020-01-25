@@ -161,15 +161,6 @@ export default class CustomDrawerContentComponent extends React.Component {
                 resizeMode="cover"
                 onError={error => console.log(error)}
               />
-              <Image
-                style={{
-                  width: 100,
-                  height: 100,
-
-                  position: "absolute"
-                }}
-                source={require("../resources/ic_hex_yellow.png")}
-              />
             </View>
             <Button
               onPress={this.navigateToScreen("Profile", { accessLevel: 1 })}
