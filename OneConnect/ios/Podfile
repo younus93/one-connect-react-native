@@ -5,17 +5,30 @@ target 'Beebuck' do
   # Comment the next line if you don't want to use dynamic frameworks
   #use_frameworks!
 
+  pod "yoga", :path => "../node_modules/react-native/ReactCommon/yoga"
+  pod 'React', :path => '../node_modules/react-native'
+
+  # Third party deps podspec link
+  pod 'DoubleConversion', :podspec => '../node_modules/react-native/third-party-podspecs/DoubleConversion.podspec'
+  pod 'glog', :podspec => '../node_modules/react-native/third-party-podspecs/glog.podspec'
+  pod 'Folly', :podspec => '../node_modules/react-native/third-party-podspecs/Folly.podspec'
+
   # Pods for Beebuck
   pod 'Firebase/Core'
     pod 'Firebase/Messaging'
 
+    pod 'GoogleSignIn'
+
+    pod 'RNGoogleSignin', :path => '../node_modules/react-native-google-signin'
+
     post_install do |installer|
       system("mkdir -p Pods/Headers/Public/FirebaseCore && cp Pods/FirebaseCore/Firebase/Core/Public/* Pods/Headers/Public/FirebaseCore/")
+      installer.pods_project.targets.each do |target|
+        if target.name == "React"
+          target.remove_from_project
+        end
     end
 
-  target 'BeebuckTests' do
-    inherit! :search_paths
-    # Pods for testing
   end
 
 end

@@ -2,10 +2,11 @@
 #import <Firebase.h>
 #import "RNFirebaseNotifications.h"
 #import "RNFirebaseMessaging.h"
-
+#import <RNGoogleSignin/RNGoogleSignin.h>
 #import <React/RCTBridge.h>
 #import <React/RCTBundleURLProvider.h>
 #import <React/RCTRootView.h>
+
 
 @implementation AppDelegate
 
@@ -49,6 +50,10 @@ fetchCompletionHandler:(nonnull void (^)(UIBackgroundFetchResult))completionHand
  
   [[RNFirebaseMessaging instance] didReceiveRemoteNotification:response.notification.request.content.userInfo];
   completionHandler();
+}
+
+- (BOOL)application:(UIApplication *)application openURL:(nonnull NSURL *)url options:(nonnull NSDictionary<NSString *,id> *)options {
+  return [RNGoogleSignin application:application openURL:url options:options];
 }
 
 - (NSURL *)sourceURLForBridge:(RCTBridge *)bridge

@@ -24,11 +24,11 @@ import Terms from "../screens/termsCondition";
 //   GraphRequestManager,
 //   LoginManager
 // } from "react-native-fbsdk";
-// import {
-//   GoogleSignin,
-//   GoogleSigninButton,
-//   statusCodes
-// } from "react-native-google-signin";
+import {
+  GoogleSignin,
+  GoogleSigninButton,
+  statusCodes
+} from "react-native-google-signin";
 
 export default class CustomDrawerContentComponent extends React.Component {
   constructor(props) {
@@ -113,11 +113,11 @@ export default class CustomDrawerContentComponent extends React.Component {
         this.signOut;
 
         //facebook log out
-        try {
-          LoginManager.logOut();
-        } catch (error) {
-          console.log(error);
-        }
+        // try {
+        //   LoginManager.logOut();
+        // } catch (error) {
+        //   console.log(error);
+        // }
         this.props.navigation.navigate("Login");
         //TODO: log out
       })
