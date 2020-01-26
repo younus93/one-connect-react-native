@@ -42,7 +42,6 @@ export default class ProfileImage extends React.Component {
           source={{ uri: this.state.imgUrl }}
           resizeMode="cover"
           defaultSource={require("../resources/dummy_profile.png")}
-          onError={error => console.log(eror)}
         />
       </View>
     );
