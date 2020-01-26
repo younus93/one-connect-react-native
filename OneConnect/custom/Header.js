@@ -66,7 +66,7 @@ const styles = StyleSheet.create({
     paddingRight: 10
   },
   header_icon: {
-    color: Colors.colorWhite
+    color: "transparent"
   },
   header_title: {
     color: Colors.colorWhite,

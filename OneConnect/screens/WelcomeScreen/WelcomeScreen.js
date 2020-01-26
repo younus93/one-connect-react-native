@@ -93,14 +93,13 @@ export default class WelcomeScreen extends Component {
 
   _renderItem = ({ item, index }) => {
     return (
-      <View style={{ alignItems: "center", backgroundColor: Colors.white }}>
+      <View style={{ alignItems: "center", justifyContent: "center" }}>
         {/* <Image
           style={{width: '100%', height: 150}}
           source={{uri: 'https://cdn.vox-cdn.com/thumbor/8tLchaDMIEDNzUD3mYQ7v1ZQL84=/0x0:2012x1341/920x613/filters:focal(0x0:2012x1341):format(webp)/cdn.vox-cdn.com/uploads/chorus_image/image/47070706/google2.0.0.jpg'}}
         /> */}
         <Image
-          style={{ width: "85%", height: "85%", marginTop: "10%" }}
-          resizeMode={"cover"}
+          style={{ width: "85%", height: "80%", marginTop: "10%" }}
           source={item.image}
         />
       </View>
@@ -186,31 +185,31 @@ const slides = [
     title: "Slide 1",
     text: "The first slider of Beebuck application",
     // imageUrl: 'https://reactnativecode.com/wp-content/uploads/2019/04/restaurants.png',
-    image: require("../../resources/slider/welcome_screen_1.jpg")
+    image: require("../../resources/slider/welcome_screen_1.png")
   },
   {
     key: "k2",
     title: "Slide 2",
     text: " The second slider of Beebuck application",
-    image: require("../../resources/slider/welcome_screen_2.jpg")
+    image: require("../../resources/slider/welcome_screen_2.png")
   },
   {
     key: "k3",
     title: "Slide 3",
     text: " The third slider of Beebuck application",
-    image: require("../../resources/slider/welcome_screen_3.jpg")
+    image: require("../../resources/slider/welcome_screen_3.png")
   },
   {
     key: "k4",
     title: "Slide 4",
     text: " The fourth slider of Beebuck application",
-    image: require("../../resources/slider/welcome_screen_4.jpg")
+    image: require("../../resources/slider/welcome_screen_4.png")
   },
   {
     key: "k5",
     title: "Slide 5",
     text: " The fifth slider of Beebuck application",
-    image: require("../../resources/slider/welcome_screen_5.jpg")
+    image: require("../../resources/slider/welcome_screen_5.png")
   }
 ];
 const DATA = [

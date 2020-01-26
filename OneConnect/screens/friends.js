@@ -17,18 +17,23 @@ import Manager from "../service/dataManager";
 import Button from "../custom/button";
 import Icon from "react-native-vector-icons/FontAwesome5";
 import I18n from "../service/i18n";
+import Header from "../custom/Header";
+
 const UUID = require("uuid");
 export default class Friends extends React.Component {
   static navigationOptions = ({ navigation }) => ({
     title: navigation.getParam("title"),
+    header: null,
     headerLeft: (
-      <Button
-        style={{ borderRadius: 20 }}
-        onPress={navigation.getParam("hamPressed")}
-      >
+      <Button onPress={navigation.getParam("hamPressed")}>
         <Image
-          style={{ width: 22, height: 22, padding: 10 }}
-          source={require("../resources/bee_bar.jpg")}
+          style={{
+            width: 22,
+            height: 22,
+            padding: 10,
+            backgroundColor: "transparent"
+          }}
+          source={require("../resources/ic_logo_trans.png")}
         />
       </Button>
     ),
@@ -282,17 +287,26 @@ export default class Friends extends React.Component {
   };
 
   render() {
+    const { navigation } = this.props;
+
     return (
-      <FlatList
-        data={this.state.data}
-        keyExtractor={this._keyExtractor}
-        renderItem={this._renderMateList}
-        ItemSeparatorComponent={this._itemSeparator}
-        ListEmptyComponent={this._renderEmptyList}
-        // ListFooterComponent={this._listFooter}
-        ListHeaderComponent={this._listHeader}
-        style={styles.listStyle}
-      />
+      <View style={{ width: "100%", height: "100%" }}>
+        <Header
+          title={I18n.t("Friends")}
+          navigation={navigation}
+          isBack={false}
+        />
+        <FlatList
+          data={this.state.data}
+          keyExtractor={this._keyExtractor}
+          renderItem={this._renderMateList}
+          ItemSeparatorComponent={this._itemSeparator}
+          ListEmptyComponent={this._renderEmptyList}
+          // ListFooterComponent={this._listFooter}
+          ListHeaderComponent={this._listHeader}
+          style={styles.listStyle}
+        />
+      </View>
     );
   }
 }

@@ -751,7 +751,8 @@ export default class LoginScreen extends Component<Props> {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    backgroundColor: Colors.surface
+    backgroundColor: Colors.surface,
+    marginTop: "10%"
   },
   containerBox: {
     flex: 1,
@@ -862,19 +863,19 @@ const styles = StyleSheet.create({
     alignSelf: "center"
   },
   loginFacebook: {
-    width: screenWidth / 3,
-    height: screenWidth / 8,
+    width: 0,
+    height: 0,
     backgroundColor: Colors.colorFacebook,
     alignItems: "center",
     borderRadius: 3,
     flexDirection: "row",
-    padding: 10,
+    padding: 0,
     justifyContent: "center",
     marginRight: "2%"
   },
   loginGmail: {
     height: screenWidth / 8,
-    width: screenWidth / 3,
+    width: screenWidth / 2.5,
     backgroundColor: Colors.colorGmail,
     alignItems: "center",
     borderRadius: 3,
