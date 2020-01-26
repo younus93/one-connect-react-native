@@ -389,7 +389,13 @@ export default class Feed extends React.Component {
         {this.state.isImageZoomable && this.state.pic != null ? (
           <View>
             <Modal visible={true} transparent={true}>
-              <View style={{ width: "100%", height: "100%" }}>
+              <View
+                style={{
+                  width: "100%",
+                  height: "100%",
+                  marginTop: Platform.OS === "ios" ? 50 : 0
+                }}
+              >
                 <ImageViewer imageUrls={images} saveToLocalByLongPress={true} />
                 <View
                   style={{

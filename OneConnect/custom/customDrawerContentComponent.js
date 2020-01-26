@@ -157,7 +157,7 @@ export default class CustomDrawerContentComponent extends React.Component {
                 source={{
                   uri: Manager.profilePicUrl
                 }}
-                // defaultSource={require("../resources/dummy_profile.png")}
+                defaultSource={require("../resources/dummy_profile.png")}
                 resizeMode="cover"
                 onError={error => console.log(error)}
               />

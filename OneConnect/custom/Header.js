@@ -1,9 +1,17 @@
 import React, { Component } from "react";
-import { View, Text, TouchableWithoutFeedback, Image } from "react-native";
+import {
+  View,
+  Text,
+  TouchableWithoutFeedback,
+  Image,
+  Dimensions,
+  Platform
+} from "react-native";
 import Icon from "react-native-vector-icons/Feather";
 import { StyleSheet } from "react-native";
 import { Colors } from "../constants";
 import { DrawerActions } from "react-navigation-drawer";
+var width = Dimensions.get("window").width;
 
 class Header extends Component {
   render() {
@@ -48,12 +56,14 @@ const styles = StyleSheet.create({
     flexDirection: "row",
     alignItems: "center",
     justifyContent: "space-between",
-    paddingHorizontal: 10,
-    paddingVertical: 20,
     height: "10%",
     borderBottomLeftRadius: 20,
     borderBottomRightRadius: 20,
-    elevation: 5
+    elevation: 5,
+    paddingTop: Platform.OS === "ios" ? 50 : 0,
+    paddingBottom: 10,
+    paddingLeft: 10,
+    paddingRight: 10
   },
   header_icon: {
     color: Colors.colorWhite
