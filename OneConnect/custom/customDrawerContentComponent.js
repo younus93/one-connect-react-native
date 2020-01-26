@@ -17,18 +17,18 @@ import Manager from "../service/dataManager";
 import I18n, { SaveLocale } from "../service/i18n";
 import Privacy from "../screens/privacySetting";
 import Terms from "../screens/termsCondition";
-import {
-  LoginButton,
-  AccessToken,
-  GraphRequest,
-  GraphRequestManager,
-  LoginManager
-} from "react-native-fbsdk";
-import {
-  GoogleSignin,
-  GoogleSigninButton,
-  statusCodes
-} from "react-native-google-signin";
+// import {
+//   LoginButton,
+//   AccessToken,
+//   GraphRequest,
+//   GraphRequestManager,
+//   LoginManager
+// } from "react-native-fbsdk";
+// import {
+//   GoogleSignin,
+//   GoogleSigninButton,
+//   statusCodes
+// } from "react-native-google-signin";
 
 export default class CustomDrawerContentComponent extends React.Component {
   constructor(props) {

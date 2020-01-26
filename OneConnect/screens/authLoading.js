@@ -13,18 +13,6 @@ import AsyncStorage from "@react-native-community/async-storage";
 import { Colors } from "../constants";
 import Manager from "../service/dataManager";
 import { UpdateLocale } from "../service/i18n";
-import {
-  LoginButton,
-  AccessToken,
-  GraphRequest,
-  GraphRequestManager,
-  LoginManager
-} from "react-native-fbsdk";
-import {
-  GoogleSignin,
-  GoogleSigninButton,
-  statusCodes
-} from "react-native-google-signin";
 
 export default class AuthLoading extends Component {
   constructor(props) {
@@ -99,16 +87,6 @@ export default class AuthLoading extends Component {
         this.setState({
           animatedState: false
         });
-
-        //gmail logOut
-        this.signOut;
-
-        //facebook log out
-        try {
-          LoginManager.logOut();
-        } catch (error) {
-          console.log(error);
-        }
 
         this.props.navigation.navigate("Login");
       })
