@@ -8,7 +8,8 @@ import {
   SafeAreaView,
   TextInput,
   Dimensions,
-  Image
+  Image,
+  TouchableOpacity
 } from "react-native";
 import { DrawerActions } from "react-navigation-drawer";
 import { Colors } from "../constants";
@@ -44,7 +45,8 @@ export default class FriendAndRequest extends React.Component {
       routes: [
         { key: "first", title: I18n.t("Friends") },
         { key: "second", title: I18n.t("Requests") }
-      ]
+      ],
+      isFriends: true
     };
   }
 
@@ -184,24 +186,81 @@ export default class FriendAndRequest extends React.Component {
             isBack={false}
           />
           <ScrollView>
-            <TabView
-              navigationState={this.state}
-              renderScene={SceneMap({
-                first: this.FirstRoute,
-                second: this.SecondRoute
-              })}
-              onIndexChange={index => this.setState({ index })}
-              initialLayout={{ width: Dimensions.get("window").width }}
-              style={styles.container}
-              renderTabBar={props => (
-                <TabBar
-                  {...props}
-                  indicatorStyle={{ backgroundColor: Colors.yellowDark }}
-                  style={{ backgroundColor: Colors.primaryLight }}
-                  labelStyle={{ color: "#000000" }}
-                />
-              )}
-            />
+            <View style={{ marginTop: "1%" }}>
+              <View
+                style={{
+                  flex: 1,
+                  height: 50,
+                  backgroundColor: Colors.primary,
+                  alignItems: "center",
+                  flexDirection: "row",
+                  shadowOffset: { width: 0, height: 2 },
+                  shadowOpacity: 0.5,
+                  shadowRadius: 2
+                }}
+              >
+                <TouchableOpacity
+                  style={{
+                    width: "45%",
+                    alignItems: "center"
+                  }}
+                  onPress={() => this.setState({ isFriends: true })}
+                >
+                  <Text
+                    style={{
+                      textAlign: "center",
+                      color: Colors.white,
+                      fontSize: 17
+                    }}
+                  >
+                    Friends
+                  </Text>
+                </TouchableOpacity>
+                <Text
+                  style={{
+                    width: "10%",
+                    textAlign: "center",
+                    color: Colors.white,
+                    fontSize: 17
+                  }}
+                >
+                  |
+                </Text>
+                <TouchableOpacity
+                  style={{
+                    width: "45%",
+                    alignItems: "center"
+                  }}
+                  onPress={() => this.setState({ isFriends: false })}
+                >
+                  <Text
+                    style={{
+                      textAlign: "center",
+                      color: Colors.white,
+                      fontSize: 17
+                    }}
+                  >
+                    Requests
+                  </Text>
+                </TouchableOpacity>
+              </View>
+              <View>
+                {this.state.isFriends ? (
+                  <Friends navigation={this.props.navigation}></Friends>
+                ) : this.state.incomingFriendships.length > 0 ? (
+                  <FriendRequestList
+                    incomingFriendships={this.state.incomingFriendships}
+                    navigation={this.props.navigation}
+                  ></FriendRequestList>
+                ) : (
+                  <View style={styles.item}>
+                    <Text style={styles.itemText}>
+                      {I18n.t("No_friend_requests")}
+                    </Text>
+                  </View>
+                )}
+              </View>
+            </View>
           </ScrollView>
         </View>
       );

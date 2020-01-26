@@ -5,7 +5,7 @@ import FriendAndRequest from "../screens/friendAndRequest";
 import { Colors } from "../constants";
 
 const navigatorConfig = {
-  initialRouteName: "Friends",
+  initialRouteName: "FriendAndRequest",
   defaultNavigationOptions: {
     headerStyle: {
       backgroundColor: Colors.primary,

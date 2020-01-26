@@ -290,12 +290,7 @@ export default class Friends extends React.Component {
     const { navigation } = this.props;
 
     return (
-      <View style={{ width: "100%", height: "100%" }}>
-        <Header
-          title={I18n.t("Friends")}
-          navigation={navigation}
-          isBack={false}
-        />
+      <View style={{ flex: 1 }}>
         <FlatList
           data={this.state.data}
           keyExtractor={this._keyExtractor}
