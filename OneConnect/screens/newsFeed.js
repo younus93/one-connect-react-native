@@ -11,7 +11,6 @@ import {
   TextInput,
   TouchableOpacity,
   Animated,
-  BackHandler,
   ToastAndroid
 } from "react-native";
 import { DrawerActions } from "react-navigation-drawer";
@@ -87,8 +86,6 @@ export default class NewsFeed extends React.Component {
       .catch(error => {
         console.log("id in comment", error);
       });
-
-    BackHandler.addEventListener("hardwareBackPress", this.handleBackButton);
   }
 
   componentWillUnmount() {
@@ -108,7 +105,6 @@ export default class NewsFeed extends React.Component {
     //post sample api
     Manager.removeListener("LOGIN_S", this._loginSuccess);
     Manager.removeListener("LOGIN_E", this._loginError);
-    BackHandler.removeEventListener("hardwareBackPress", this.handleBackButton);
   }
 
   handleBackButton() {
