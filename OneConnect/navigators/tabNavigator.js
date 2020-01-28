@@ -140,7 +140,7 @@ const Tabs = createAppContainer(
       }
     },
     {
-      initialRouteName: "FriendsStack",
+      initialRouteName: "FeedStack",
       backBehavior: "history",
       resetOnBlur: true,
       activeColor: Colors.yellowDark,

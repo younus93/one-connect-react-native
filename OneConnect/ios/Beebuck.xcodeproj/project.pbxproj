@@ -53,9 +53,7 @@
 		667C180CD3F74F54B89C53C1 /* FontAwesome5_Brands.ttf in Resources */ = {isa = PBXBuildFile; fileRef = A409D5921BAB428786DBB400 /* FontAwesome5_Brands.ttf */; };
 		69BDD46A074D4175AD056DE3 /* AntDesign.ttf in Resources */ = {isa = PBXBuildFile; fileRef = F88EF3915EBE44B3B494E7D9 /* AntDesign.ttf */; };
 		6CECBF9C81CA05745E023A7F /* libPods-Beebuck.a in Frameworks */ = {isa = PBXBuildFile; fileRef = A6DAD7EC8BCA7A78EF23DF40 /* libPods-Beebuck.a */; };
-		6ED6301B23DCFE4F001CD570 /* GoogleService-Info.plist in Resources */ = {isa = PBXBuildFile; fileRef = 6EE348B923DCD66000FEF43F /* GoogleService-Info.plist */; };
-		6ED6305123DCFE4F001CD570 /* GoogleService-Info.plist in Resources */ = {isa = PBXBuildFile; fileRef = 6EE348B923DCD66000FEF43F /* GoogleService-Info.plist */; };
-		6ED6305223DCFE50001CD570 /* GoogleService-Info.plist in Resources */ = {isa = PBXBuildFile; fileRef = 6EE348B923DCD66000FEF43F /* GoogleService-Info.plist */; };
+		6E11F96223DE1BCD00C0339A /* GoogleService-Info.plist in Resources */ = {isa = PBXBuildFile; fileRef = 6E11F96123DE1BCD00C0339A /* GoogleService-Info.plist */; };
 		6ED6305A23DD6A4E001CD570 /* libRNGoogleSignin.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 6ED6305923DD6A1E001CD570 /* libRNGoogleSignin.a */; };
 		6ED630AC23DD6B57001CD570 /* AddressBook.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 6ED6307523DD6B57001CD570 /* AddressBook.framework */; };
 		6ED630AE23DD6B5F001CD570 /* SafariServices.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 6ED630AD23DD6B5F001CD570 /* SafariServices.framework */; };
@@ -63,7 +61,6 @@
 		6ED630B223DD6B73001CD570 /* libz.tbd in Frameworks */ = {isa = PBXBuildFile; fileRef = 6ED630B123DD6B73001CD570 /* libz.tbd */; };
 		6EE345F223DC8C4200FEF43F /* UserNotifications.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 6EE345BA23DC8C4200FEF43F /* UserNotifications.framework */; };
 		6EE3485423DCC6FF00FEF43F /* libRNFirebase.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 6EE3484823DCC69600FEF43F /* libRNFirebase.a */; };
-		6EE348EF23DCD66000FEF43F /* GoogleService-Info.plist in Resources */ = {isa = PBXBuildFile; fileRef = 6EE348B923DCD66000FEF43F /* GoogleService-Info.plist */; };
 		832341BD1AAA6AB300B99B32 /* libRCTText.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 832341B51AAA6A8300B99B32 /* libRCTText.a */; };
 		869CE8C3F7BF49598116E756 /* libRNI18n-tvOS.a in Frameworks */ = {isa = PBXBuildFile; fileRef = E429DD548EB04C708129868F /* libRNI18n-tvOS.a */; };
 		905E5F9E4EBF4722BB425738 /* libAirMaps.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 75539CC73A0E4F109C5F1904 /* libAirMaps.a */; };
@@ -527,8 +524,8 @@
 		698DD2FE6C9F4B818EE357EF /* RNVectorIcons.xcodeproj */ = {isa = PBXFileReference; explicitFileType = undefined; fileEncoding = 9; includeInIndex = 0; lastKnownFileType = "wrapper.pb-project"; name = RNVectorIcons.xcodeproj; path = "../node_modules/react-native-vector-icons/RNVectorIcons.xcodeproj"; sourceTree = "<group>"; };
 		6BD7E2E5F4604AEC9EA5FCEB /* RNGestureHandler.xcodeproj */ = {isa = PBXFileReference; explicitFileType = undefined; fileEncoding = 9; includeInIndex = 0; lastKnownFileType = "wrapper.pb-project"; name = RNGestureHandler.xcodeproj; path = "../node_modules/react-native-gesture-handler/ios/RNGestureHandler.xcodeproj"; sourceTree = "<group>"; };
 		6CCFCA855C8B492C859F5003 /* Feather.ttf */ = {isa = PBXFileReference; explicitFileType = undefined; fileEncoding = 9; includeInIndex = 0; lastKnownFileType = unknown; name = Feather.ttf; path = "../node_modules/react-native-vector-icons/Fonts/Feather.ttf"; sourceTree = "<group>"; };
+		6E11F96123DE1BCD00C0339A /* GoogleService-Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; name = "GoogleService-Info.plist"; path = "../../../GoogleService-Info.plist"; sourceTree = "<group>"; };
 		6EC82393DEA940CE96A66507 /* libRNImagePicker.a */ = {isa = PBXFileReference; explicitFileType = undefined; fileEncoding = 9; includeInIndex = 0; lastKnownFileType = archive.ar; path = libRNImagePicker.a; sourceTree = "<group>"; };
-		6ED6305323DCFF71001CD570 /* GoogleService-Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; name = "GoogleService-Info.plist"; path = "Beebuck/GoogleService-Info.plist"; sourceTree = "<group>"; };
 		6ED6305423DD6A1E001CD570 /* RNGoogleSignin.xcodeproj */ = {isa = PBXFileReference; lastKnownFileType = "wrapper.pb-project"; name = RNGoogleSignin.xcodeproj; path = "../node_modules/react-native-google-signin/ios/RNGoogleSignin.xcodeproj"; sourceTree = "<group>"; };
 		6ED6307523DD6B57001CD570 /* AddressBook.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = AddressBook.framework; path = System/Library/Frameworks/AddressBook.framework; sourceTree = SDKROOT; };
 		6ED630AD23DD6B5F001CD570 /* SafariServices.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = SafariServices.framework; path = System/Library/Frameworks/SafariServices.framework; sourceTree = SDKROOT; };
@@ -536,7 +533,6 @@
 		6ED630B123DD6B73001CD570 /* libz.tbd */ = {isa = PBXFileReference; lastKnownFileType = "sourcecode.text-based-dylib-definition"; name = libz.tbd; path = usr/lib/libz.tbd; sourceTree = SDKROOT; };
 		6EE345BA23DC8C4200FEF43F /* UserNotifications.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = UserNotifications.framework; path = System/Library/Frameworks/UserNotifications.framework; sourceTree = SDKROOT; };
 		6EE347B623DCC60500FEF43F /* Beebuck.entitlements */ = {isa = PBXFileReference; lastKnownFileType = text.plist.entitlements; name = Beebuck.entitlements; path = Beebuck/Beebuck.entitlements; sourceTree = "<group>"; };
-		6EE348B923DCD66000FEF43F /* GoogleService-Info.plist */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.plist.xml; name = "GoogleService-Info.plist"; path = "Beebuck/GoogleService-Info.plist"; sourceTree = "<group>"; };
 		6FDA551F278C4923A0332149 /* FontAwesome.ttf */ = {isa = PBXFileReference; explicitFileType = undefined; fileEncoding = 9; includeInIndex = 0; lastKnownFileType = unknown; name = FontAwesome.ttf; path = "../node_modules/react-native-vector-icons/Fonts/FontAwesome.ttf"; sourceTree = "<group>"; };
 		75539CC73A0E4F109C5F1904 /* libAirMaps.a */ = {isa = PBXFileReference; explicitFileType = undefined; fileEncoding = 9; includeInIndex = 0; lastKnownFileType = archive.ar; path = libAirMaps.a; sourceTree = "<group>"; };
 		76C14CE565A84951A1138F36 /* libRNCAsyncStorage.a */ = {isa = PBXFileReference; explicitFileType = undefined; fileEncoding = 9; includeInIndex = 0; lastKnownFileType = archive.ar; path = libRNCAsyncStorage.a; sourceTree = "<group>"; };
@@ -974,8 +970,7 @@
 		83CBB9F61A601CBA00E9B192 = {
 			isa = PBXGroup;
 			children = (
-				6EE348B923DCD66000FEF43F /* GoogleService-Info.plist */,
-				6ED6305323DCFF71001CD570 /* GoogleService-Info.plist */,
+				6E11F96123DE1BCD00C0339A /* GoogleService-Info.plist */,
 				13B07FAE1A68108700A75B9A /* Beebuck */,
 				832341AE1AAA6A7D00B99B32 /* Libraries */,
 				00E356EF1AD99517003FC87E /* BeebuckTests */,
@@ -1644,7 +1639,6 @@
 			isa = PBXResourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				6ED6301B23DCFE4F001CD570 /* GoogleService-Info.plist in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -1652,7 +1646,7 @@
 			isa = PBXResourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				6EE348EF23DCD66000FEF43F /* GoogleService-Info.plist in Resources */,
+				6E11F96223DE1BCD00C0339A /* GoogleService-Info.plist in Resources */,
 				13B07FBF1A68108700A75B9A /* Images.xcassets in Resources */,
 				13B07FBD1A68108700A75B9A /* LaunchScreen.xib in Resources */,
 				69BDD46A074D4175AD056DE3 /* AntDesign.ttf in Resources */,
@@ -1679,7 +1673,6 @@
 			buildActionMask = 2147483647;
 			files = (
 				2D02E4BD1E0B4A84006451C7 /* Images.xcassets in Resources */,
-				6ED6305123DCFE4F001CD570 /* GoogleService-Info.plist in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -1687,7 +1680,6 @@
 			isa = PBXResourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				6ED6305223DCFE50001CD570 /* GoogleService-Info.plist in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -1916,7 +1908,7 @@
 				CODE_SIGN_ENTITLEMENTS = Beebuck/Beebuck.entitlements;
 				CODE_SIGN_IDENTITY = "iPhone Developer";
 				CODE_SIGN_STYLE = Automatic;
-				CURRENT_PROJECT_VERSION = 1;
+				CURRENT_PROJECT_VERSION = 5.2.3;
 				DEAD_CODE_STRIPPING = NO;
 				DEVELOPMENT_TEAM = 944QM936QK;
 				HEADER_SEARCH_PATHS = (
@@ -1936,6 +1928,7 @@
 				);
 				INFOPLIST_FILE = Beebuck/Info.plist;
 				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks";
+				MARKETING_VERSION = 5.2.3;
 				OTHER_LDFLAGS = (
 					"$(inherited)",
 					"-ObjC",
@@ -1956,7 +1949,7 @@
 				CODE_SIGN_ENTITLEMENTS = Beebuck/Beebuck.entitlements;
 				CODE_SIGN_IDENTITY = "iPhone Developer";
 				CODE_SIGN_STYLE = Automatic;
-				CURRENT_PROJECT_VERSION = 1;
+				CURRENT_PROJECT_VERSION = 5.2.3;
 				DEVELOPMENT_TEAM = 944QM936QK;
 				HEADER_SEARCH_PATHS = (
 					"$(inherited)",
@@ -1975,6 +1968,7 @@
 				);
 				INFOPLIST_FILE = Beebuck/Info.plist;
 				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks";
+				MARKETING_VERSION = 5.2.3;
 				OTHER_LDFLAGS = (
 					"$(inherited)",
 					"-ObjC",
@@ -2269,6 +2263,7 @@
 				GCC_WARN_UNUSED_VARIABLE = YES;
 				IPHONEOS_DEPLOYMENT_TARGET = 9.0;
 				MTL_ENABLE_DEBUG_INFO = NO;
+				ONLY_ACTIVE_ARCH = YES;
 				SDKROOT = iphoneos;
 				VALIDATE_PRODUCT = YES;
 			};

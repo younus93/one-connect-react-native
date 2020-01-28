@@ -248,7 +248,7 @@ export default class LoginScreen extends Component<Props> {
         data.data.user.basic.id,
         data.data.user
       );
-      AsyncStorage.setItem("user_id", data.data.user.basic.id);
+      AsyncStorage.setItem("user_id", JSON.stringify(data.data.user.basic.id));
       Animated.timing(this.opacity, {
         toValue: 0,
         duration: 10
@@ -467,7 +467,8 @@ export default class LoginScreen extends Component<Props> {
                         flex: 1,
                         flexWrap: "wrap",
                         color: "white",
-                        fontWeight: "bold"
+                        fontWeight: "bold",
+                        textAlign: "center"
                       }}
                     >
                       {I18n.t("google_signup")}
@@ -628,8 +629,8 @@ const styles = StyleSheet.create({
     marginRight: "2%"
   },
   loginGmail: {
-    height: screenWidth / 8,
-    width: screenWidth / 2.5,
+    height: screenWidth / 7,
+    width: screenWidth / 2.3,
     backgroundColor: Colors.colorGmail,
     alignItems: "center",
     borderRadius: 3,

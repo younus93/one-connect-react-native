@@ -238,7 +238,7 @@ export default class LoginScreen extends Component<Props> {
       data.data.user.basic.id,
       data.data.user
     );
-    AsyncStorage.setItem("user_id", data.data.user.basic.id);
+    AsyncStorage.setItem("user_id", JSON.stringify(data.data.user.basic.id));
     Animated.timing(this.opacity, {
       toValue: 0,
       duration: 10
