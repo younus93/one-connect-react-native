@@ -676,9 +676,10 @@ export default class LoginScreen extends Component<Props> {
                         name="facebook"
                         size={22}
                         color={Colors.colorWhite}
-                        style={{ marginLeft: "18%", marginRight: "5%" }}
+                        style={{ marginLeft: Platform.OS == 'ios' ? 0 : '18%', marginRight: Platform.Os == 'ios' ? 0 :"5%" }}
                       />
-                      <Text style={{ color: "white", fontWeight: "bold" }}>
+                      <Text style={{
+                      color: "white", fontWeight: "bold" }}>
                         {I18n.t("facebook_login")}
                       </Text>
                     </TouchableOpacity>
@@ -691,7 +692,7 @@ export default class LoginScreen extends Component<Props> {
                         name="logo-google"
                         size={22}
                         color={Colors.colorWhite}
-                        style={{ marginLeft: "0%", marginRight: "5%" }}
+                        style={{ marginLeft: Platform.OS == 'ios' ? 0 : '18%', marginRight: Platform.Os == 'ios' ? 0 :"5%"}}
                       />
                       <Text
                         style={{
@@ -864,18 +865,18 @@ const styles = StyleSheet.create({
   },
   loginFacebook: {
     width: screenWidth / 3,
-    height: screenWidth / 8,
+    height: screenWidth / 7,
     backgroundColor: Colors.colorFacebook,
     alignItems: "center",
     borderRadius: 3,
     flexDirection: "row",
-    padding: 0,
-    justifyContent: "center",
-    marginRight: "2%"
+    padding: 10,
+    marginRight: "2%",
+    justifyContent: "center"
   },
   loginGmail: {
-    height: screenWidth / 8,
-    width: screenWidth / 2.5,
+    height: screenWidth / 7,
+    width: screenWidth / 3,
     backgroundColor: Colors.colorGmail,
     alignItems: "center",
     borderRadius: 3,
