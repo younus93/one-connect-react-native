@@ -92,5 +92,7 @@ export default {
   Report: "รายงาน",
   storage_permission_title: "การอนุญาตให้เก็บรักษา",
   storage_permission_message:
-    "แอป Beebuck ต้องการเข้าถึงที่เก็บข้อมูลของคุณเพื่อดาวน์โหลดรูปภาพ"
+    "แอป Beebuck ต้องการเข้าถึงที่เก็บข้อมูลของคุณเพื่อดาวน์โหลดรูปภาพ",
+    post_empty:"กรุณาใส่เนื้อหาโพสต์",
+
 };

@@ -103,22 +103,23 @@ const styles = StyleSheet.create({
     flexDirection: "row",
     alignItems: "center",
     justifyContent: "space-between",
-    height: width / 5,
+    height: Platform.OS == 'ios' ? width / 5 : width / 8,
     borderBottomLeftRadius: 20,
     borderBottomRightRadius: 20,
     elevation: 5,
-    paddingLeft: width / 25,
-    paddingTop: width / 15
+    paddingLeft: Platform.OS == 'ios' ? width / 25 : width / 25,
+    paddingTop: Platform.OS == 'ios' ? width / 15 : 0
   },
   header_icon: {
-    color: "transparent"
+    color: Colors.white
   },
   header_title: {
     color: Colors.colorWhite,
     fontSize: 18,
     fontWeight: "500",
-    height: width / 6,
-    marginTop: width / 9
+    height: Platform.OS == 'ios' ? width / 6 :width/8,
+    marginTop: Platform.OS == 'ios' ? width / 9 : width / 14,
+    marginLeft: Platform.OS == 'ios' ? 0 : -(width/15)
   }
 });
 

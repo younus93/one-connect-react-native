@@ -12,7 +12,8 @@ import {
   TouchableOpacity,
   Animated,
   BackHandler,
-  ToastAndroid
+  ToastAndroid,
+  AppState
 } from "react-native";
 import { DrawerActions } from "react-navigation-drawer";
 import Feed from "../custom/feed";
@@ -26,6 +27,8 @@ import Toast from "react-native-simple-toast";
 import ImagePicker from "react-native-image-picker";
 import AsyncStorage from "@react-native-community/async-storage";
 import ProfileImage from "../custom/profileImage";
+
+var postContent = "";
 
 export default class NewsFeed extends React.Component {
   static navigationOptions = ({ navigation }) => ({
@@ -87,8 +90,8 @@ export default class NewsFeed extends React.Component {
       .catch(error => {
         console.log("id in comment", error);
       });
+      AppState.addEventListener('change', this._handleAppStateChange);
 
-    BackHandler.addEventListener("hardwareBackPress", this.handleBackButton);
   }
 
   componentWillUnmount() {
@@ -108,13 +111,29 @@ export default class NewsFeed extends React.Component {
     //post sample api
     Manager.removeListener("LOGIN_S", this._loginSuccess);
     Manager.removeListener("LOGIN_E", this._loginError);
-    BackHandler.removeEventListener("hardwareBackPress", this.handleBackButton);
+
+    AppState.removeEventListener('change', this._handleAppStateChange);
+
   }
 
-  handleBackButton() {
-    ToastAndroid.show("Back button is pressed", ToastAndroid.SHORT);
-    return true;
-  }
+  _handleAppStateChange = (nextAppState) => {
+       if (this.state.appState.match(/inactive|background/) && nextAppState === 'active') {
+         Manager.newsFeeds("/api/newsfeeds?page=1", "GET");
+         AsyncStorage.getItem("@id")
+           .then(res => {
+             console.log("id in comment", res);
+             this.setState({
+               userId: res
+             });
+           })
+           .catch(error => {
+             console.log("id in comment", error);
+           });
+       }
+       this.setState({appState: nextAppState});
+     }
+
+
 
   _loginSuccess = data => {
     console.log("login successfull : ", data);
@@ -152,10 +171,17 @@ export default class NewsFeed extends React.Component {
       toValue: 0.7,
       duration: 100
     }).start(() => {
-      Manager.postCreation("/api/newsfeeds", "POST", {
-        user_id: userId,
-        body: this.state.post_content
-      });
+      console.warn(postContent);
+      if(postContent!=""){
+        Manager.postCreation("/api/newsfeeds", "POST", {
+          user_id: userId,
+          body: postContent
+        });
+        postContent = ""
+      }else{
+        alert(I18n.t('post_empty'));
+      }
+
     });
     //}
   };
@@ -531,7 +557,7 @@ export default class NewsFeed extends React.Component {
                     editable
                     maxLength={40}
                     onChangeText={post_content =>
-                      this.setState({ post_content })
+                      postContent = post_content
                     }
                   />
                 </View>

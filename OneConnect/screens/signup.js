@@ -21,13 +21,13 @@ import Manager from "../service/dataManager";
 import ErrorHandler from "../custom/errorHandler";
 import Icon from "react-native-vector-icons/Entypo";
 import GmailIcon from "react-native-vector-icons/Ionicons";
-// import {
-//   LoginButton,
-//   AccessToken,
-//   GraphRequest,
-//   GraphRequestManager,
-//   LoginManager
-// } from "react-native-fbsdk";
+import {
+  LoginButton,
+  AccessToken,
+  GraphRequest,
+  GraphRequestManager,
+  LoginManager
+} from "react-native-fbsdk";
 import {
   GoogleSignin,
   GoogleSigninButton,
@@ -619,8 +619,8 @@ const styles = StyleSheet.create({
     alignSelf: "center"
   },
   loginFacebook: {
-    width: 0,
-    height: 0,
+    width: screenWidth / 3,
+    height: screenWidth / 8,
     backgroundColor: Colors.colorFacebook,
     alignItems: "center",
     borderRadius: 3,

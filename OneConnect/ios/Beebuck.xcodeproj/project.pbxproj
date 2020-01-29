@@ -23,7 +23,6 @@
 		139FDEF61B0652A700C62182 /* libRCTWebSocket.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 139FDEF41B06529B00C62182 /* libRCTWebSocket.a */; };
 		13B07FBC1A68108700A75B9A /* AppDelegate.m in Sources */ = {isa = PBXBuildFile; fileRef = 13B07FB01A68108700A75B9A /* AppDelegate.m */; };
 		13B07FBD1A68108700A75B9A /* LaunchScreen.xib in Resources */ = {isa = PBXBuildFile; fileRef = 13B07FB11A68108700A75B9A /* LaunchScreen.xib */; };
-		13B07FBF1A68108700A75B9A /* Images.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 13B07FB51A68108700A75B9A /* Images.xcassets */; };
 		13B07FC11A68108700A75B9A /* main.m in Sources */ = {isa = PBXBuildFile; fileRef = 13B07FB71A68108700A75B9A /* main.m */; };
 		140ED2AC1D01E1AD002B40FF /* libReact.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 146834041AC3E56700842450 /* libReact.a */; };
 		146834051AC3E58100842450 /* libReact.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 146834041AC3E56700842450 /* libReact.a */; };
@@ -53,7 +52,6 @@
 		667C180CD3F74F54B89C53C1 /* FontAwesome5_Brands.ttf in Resources */ = {isa = PBXBuildFile; fileRef = A409D5921BAB428786DBB400 /* FontAwesome5_Brands.ttf */; };
 		69BDD46A074D4175AD056DE3 /* AntDesign.ttf in Resources */ = {isa = PBXBuildFile; fileRef = F88EF3915EBE44B3B494E7D9 /* AntDesign.ttf */; };
 		6CECBF9C81CA05745E023A7F /* libPods-Beebuck.a in Frameworks */ = {isa = PBXBuildFile; fileRef = A6DAD7EC8BCA7A78EF23DF40 /* libPods-Beebuck.a */; };
-		6E11F96223DE1BCD00C0339A /* GoogleService-Info.plist in Resources */ = {isa = PBXBuildFile; fileRef = 6E11F96123DE1BCD00C0339A /* GoogleService-Info.plist */; };
 		6ED6305A23DD6A4E001CD570 /* libRNGoogleSignin.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 6ED6305923DD6A1E001CD570 /* libRNGoogleSignin.a */; };
 		6ED630AC23DD6B57001CD570 /* AddressBook.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 6ED6307523DD6B57001CD570 /* AddressBook.framework */; };
 		6ED630AE23DD6B5F001CD570 /* SafariServices.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 6ED630AD23DD6B5F001CD570 /* SafariServices.framework */; };
@@ -62,6 +60,7 @@
 		6EE345F223DC8C4200FEF43F /* UserNotifications.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 6EE345BA23DC8C4200FEF43F /* UserNotifications.framework */; };
 		6EE3485423DCC6FF00FEF43F /* libRNFirebase.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 6EE3484823DCC69600FEF43F /* libRNFirebase.a */; };
 		832341BD1AAA6AB300B99B32 /* libRCTText.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 832341B51AAA6A8300B99B32 /* libRCTText.a */; };
+		8415EA4D23E0596C0087A736 /* GoogleService-Info.plist in Resources */ = {isa = PBXBuildFile; fileRef = 8415EA4C23E0596C0087A736 /* GoogleService-Info.plist */; };
 		869CE8C3F7BF49598116E756 /* libRNI18n-tvOS.a in Frameworks */ = {isa = PBXBuildFile; fileRef = E429DD548EB04C708129868F /* libRNI18n-tvOS.a */; };
 		905E5F9E4EBF4722BB425738 /* libAirMaps.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 75539CC73A0E4F109C5F1904 /* libAirMaps.a */; };
 		90D9418907634078967FBCD2 /* libRNCAsyncStorage.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 76C14CE565A84951A1138F36 /* libRNCAsyncStorage.a */; };
@@ -541,6 +540,7 @@
 		808605CEFA4A4E2DB2A661DD /* Ionicons.ttf */ = {isa = PBXFileReference; explicitFileType = undefined; fileEncoding = 9; includeInIndex = 0; lastKnownFileType = unknown; name = Ionicons.ttf; path = "../node_modules/react-native-vector-icons/Fonts/Ionicons.ttf"; sourceTree = "<group>"; };
 		81F9296B267F4A3EB49F8023 /* FontAwesome5_Regular.ttf */ = {isa = PBXFileReference; explicitFileType = undefined; fileEncoding = 9; includeInIndex = 0; lastKnownFileType = unknown; name = FontAwesome5_Regular.ttf; path = "../node_modules/react-native-vector-icons/Fonts/FontAwesome5_Regular.ttf"; sourceTree = "<group>"; };
 		832341B01AAA6A8300B99B32 /* RCTText.xcodeproj */ = {isa = PBXFileReference; lastKnownFileType = "wrapper.pb-project"; name = RCTText.xcodeproj; path = "../node_modules/react-native/Libraries/Text/RCTText.xcodeproj"; sourceTree = "<group>"; };
+		8415EA4C23E0596C0087A736 /* GoogleService-Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = "GoogleService-Info.plist"; sourceTree = "<group>"; };
 		8AD033889AC14EE8A447E229 /* libRNI18n.a */ = {isa = PBXFileReference; explicitFileType = undefined; fileEncoding = 9; includeInIndex = 0; lastKnownFileType = archive.ar; path = libRNI18n.a; sourceTree = "<group>"; };
 		91E35B16E1FC4798B8011E32 /* libRNSVG-tvOS.a */ = {isa = PBXFileReference; explicitFileType = undefined; fileEncoding = 9; includeInIndex = 0; lastKnownFileType = archive.ar; path = "libRNSVG-tvOS.a"; sourceTree = "<group>"; };
 		A409D5921BAB428786DBB400 /* FontAwesome5_Brands.ttf */ = {isa = PBXFileReference; explicitFileType = undefined; fileEncoding = 9; includeInIndex = 0; lastKnownFileType = unknown; name = FontAwesome5_Brands.ttf; path = "../node_modules/react-native-vector-icons/Fonts/FontAwesome5_Brands.ttf"; sourceTree = "<group>"; };
@@ -971,6 +971,7 @@
 			isa = PBXGroup;
 			children = (
 				6E11F96123DE1BCD00C0339A /* GoogleService-Info.plist */,
+				8415EA4C23E0596C0087A736 /* GoogleService-Info.plist */,
 				13B07FAE1A68108700A75B9A /* Beebuck */,
 				832341AE1AAA6A7D00B99B32 /* Libraries */,
 				00E356EF1AD99517003FC87E /* BeebuckTests */,
@@ -1646,8 +1647,7 @@
 			isa = PBXResourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				6E11F96223DE1BCD00C0339A /* GoogleService-Info.plist in Resources */,
-				13B07FBF1A68108700A75B9A /* Images.xcassets in Resources */,
+				8415EA4D23E0596C0087A736 /* GoogleService-Info.plist in Resources */,
 				13B07FBD1A68108700A75B9A /* LaunchScreen.xib in Resources */,
 				69BDD46A074D4175AD056DE3 /* AntDesign.ttf in Resources */,
 				370233B273D8451996287F12 /* Entypo.ttf in Resources */,
@@ -2194,8 +2194,8 @@
 				CLANG_WARN_SUSPICIOUS_MOVE = YES;
 				CLANG_WARN_UNREACHABLE_CODE = YES;
 				CLANG_WARN__DUPLICATE_METHOD_MATCH = YES;
-				CODE_SIGN_IDENTITY = "iPhone Developer: Jagdish Mahindran (4D86TZH32Y)";
-				"CODE_SIGN_IDENTITY[sdk=iphoneos*]" = "iPhone Developer: Jagdish Mahindran (4D86TZH32Y)";
+				CODE_SIGN_IDENTITY = "Apple Development: Jagdish Mahindran (4D86TZH32Y)";
+				"CODE_SIGN_IDENTITY[sdk=iphoneos*]" = "Apple Development: Jagdish Mahindran (4D86TZH32Y)";
 				COPY_PHASE_STRIP = NO;
 				ENABLE_STRICT_OBJC_MSGSEND = YES;
 				ENABLE_TESTABILITY = YES;
@@ -2248,8 +2248,8 @@
 				CLANG_WARN_SUSPICIOUS_MOVE = YES;
 				CLANG_WARN_UNREACHABLE_CODE = YES;
 				CLANG_WARN__DUPLICATE_METHOD_MATCH = YES;
-				CODE_SIGN_IDENTITY = "iPhone Developer: Jagdish Mahindran (4D86TZH32Y)";
-				"CODE_SIGN_IDENTITY[sdk=iphoneos*]" = "iPhone Developer: Jagdish Mahindran (4D86TZH32Y)";
+				CODE_SIGN_IDENTITY = "Apple Development: Jagdish Mahindran (4D86TZH32Y)";
+				"CODE_SIGN_IDENTITY[sdk=iphoneos*]" = "Apple Development: Jagdish Mahindran (4D86TZH32Y)";
 				COPY_PHASE_STRIP = YES;
 				ENABLE_NS_ASSERTIONS = NO;
 				ENABLE_STRICT_OBJC_MSGSEND = YES;

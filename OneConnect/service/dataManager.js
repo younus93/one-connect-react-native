@@ -336,6 +336,16 @@ class dataManager {
       });
   };
 
+  deletePost = (uri, method, data = null) => {
+    Call(uri,method,data,this.token)
+    .then(response => {
+      this.eventEmitter.emit("DELETE_POST_SUCCESS", response);
+    })
+    .catch(error => {
+      this.eventEmitter.emit("DELETE_POST_ERROR",error);
+    });
+  };
+
   uploadPic = (uri, method, data = null) => {
     Call(uri, method, data, this.token)
       .then(response => {

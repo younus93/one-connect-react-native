@@ -27,6 +27,7 @@ const win = Dimensions.get("window");
 const ratio = win.width / 541; //541 is actual image width
 import AsyncStorage from "@react-native-community/async-storage";
 import AutoHeightImage from "./autoHeightImage/autoHeightImageWithErrorFallback";
+import Manager from "../service/dataManager";
 
 let faceData = [];
 let remainingFaces = 0;
@@ -164,6 +165,8 @@ export default class Feed extends React.Component {
   //   this.props.reportCallback();
   // }
 
+
+
   _likeText = () => {
     if (this.state.likeIconActive) return I18n.t("You") + I18n.t("Like_it");
     if (this.props.data.likers != null && this.props.data.likers.length > 0)
@@ -194,7 +197,34 @@ export default class Feed extends React.Component {
       .catch(error => {
         console.log("id in comment", error);
       });
+      //delete post
+      Manager.addListener("DELETE_POST_SUCCESS", this.onDeletePost);
   }
+
+  componentWillUnmount() {
+    Manager.removeListener("DELETE_POST_ERROR",this.onDeletePostError)
+}
+
+onPostDelete(data){
+  //post delete api callback
+  console.log("delete_post",data.resource_url);
+  Manager.deletePost(data.resource_url, "DELETE");
+
+}
+
+onDeletePost = data => {
+  //post delete success / error
+console.log("delete_post",data);
+  if(data.status){
+    alert(data.messages);
+  }else{
+    alert(I18n.t("something_error"));
+  }
+}
+
+onDeletePostError = error => {
+  //alert(I18n.t("something_error"));
+}
 
   //download image from server
   downloadImage = async () => {
@@ -236,6 +266,7 @@ export default class Feed extends React.Component {
     console.log("pic", this.state.pic);
     const { data, navigation } = this.props;
     console.log("response", data);
+    console.log("id--",userId+" : "+data.created_by.id );
     let faces = this.props.data.likers;
 
     const images = [
@@ -250,11 +281,14 @@ export default class Feed extends React.Component {
 
     return (
       <View>
+
         <TouchableWithoutFeedback
           onPress={this._onPress}
           hitSlop={{ top: 5, left: 5, bottom: 5, right: 5 }}
         >
           <View style={[styles.container, this.transformation]}>
+            <View >
+
             <View style={styles.header}>
               <TouchableWithoutFeedback
                 onPress={
@@ -314,6 +348,20 @@ export default class Feed extends React.Component {
                   <Text style={styles.headerSubText}>{data.created_at}</Text>
                 </View>
               </TouchableWithoutFeedback>
+            </View>
+            {userId == data.created_by.id ? (
+            <TouchableWithoutFeedback onPress={() => Alert.alert(
+          'Post Delete',
+          'Are you sure? you want to delete this post?',
+          [
+            {text: 'Cancel', onPress: () => console.log('Cancel Pressed!')},
+            {text: 'OK', onPress: () => this.onPostDelete(data)},
+          ],
+          { cancelable: false }
+        )}>
+            <Icon name={"trash"} size={18} color={Colors.primary} style={{alignSelf:'flex-end',paddingTop:10,paddingRight:10,position:'absolute'}}/>
+            </TouchableWithoutFeedback>
+          ):null}
             </View>
 
             <View style={styles.paddingVertical20}>
@@ -496,7 +544,8 @@ const styles = StyleSheet.create({
     paddingLeft: 5
   },
   header: {
-    flexDirection: "row"
+    flexDirection: "row",
+    paddingTop:10,paddingRight:10
   },
   headerText: {
     color: Colors.onSurface,

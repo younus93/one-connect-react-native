@@ -24,13 +24,13 @@ import AsyncStorage from "@react-native-community/async-storage";
 import Icon from "react-native-vector-icons/Entypo";
 import GmailIcon from "react-native-vector-icons/Ionicons";
 // import GradientButton from 'react-native-gradient-buttons';
-// import {
-//   LoginButton,
-//   AccessToken,
-//   GraphRequest,
-//   GraphRequestManager,
-//   LoginManager
-// } from "react-native-fbsdk";
+import {
+  LoginButton,
+  AccessToken,
+  GraphRequest,
+  GraphRequestManager,
+  LoginManager
+} from "react-native-fbsdk";
 import {
   GoogleSignin,
   GoogleSigninButton,
@@ -238,7 +238,7 @@ export default class LoginScreen extends Component<Props> {
       data.data.user.basic.id,
       data.data.user
     );
-    AsyncStorage.setItem("user_id", JSON.stringify(data.data.user.basic.id));
+    //AsyncStorage.setItem("user_id", JSON.stringify(data.data.user.basic.id));
     Animated.timing(this.opacity, {
       toValue: 0,
       duration: 10
@@ -863,8 +863,8 @@ const styles = StyleSheet.create({
     alignSelf: "center"
   },
   loginFacebook: {
-    width: 0,
-    height: 0,
+    width: screenWidth / 3,
+    height: screenWidth / 8,
     backgroundColor: Colors.colorFacebook,
     alignItems: "center",
     borderRadius: 3,

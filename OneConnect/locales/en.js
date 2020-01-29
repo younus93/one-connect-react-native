@@ -73,7 +73,7 @@ export default {
   Unsend: "Unsend",
   Public: "Public",
   Location: "Location",
-  Version: "Version 5.2.2",
+  Version: "Version 5.2.3",
   PrivacyPolicy: "Terms & Conditions",
   Requests: "Requests",
   Links: "Social Info",
@@ -92,5 +92,7 @@ export default {
   Report: "Report",
   storage_permission_title: "Storage Permission",
   storage_permission_message:
-    "Beebuck App needs access to your storage to download Photos."
+    "Beebuck App needs access to your storage to download Photos.",
+    something_error:"Something went wrong.please try again",
+    post_empty:"Please enter post content",
 };
