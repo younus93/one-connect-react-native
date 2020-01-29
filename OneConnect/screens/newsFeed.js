@@ -240,7 +240,6 @@ export default class NewsFeed extends React.Component {
   };
 
   _newsSuccess = data => {
-    console.log("news_feed : ", data);
     // TODO: FIX IT.
     this.data = [
       ...this.data,
@@ -248,10 +247,12 @@ export default class NewsFeed extends React.Component {
         return !item.is_flagged;
       })
     ];
+    console.log("news_feed : ", data.data,this.data);
+
     this.setState(state => ({
       loading: false,
       refreshing: false,
-      data: this.data,
+      data: data.data,
       totalPage: data.meta.total,
       currentPage: data.meta.current_page,
       faceData: [],
@@ -315,6 +316,11 @@ export default class NewsFeed extends React.Component {
     Manager.like(item.resource_url + "/likes", "POST", { body: item.likes });
   };
 
+  _onReload = item => {
+    this.setState({loading:true});
+    Manager.newsFeeds("/api/newsfeeds?page=1", "GET");
+  }
+
   _flag = item => {
     console.log("Item to be flagged", item);
     Manager.flagPost(`${item.resource_url}/flag`, "POST");
@@ -355,6 +361,7 @@ export default class NewsFeed extends React.Component {
         likeCallback={() => this._like(item)}
         reportCallback={() => this._flag(item)}
         onBackPressCallback={() => this._onBackPress()}
+        onReloadCallback={()=> this._onReload()}
         touchable
       />
     );

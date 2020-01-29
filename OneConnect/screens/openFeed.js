@@ -275,6 +275,11 @@ export default class OpenFeed extends React.Component {
     Manager.like(item.resource_url + "/likes", "POST", { body: item.likes });
   };
 
+  _onReload = item => {
+  alert("hello");
+    this.props.navigation.goBack(null);
+  }
+
   _flag = item => {
     console.log("Item to be flagged", item);
     Manager.flagPost(`${item.resource_url}/flag`, "POST");
@@ -303,6 +308,7 @@ export default class OpenFeed extends React.Component {
             profileCallback={() => this._profile(this.data)}
             likeCallback={() => this._like(this.data)}
             reportCallback={() => this._flag(this.data)}
+            onReloadCallback={()=> this._onReload(this.data)}
           />
           <View style={{ height: 1, backgroundColor: Colors.background }} />
           {this._renderComments()}

@@ -33,6 +33,7 @@ let faceData = [];
 let remainingFaces = 0;
 let userId = -1;
 var isPermissionGranted = false;
+var isDeletePostCalled = false;
 
 //convert camel case format
 function ConvertCamelCase(str) {
@@ -191,8 +192,9 @@ export default class Feed extends React.Component {
     await request_storage_runtime_permission();
     AsyncStorage.getItem("@id")
       .then(res => {
-        console.log("id in comment", res);
+        console.log("id--", res);
         userId = res;
+        this.setState({loggedId : userId});
       })
       .catch(error => {
         console.log("id in comment", error);
@@ -205,25 +207,36 @@ export default class Feed extends React.Component {
     Manager.removeListener("DELETE_POST_ERROR",this.onDeletePostError)
 }
 
-onPostDelete(data){
+onPostDelete(data,isDeletePostCalled){
   //post delete api callback
-  console.log("delete_post",data.resource_url);
-  Manager.deletePost(data.resource_url, "DELETE");
+  if(isDeletePostCalled){
+    isDeletePostCalled = false;
+    console.log("delete_post",data.resource_url);
+    Manager.deletePost(data.resource_url, "DELETE");
+  }
+
 
 }
 
 onDeletePost = data => {
   //post delete success / error
-console.log("delete_post",data);
+  console.log("delete_post2",isDeletePostCalled);
+
   if(data.status){
-    alert(data.messages);
-  }else{
-    alert(I18n.t("something_error"));
+    Alert.alert(
+  'Delete',
+  data.messages,
+  [{text: 'Cancel', onPress: ()=> this.props.onReloadCallback()},
+    {text: 'OK', onPress: ()=> this.props.onReloadCallback()},
+  ],
+  { cancelable: false }
+)
   }
+
 }
 
 onDeletePostError = error => {
-  //alert(I18n.t("something_error"));
+  alert(I18n.t("something_error"));
 }
 
   //download image from server
@@ -355,7 +368,7 @@ onDeletePostError = error => {
           'Are you sure? you want to delete this post?',
           [
             {text: 'Cancel', onPress: () => console.log('Cancel Pressed!')},
-            {text: 'OK', onPress: () => this.onPostDelete(data)},
+            {text: 'OK', onPress: () => this.onPostDelete(data,true)},
           ],
           { cancelable: false }
         )}>
