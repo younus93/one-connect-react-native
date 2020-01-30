@@ -33,7 +33,7 @@ let faceData = [];
 let remainingFaces = 0;
 let userId = -1;
 var isPermissionGranted = false;
-var isDeletePostCalled = false;
+var isDeletePostCalled = 0;
 
 //convert camel case format
 function ConvertCamelCase(str) {
@@ -74,7 +74,8 @@ export default class Feed extends React.Component {
       likeActivefont: Colors.red,
       commentsCount: props.data.comments_count,
       pic: props.data.pic,
-      isImageZoomable: false
+      isImageZoomable: false,
+      isPostDeleteCalled:false,
     };
   }
 
@@ -189,6 +190,8 @@ export default class Feed extends React.Component {
 
   //image save option
   async componentDidMount() {
+    isDeletePostCalled =0;
+    console.warn("delete_post2",isDeletePostCalled);
     await request_storage_runtime_permission();
     AsyncStorage.getItem("@id")
       .then(res => {
@@ -205,35 +208,41 @@ export default class Feed extends React.Component {
 
   componentWillUnmount() {
     Manager.removeListener("DELETE_POST_ERROR",this.onDeletePostError)
+    isDeletePostCalled =0;
+    console.warn("delete_post2",isDeletePostCalled);
+
 }
 
-onPostDelete(data,isDeletePostCalled){
+onPostDelete(data,isTrue){
   //post delete api callback
-  if(isDeletePostCalled){
-    isDeletePostCalled = false;
-    console.log("delete_post",data.resource_url);
+
+    console.warn("delete_post",data.resource_url,isDeletePostCalled);
     Manager.deletePost(data.resource_url, "DELETE");
-  }
+
 
 
 }
 
 onDeletePost = data => {
   //post delete success / error
-  console.log("delete_post2",isDeletePostCalled);
-
-  if(data.status){
+  isDeletePostCalled = isDeletePostCalled + 1;
+  console.warn("delete_post2",isDeletePostCalled);
+  if(data.status && isDeletePostCalled == 1){
     Alert.alert(
   'Delete',
   data.messages,
   [{text: 'Cancel', onPress: ()=> this.props.onReloadCallback()},
-    {text: 'OK', onPress: ()=> this.props.onReloadCallback()},
+    {text: 'OK', onPress: () => this.props.onReloadCallback()},
   ],
   { cancelable: false }
 )
   }
 
 }
+
+
+
+
 
 onDeletePostError = error => {
   alert(I18n.t("something_error"));

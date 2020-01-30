@@ -275,9 +275,9 @@ export default class OpenFeed extends React.Component {
     Manager.like(item.resource_url + "/likes", "POST", { body: item.likes });
   };
 
-  _onReload = item => {
-  alert("hello");
-    this.props.navigation.goBack(null);
+    _onReload  = item =>  {
+    console.log("delete_post_back_pressed");
+
   }
 
   _flag = item => {
@@ -308,7 +308,8 @@ export default class OpenFeed extends React.Component {
             profileCallback={() => this._profile(this.data)}
             likeCallback={() => this._like(this.data)}
             reportCallback={() => this._flag(this.data)}
-            onReloadCallback={()=> this._onReload(this.data)}
+            onReloadCallback={()=> this._onReload()}
+            touchable
           />
           <View style={{ height: 1, backgroundColor: Colors.background }} />
           {this._renderComments()}
@@ -317,7 +318,7 @@ export default class OpenFeed extends React.Component {
           style={[
             styles.container2,
             { transform: [{ translateY: this.shift }] }
-          ]}
+          ]}ß
         >
           <View
             style={{

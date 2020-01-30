@@ -317,8 +317,10 @@ export default class NewsFeed extends React.Component {
   };
 
   _onReload = item => {
+    console.log("delete_post3",'data.status');
     this.setState({loading:true});
     Manager.newsFeeds("/api/newsfeeds?page=1", "GET");
+    this.props.navigation.navigate("NewsFeed");
   }
 
   _flag = item => {
@@ -333,7 +335,8 @@ export default class NewsFeed extends React.Component {
   };
 
   _onBackPress = isOnBackPress => {
-    alert(isOnBackPress);
+    this.props.navigation.goBack(null);
+    this._onReload();
   };
 
   _institute = item => {
@@ -516,7 +519,6 @@ export default class NewsFeed extends React.Component {
                 marginLeft: "3%",
                 marginRight: "3%",
                 marginTop: "2%",
-                marginBottom: "1.7%"
               }}
             >
               <View
@@ -531,7 +533,6 @@ export default class NewsFeed extends React.Component {
                     marginLeft: "3%",
                     marginRight: "4%",
                     marginTop: "4%",
-                    marginBottom: "1.5%"
                   }}
                 >
                   <View>
@@ -549,13 +550,13 @@ export default class NewsFeed extends React.Component {
                   <TextInput
                     style={{
                       flex: 1,
-                      marginLeft: "3%",
                       height: 65,
                       borderColor: Colors.background,
                       borderWidth: 1,
                       borderRadius: 5,
-                      padding: 10,
-                      textAlignVertical: "top"
+                      marginLeft: '3%',
+                      padding:'3%'
+
                     }}
                     underlineColorAndroid="transparent"
                     placeholder="What do you feel?"
@@ -569,22 +570,18 @@ export default class NewsFeed extends React.Component {
                   />
                 </View>
 
-                <TouchableOpacity onPress={this._loginButton}>
+                <TouchableOpacity onPress={this._loginButton} style={{
+                  width:75,
+                  backgroundColor: Colors.primary,
+                  borderRadius: 15,
+                  padding:8,
+                  alignSelf:'flex-end',
+                  marginTop:8,
+                  marginRight: "4%",
+                  justifyContent:'center',
+                }}>
                   <Text
-                    style={{
-                      backgroundColor: Colors.primary,
-                      borderRadius: 15,
-                      width: "15%",
-                      textAlign: "center",
-                      alignSelf: "flex-end",
-                      marginTop: "1.5%",
-                      marginRight: "3%",
-                      paddingLeft: 5,
-                      paddingRight: 0,
-                      paddingTop: 3,
-                      paddingBottom: 3,
-                      color: Colors.white
-                    }}
+                  style={{color: Colors.white, textAlign:'center'}}
                   >
                     {I18n.t("POST")}
                   </Text>
@@ -602,7 +599,7 @@ export default class NewsFeed extends React.Component {
               onEndReachedThreshold={0.5}
               // onRefresh={this._refresh}
               refreshing={this.state.refreshing}
-              style={{ backgroundColor: Colors.background }}
+              style={{ backgroundColor: Colors.background,marginTop:'1.5%' }}
             />
           </ScrollView>
         </View>
