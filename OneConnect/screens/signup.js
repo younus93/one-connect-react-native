@@ -619,8 +619,8 @@ const styles = StyleSheet.create({
     alignSelf: "center"
   },
   loginFacebook: {
-    width: screenWidth / 3,
-    height: screenWidth / 7,
+    width: 0,
+    height: 0,
     backgroundColor: Colors.colorFacebook,
     alignItems: "center",
     borderRadius: 3,

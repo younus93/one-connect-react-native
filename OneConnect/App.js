@@ -11,6 +11,8 @@ import ForgotPassword from "./screens/forgotPassword";
 import WelcomeScreen from "./screens/WelcomeScreen/WelcomeScreen";
 import { mapping, light as lightTheme } from "@eva-design/eva";
 import { ApplicationProvider, Layout } from "react-native-ui-kitten";
+console.disableYellowBox = true;
+
 
 const navigatorConfig = {
   initialRouteName: "AuthLoading"

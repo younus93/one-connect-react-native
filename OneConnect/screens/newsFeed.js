@@ -509,84 +509,61 @@ export default class NewsFeed extends React.Component {
             isBack={false}
           />
           <ScrollView>
-            <View
-              style={{
-                flex: 1,
-                height: 130,
-                borderRadius: 10,
-                backgroundColor: Colors.white,
-                elevation: 0.1,
-                marginLeft: "3%",
-                marginRight: "3%",
-                marginTop: "2%",
-              }}
-            >
-              <View
+            <View>
+            <View style={{width:'95%',padding:'3%',backgroundColor:Colors.white,borderRadius:10,marginLeft:10,marginTop:10,marginRight:10}}>
+            <View style={{flex:1,flexDirection:'row',marginRight:'2%',marginTop:'2%'}}>
+            <View>
+              <ProfileImage width={40} height={40} borderRadius={20} />
+
+              <Image
+                style={{
+                  width: 40,
+                  height: 40,
+                  position: "absolute",
+
+                }}
+                source={require("../resources/ic_white_hex.png")}
+              />
+              </View>
+              <TextInput
                 style={{
                   flex: 1,
-                  flexDirection: "column"
+                  minHeight: 65,
+                  borderColor: Colors.background,
+                  borderWidth: 1,
+                  borderRadius: 5,
+                  marginLeft: '3%',
+                  padding:'2%'
                 }}
+                multiline={true}
+                underlineColorAndroid="transparent"
+                placeholder="What do you feel?"
+                placeholderTextColor={Colors.background}
+                autoCapitalize="none"
+                editable
+
+                onChangeText={post_content =>
+                  postContent = post_content
+                }
+              />
+            </View>
+            <TouchableOpacity onPress={this._loginButton} style={{
+              height:35,
+              backgroundColor: Colors.primary,
+              borderRadius: 15,
+              padding:8,
+              alignSelf:'flex-end',
+              marginTop:20,
+              marginRight: "2%",
+              justifyContent:'center',
+
+            }}>
+              <Text
+              style={{color: Colors.white, textAlign:'center'}}
               >
-                <View
-                  style={{
-                    flexDirection: "row",
-                    marginLeft: "3%",
-                    marginRight: "4%",
-                    marginTop: "4%",
-                  }}
-                >
-                  <View>
-                    <ProfileImage width={40} height={40} borderRadius={20} />
-
-                    <Image
-                      style={{
-                        width: 40,
-                        height: 40,
-                        position: "absolute"
-                      }}
-                      source={require("../resources/ic_white_hex.png")}
-                    />
-                  </View>
-                  <TextInput
-                    style={{
-                      flex: 1,
-                      height: 65,
-                      borderColor: Colors.background,
-                      borderWidth: 1,
-                      borderRadius: 5,
-                      marginLeft: '3%',
-                      padding:'3%'
-
-                    }}
-                    underlineColorAndroid="transparent"
-                    placeholder="What do you feel?"
-                    placeholderTextColor={Colors.background}
-                    autoCapitalize="none"
-                    editable
-                    maxLength={40}
-                    onChangeText={post_content =>
-                      postContent = post_content
-                    }
-                  />
-                </View>
-
-                <TouchableOpacity onPress={this._loginButton} style={{
-                  width:75,
-                  backgroundColor: Colors.primary,
-                  borderRadius: 15,
-                  padding:8,
-                  alignSelf:'flex-end',
-                  marginTop:8,
-                  marginRight: "4%",
-                  justifyContent:'center',
-                }}>
-                  <Text
-                  style={{color: Colors.white, textAlign:'center'}}
-                  >
-                    {I18n.t("POST")}
-                  </Text>
-                </TouchableOpacity>
-              </View>
+                {I18n.t("POST")}
+              </Text>
+            </TouchableOpacity>
             </View>
             <FlatList
               data={this.state.data}
@@ -601,6 +578,7 @@ export default class NewsFeed extends React.Component {
               refreshing={this.state.refreshing}
               style={{ backgroundColor: Colors.background,marginTop:'1.5%' }}
             />
+            </View>
           </ScrollView>
         </View>
       );

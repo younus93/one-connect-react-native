@@ -1057,9 +1057,9 @@
 				458D5F4924B98D85DE200A6F /* [CP] Check Pods Manifest.lock */,
 				13B07F871A680F5B00A75B9A /* Sources */,
 				13B07F8C1A680F5B00A75B9A /* Frameworks */,
-				13B07F8E1A680F5B00A75B9A /* Resources */,
 				00DD1BFF1BD5951E006B06BC /* Bundle React Native code and images */,
 				2B22FA2C8E0F4EF75C7F9EF0 /* [CP] Copy Pods Resources */,
+				13B07F8E1A680F5B00A75B9A /* Resources */,
 			);
 			buildRules = (
 			);
@@ -1698,7 +1698,7 @@
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 			shellPath = /bin/sh;
-			shellScript = "export NODE_BINARY=node\n../node_modules/react-native/scripts/react-native-xcode.sh";
+			shellScript = "export NODE_BINARY=node\n../node_modules/react-native/scripts/react-native-xcode.sh\n";
 		};
 		2B22FA2C8E0F4EF75C7F9EF0 /* [CP] Copy Pods Resources */ = {
 			isa = PBXShellScriptBuildPhase;
@@ -1908,7 +1908,7 @@
 				CODE_SIGN_ENTITLEMENTS = Beebuck/Beebuck.entitlements;
 				CODE_SIGN_IDENTITY = "iPhone Developer";
 				CODE_SIGN_STYLE = Automatic;
-				CURRENT_PROJECT_VERSION = 5.2.3;
+				CURRENT_PROJECT_VERSION = 5.2.4;
 				DEAD_CODE_STRIPPING = NO;
 				DEVELOPMENT_TEAM = 944QM936QK;
 				HEADER_SEARCH_PATHS = (
@@ -1928,7 +1928,7 @@
 				);
 				INFOPLIST_FILE = Beebuck/Info.plist;
 				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks";
-				MARKETING_VERSION = 5.2.3;
+				MARKETING_VERSION = 5.2.4;
 				OTHER_LDFLAGS = (
 					"$(inherited)",
 					"-ObjC",
@@ -1949,7 +1949,7 @@
 				CODE_SIGN_ENTITLEMENTS = Beebuck/Beebuck.entitlements;
 				CODE_SIGN_IDENTITY = "iPhone Developer";
 				CODE_SIGN_STYLE = Automatic;
-				CURRENT_PROJECT_VERSION = 5.2.3;
+				CURRENT_PROJECT_VERSION = 5.2.4;
 				DEVELOPMENT_TEAM = 944QM936QK;
 				HEADER_SEARCH_PATHS = (
 					"$(inherited)",
@@ -1968,7 +1968,7 @@
 				);
 				INFOPLIST_FILE = Beebuck/Info.plist;
 				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks";
-				MARKETING_VERSION = 5.2.3;
+				MARKETING_VERSION = 5.2.4;
 				OTHER_LDFLAGS = (
 					"$(inherited)",
 					"-ObjC",

@@ -73,7 +73,7 @@ export default {
   Unsend: "Unsend",
   Public: "Public",
   Location: "Location",
-  Version: "Version 5.2.3",
+  Version: "Version 5.2.4",
   PrivacyPolicy: "Terms & Conditions",
   Requests: "Requests",
   Links: "Social Info",
