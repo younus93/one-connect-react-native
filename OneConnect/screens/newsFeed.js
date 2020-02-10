@@ -307,6 +307,7 @@ export default class NewsFeed extends React.Component {
   };
 
   _openFeed = item => {
+    console.log("postCreation",item);
     this.props.navigation.navigate("OpenFeed", { comment: false, item: item });
   };
 

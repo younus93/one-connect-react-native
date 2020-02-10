@@ -113,7 +113,7 @@ export default class LoginScreen extends Component<Props> {
     try {
       await GoogleSignin.hasPlayServices();
       const userInfo = await GoogleSignin.signIn();
-        if(userData!=null){
+        if(userInfo!=null){
       this.setState({ userData: userInfo });
       console.log("info", userInfo);
 
