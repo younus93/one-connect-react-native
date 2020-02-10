@@ -454,6 +454,24 @@ class dataManager {
         this.eventEmitter.emit("FORGOT_E", error);
       });
   };
+
+  //user timeline
+  myTimeline = (uri, method, data = null) => {
+    console.log("mytimeline",data);
+    Call(uri, method, data, this.token)
+      .then(response => {
+        console.log("MY_TIMELINE_S",response);
+        if(response.data.action === true){
+          this.eventEmitter.emit("MY_TIMELINE_S",response);
+        }else{
+          this.eventEmitter.emit("MY_TIMELINE_S",response);
+        }
+      })
+      .catch(error => {
+        console.log("error", error);
+        this.eventEmitter.emit("MY_TIMELINE_E",error);
+      })
+  }
 }
 
 const Manager = new dataManager();

@@ -64,6 +64,7 @@ class Header extends Component {
 
     return (
       <View style={styles.header_container}>
+      <View>
         {!isBack ? (
           <TouchableWithoutFeedback
             onPress={() => {
@@ -88,10 +89,12 @@ class Header extends Component {
           </TouchableWithoutFeedback>
         )}
 
+
+        <View style={styles.header_icon} />
+        </View>
         <Text style={styles.header_title} size={25}>
           {title}
         </Text>
-        <View style={styles.header_icon} />
       </View>
     );
   }
@@ -111,15 +114,21 @@ const styles = StyleSheet.create({
     paddingTop: Platform.OS == 'ios' ? width / 15 : 0
   },
   header_icon: {
-    color: Colors.white
+
   },
   header_title: {
-    color: Colors.colorWhite,
     fontSize: 18,
     fontWeight: "500",
     height: Platform.OS == 'ios' ? width / 6 :width/8,
     marginTop: Platform.OS == 'ios' ? width / 9 : width / 14,
-    marginLeft: Platform.OS == 'ios' ? 0 : -(width/15)
+    marginLeft: Platform.OS == 'ios' ? 0 : -(width/15),
+    justifyContent:'center',
+    width:width,
+    position:'absolute',
+    alignItems:'center',
+    alignSelf:'center',
+    textAlign:'center',
+    paddingVertical:width/5
   }
 });
 

@@ -94,5 +94,7 @@ export default {
   storage_permission_message:
     "แอป Beebuck ต้องการเข้าถึงที่เก็บข้อมูลของคุณเพื่อดาวน์โหลดรูปภาพ",
     post_empty:"กรุณาใส่เนื้อหาโพสต์",
+    timeline:'เส้นเวลา',
+    profile : 'ข้อมูลส่วนตัว'
 
 };

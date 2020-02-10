@@ -95,4 +95,6 @@ export default {
     "Beebuck App needs access to your storage to download Photos.",
     something_error:"Something went wrong.please try again",
     post_empty:"Please enter post content",
+    timeline:'Timeline',
+    profile : 'Profile'
 };
