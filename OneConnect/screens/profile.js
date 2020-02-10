@@ -219,7 +219,6 @@ export default class Profile extends React.Component {
     //   })
     // ];
 
-    if(this.state.data.length ==0){
       this.setState(state => ({
         loading: false,
         refreshing: false,
@@ -227,7 +226,7 @@ export default class Profile extends React.Component {
         faceData: [],
         remainingFaces: 0
       }));
-    }
+
   };
 
   userTimelineError = error => {
@@ -1277,7 +1276,7 @@ export default class Profile extends React.Component {
             refreshing={this.state.refreshing}
             style={{ backgroundColor: Colors.background, marginTop: "1.5%" }}
           />
-        ) : (
+        ) : this.state.data.length == 0 ? this._renderEmptyList : (
           <View
             style={{
               backgroundColor: Colors.background,
@@ -1456,9 +1455,7 @@ export default class Profile extends React.Component {
     const { navigation } = this.props;
 
     // console.log("news_feed12345",this.state.profile.basic.id);
-    if (this.state.profile.basic !=null && this.state.profile.basic !=undefined && this.state.profile.basic.id!=null && this.state.profile.basic.id != undefined) {
-      Manager.myTimeline("/api/professionals/" + this.state.profile.basic.id + "/posts", "GET");
-    }
+
 
     //below if condition stops other user profile saving
     if (this.state.profile.editable) {
