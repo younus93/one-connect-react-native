@@ -22,6 +22,8 @@ target 'Beebuck' do
     pod 'RNGoogleSignin', :path => '../node_modules/react-native-google-signin'
 
 
+    pod 'react-native-fbsdk', :path => '../node_modules/react-native-fbsdk'
+
     post_install do |installer|
       system("mkdir -p Pods/Headers/Public/FirebaseCore && cp Pods/FirebaseCore/Firebase/Core/Public/* Pods/Headers/Public/FirebaseCore/")
       copy_pods_resources_path = "Pods/Target Support Files/Pods-IconTest/Pods-IconTest-resources.sh"

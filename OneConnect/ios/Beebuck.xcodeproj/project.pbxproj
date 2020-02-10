@@ -52,7 +52,6 @@
 		667C180CD3F74F54B89C53C1 /* FontAwesome5_Brands.ttf in Resources */ = {isa = PBXBuildFile; fileRef = A409D5921BAB428786DBB400 /* FontAwesome5_Brands.ttf */; };
 		69BDD46A074D4175AD056DE3 /* AntDesign.ttf in Resources */ = {isa = PBXBuildFile; fileRef = F88EF3915EBE44B3B494E7D9 /* AntDesign.ttf */; };
 		6CECBF9C81CA05745E023A7F /* libPods-Beebuck.a in Frameworks */ = {isa = PBXBuildFile; fileRef = A6DAD7EC8BCA7A78EF23DF40 /* libPods-Beebuck.a */; };
-		6ED6305A23DD6A4E001CD570 /* libRNGoogleSignin.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 6ED6305923DD6A1E001CD570 /* libRNGoogleSignin.a */; };
 		6ED630AC23DD6B57001CD570 /* AddressBook.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 6ED6307523DD6B57001CD570 /* AddressBook.framework */; };
 		6ED630AE23DD6B5F001CD570 /* SafariServices.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 6ED630AD23DD6B5F001CD570 /* SafariServices.framework */; };
 		6ED630B023DD6B68001CD570 /* SystemConfiguration.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 6ED630AF23DD6B68001CD570 /* SystemConfiguration.framework */; };
@@ -62,6 +61,7 @@
 		832341BD1AAA6AB300B99B32 /* libRCTText.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 832341B51AAA6A8300B99B32 /* libRCTText.a */; };
 		8415EA4D23E0596C0087A736 /* GoogleService-Info.plist in Resources */ = {isa = PBXBuildFile; fileRef = 8415EA4C23E0596C0087A736 /* GoogleService-Info.plist */; };
 		8458A62E23E3774100AC9383 /* Images.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 13B07FB51A68108700A75B9A /* Images.xcassets */; };
+		84C24B0E23F06CFF00DD7B5F /* libRNGoogleSignin.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 84C24B0D23F06CFF00DD7B5F /* libRNGoogleSignin.a */; };
 		869CE8C3F7BF49598116E756 /* libRNI18n-tvOS.a in Frameworks */ = {isa = PBXBuildFile; fileRef = E429DD548EB04C708129868F /* libRNI18n-tvOS.a */; };
 		905E5F9E4EBF4722BB425738 /* libAirMaps.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 75539CC73A0E4F109C5F1904 /* libAirMaps.a */; };
 		90D9418907634078967FBCD2 /* libRNCAsyncStorage.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 76C14CE565A84951A1138F36 /* libRNCAsyncStorage.a */; };
@@ -542,6 +542,7 @@
 		81F9296B267F4A3EB49F8023 /* FontAwesome5_Regular.ttf */ = {isa = PBXFileReference; explicitFileType = undefined; fileEncoding = 9; includeInIndex = 0; lastKnownFileType = unknown; name = FontAwesome5_Regular.ttf; path = "../node_modules/react-native-vector-icons/Fonts/FontAwesome5_Regular.ttf"; sourceTree = "<group>"; };
 		832341B01AAA6A8300B99B32 /* RCTText.xcodeproj */ = {isa = PBXFileReference; lastKnownFileType = "wrapper.pb-project"; name = RCTText.xcodeproj; path = "../node_modules/react-native/Libraries/Text/RCTText.xcodeproj"; sourceTree = "<group>"; };
 		8415EA4C23E0596C0087A736 /* GoogleService-Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = "GoogleService-Info.plist"; sourceTree = "<group>"; };
+		84C24B0D23F06CFF00DD7B5F /* libRNGoogleSignin.a */ = {isa = PBXFileReference; explicitFileType = archive.ar; path = libRNGoogleSignin.a; sourceTree = BUILT_PRODUCTS_DIR; };
 		8AD033889AC14EE8A447E229 /* libRNI18n.a */ = {isa = PBXFileReference; explicitFileType = undefined; fileEncoding = 9; includeInIndex = 0; lastKnownFileType = archive.ar; path = libRNI18n.a; sourceTree = "<group>"; };
 		91E35B16E1FC4798B8011E32 /* libRNSVG-tvOS.a */ = {isa = PBXFileReference; explicitFileType = undefined; fileEncoding = 9; includeInIndex = 0; lastKnownFileType = archive.ar; path = "libRNSVG-tvOS.a"; sourceTree = "<group>"; };
 		A409D5921BAB428786DBB400 /* FontAwesome5_Brands.ttf */ = {isa = PBXFileReference; explicitFileType = undefined; fileEncoding = 9; includeInIndex = 0; lastKnownFileType = unknown; name = FontAwesome5_Brands.ttf; path = "../node_modules/react-native-vector-icons/Fonts/FontAwesome5_Brands.ttf"; sourceTree = "<group>"; };
@@ -577,11 +578,11 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				84C24B0E23F06CFF00DD7B5F /* libRNGoogleSignin.a in Frameworks */,
 				6ED630B223DD6B73001CD570 /* libz.tbd in Frameworks */,
 				6ED630B023DD6B68001CD570 /* SystemConfiguration.framework in Frameworks */,
 				6ED630AE23DD6B5F001CD570 /* SafariServices.framework in Frameworks */,
 				6ED630AC23DD6B57001CD570 /* AddressBook.framework in Frameworks */,
-				6ED6305A23DD6A4E001CD570 /* libRNGoogleSignin.a in Frameworks */,
 				6EE3485423DCC6FF00FEF43F /* libRNFirebase.a in Frameworks */,
 				6EE345F223DC8C4200FEF43F /* UserNotifications.framework in Frameworks */,
 				ED297163215061F000B7C4FE /* JavaScriptCore.framework in Frameworks */,
@@ -763,6 +764,7 @@
 		2D16E6871FA4F8E400B85C8A /* Frameworks */ = {
 			isa = PBXGroup;
 			children = (
+				84C24B0D23F06CFF00DD7B5F /* libRNGoogleSignin.a */,
 				6ED630B123DD6B73001CD570 /* libz.tbd */,
 				6ED630AF23DD6B68001CD570 /* SystemConfiguration.framework */,
 				6ED630AD23DD6B5F001CD570 /* SafariServices.framework */,

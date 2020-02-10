@@ -18,7 +18,8 @@ import {
   ImageBackground,
   Modal,
   Platform,
-  Linking
+  Linking,
+  AppState
 } from "react-native";
 import TagInput from "react-native-tag-input";
 import {
@@ -44,6 +45,9 @@ import Toast from "react-native-simple-toast";
 import Header from "../custom/Header";
 import AsyncStorage from "@react-native-community/async-storage";
 import { UpdateLocale, SaveLocale } from "../service/i18n";
+import Feed from "../custom/feed";
+var width = Dimensions.get('window').width;
+
 
 const UUID = require("uuid");
 
@@ -52,7 +56,8 @@ export default class Profile extends React.Component {
     const accessLevel = navigation.getParam("accessLevel", 0);
     let options = {
       title: navigation.getParam("title"),
-      header: null
+      header: null,
+      hamPressed : navigation.getParam("hamPressed")
     };
     if (accessLevel) {
       options["headerLeft"] = (
@@ -74,6 +79,7 @@ export default class Profile extends React.Component {
 
   constructor(props) {
     super(props);
+    this.data = [];
     this.props.navigation.setParams({ title: I18n.t("Profile") });
     this.url = props.navigation.getParam("url", "/api/profile");
     this.accessLevel = props.navigation.getParam("accessLevel", 0);
@@ -83,9 +89,14 @@ export default class Profile extends React.Component {
       updateNeeded: false,
       isTagModal: false,
       profile: {},
+      data: [],
       loading: true,
+      refreshing: false,
       error: false,
-      errorText: null
+      errorText: null,
+      isSelectionId:0,
+      userId: -1,
+      updateToggle: false,
     };
   }
 
@@ -103,8 +114,31 @@ export default class Profile extends React.Component {
     Manager.addListener("S_TAG_REMOVE_S", this._tagsRemoveSuccess);
     Manager.addListener("F_REQUEST_S", this._friendRequestSuccess);
     Manager.profile(this.url, "GET");
-    this.props.navigation.setParams({ backButton: this._backButtonPressed });
-    this.props.navigation.setParams({ hamPressed: this._hamPressed });
+    this.props.navigation.setParams({ backButton: this._backButtonPressed,hamPressed: this._hamPressed });
+
+    Manager.addListener("NEWS_S", this._newsSuccess);
+    Manager.addListener("NEWS_E", this._newsError);
+    if(this.state.data.length == 0){
+      Manager.newsFeeds("/api/newsfeeds?page=1", "GET");
+    }
+        Manager.addListener("LIKE_S", this._likeSuccess);
+    Manager.addListener("LIKE_E", this._likeError);
+    Manager.addListener("UPDATENEWS", this._updateNews);
+    Manager.addListener("LANG_U", this._updateNews);
+
+    AsyncStorage.getItem("@id")
+      .then(res => {
+        console.log("id in comment", res);
+        this.setState({
+          userId: res
+        });
+      })
+      .catch(error => {
+        console.log("id in comment", error);
+      });
+
+      AppState.addEventListener('change', this._handleAppStateChange);
+
   }
 
   refreshPage = () => {
@@ -122,7 +156,36 @@ export default class Profile extends React.Component {
     Manager.removeListener("S_TAG_S", this._tagsSuccess);
     Manager.removeListener("S_TAG_REMOVE_S", this._tagsRemoveSuccess);
     Manager.removeListener("F_REQUEST_S", this._friendRequestSuccess);
+
+    Manager.removeListener("NEWS_S", this._newsSuccess);
+    Manager.removeListener("NEWS_E", this._newsError);
+    AppState.removeEventListener('change', this._handleAppStateChange);
+    Manager.removeListener("LIKE_S", this._likeSuccess);
+    Manager.removeListener("LIKE_E", this._likeError);
+    Manager.removeListener("UPDATENEWS", this._updateNews);
+    Manager.removeListener("LANG_U", this._updateNews);
+
+
   }
+
+  _handleAppStateChange = (nextAppState) => {
+       if (this.state.appState!=undefined && this.state.appState.match(/inactive|background/) != undefined && this.state.appState.match(/inactive|background/) && nextAppState === 'active') {
+         if(this.state.data.length == 0){
+           Manager.newsFeeds("/api/newsfeeds?page=1", "GET");
+         }
+         AsyncStorage.getItem("@id")
+           .then(res => {
+             console.log("id in comment", res);
+             this.setState({
+               userId: res
+             });
+           })
+           .catch(error => {
+             console.log("id in comment", error);
+           });
+       }
+       this.setState({appState: nextAppState});
+     }
 
   _hamPressed = () => {
     this.props.navigation.dispatch(DrawerActions.toggleDrawer());
@@ -135,6 +198,58 @@ export default class Profile extends React.Component {
     });
     this.props.navigation.dispatch(backAction);
   };
+
+  _newsSuccess = data => {
+    console.log("news_feed : ", data.data,this.data);
+    // TODO: FIX IT.
+    // this.data = [
+    //   ...this.data,
+    //   ...data.data.filter(item => {
+    //     return !item.is_flagged;
+    //   })
+    // ];
+
+    if(this.state.data.length == 0){
+      this.setState(state => ({
+        loading: false,
+        refreshing: false,
+        data: data.data,
+        totalPage: data.meta.total,
+        currentPage: data.meta.current_page,
+        faceData: [],
+        remainingFaces: 0
+      }));
+    }
+
+  };
+  _newsError = error => {
+    console.log("newsFeed, error received :", error);
+    this.setState({
+      loading: false,
+      refreshing: false,
+      error: true,
+      totalPage: 0,
+      currentPage: 0
+    });
+  };
+
+  _likeSuccess = data => {
+    console.log("like success data : ", data);
+    this._updateNews();
+  };
+
+  _likeError = error => {
+    console.log("like success data : ", error);
+  };
+
+  _updateNews = () => {
+    console.log("updating news");
+    this.props.navigation.setParams({ title: I18n.t("Newsfeed") });
+    this.setState(previousState => ({
+      updateToggle: !previousState.updateToggle
+    }));
+  };
+
 
   _profileSuccess = data => {
     this.data = data.data;
@@ -529,7 +644,8 @@ export default class Profile extends React.Component {
               <View
                 style={{
                   justifyContent: "center",
-                  alignItems: "center"
+                  alignItems: "center",
+                  marginBottom:width/20,
                 }}
               >
                 <Image
@@ -579,537 +695,729 @@ export default class Profile extends React.Component {
                 </View>
               </View>
               {this._renderFriendMeta()}
-              <View style={styles.container}>
-                <View style={styles.bio}>
-                  <View style={{ flexDirection: "row" }}>
-                    <Text
-                      style={{
-                        color: Colors.yellowDark,
-                        fontWeight: "600",
-                        fontSize: 20
-                      }}
-                    >
-                      {this.state.profile.basic.salutation +
-                        " " +
-                        this.state.profile.basic.f_name +
-                        " " +
-                        this.state.profile.basic.l_name}
-                    </Text>
-                    <View style={{ alignItems: "flex-end" }}>
-                      {this.state.profile.editable ? (
-                        <Button onPress={this._navigateToSettings}>
-                          <Icon
-                            name="edit"
-                            color={Colors.yellowDark}
-                            style={{
-                              fontSize: 16,
-                              marginLeft: 10,
-                              marginTop: 5
-                            }}
-                          ></Icon>
-                        </Button>
-                      ) : null}
-                    </View>
-                  </View>
-                </View>
-                <View>
-                  <View key={`pelt-${Math.random(1)}`} style={styles.item}>
-                    <Icon
-                      name="smile-wink"
-                      size={18}
-                      color={Colors.primaryDark}
-                    />
-                    <Text style={styles.itemText}>
-                      {I18n.t("Nick_Name")} :{" "}
-                      {this.state.profile.basic.nick_name}
-                    </Text>
-                  </View>
-                  {this.state.profile.basic.phone_number ? (
-                    <Button
-                      key={`pelt-${Math.random(1)}`}
-                      style={styles.item}
-                      onPress={() =>
-                        this._makeCall(this.state.profile.basic.phone_number)
-                      }
-                    >
-                      <Icon name="phone" size={18} color={Colors.primaryDark} />
-                      <Text style={styles.itemText}>
-                        {I18n.t("Phone_Number")} :{" "}
-                        {this.state.profile.basic.phone_number}
-                      </Text>
-                    </Button>
-                  ) : null}
-                  {this.state.profile.basic.email ? (
-                    <Button
-                      key={`pelt-${Math.random(1)}`}
-                      style={styles.item}
-                      onPress={() =>
-                        this._makeEmail(this.state.profile.basic.email)
-                      }
-                    >
-                      <Entypo
-                        name="email"
-                        size={18}
-                        color={Colors.primaryDark}
-                      />
-                      <Text style={styles.itemText}>
-                        {I18n.t("Email")} : {this.state.profile.basic.email}
-                      </Text>
-                    </Button>
-                  ) : null}
-                  {this.state.profile.basic.website ? (
-                    <View key={`pelt-${Math.random(1)}`} style={styles.item}>
-                      <Entypo
-                        name="network"
-                        size={18}
-                        color={Colors.primaryDark}
-                      />
-                      <Text style={styles.itemText}>
-                        {I18n.t("Website")} : {this.state.profile.basic.website}
-                      </Text>
-                    </View>
-                  ) : null}
-                  {this.state.profile.basic.dob ? (
-                    <View key={`pelt-${Math.random(1)}`} style={styles.item}>
-                      <Icon
-                        name="calendar-day"
-                        size={18}
-                        color={Colors.primaryDark}
-                      />
-                      <Text style={styles.itemText}>
-                        {I18n.t("Date_of_Birth")} :{" "}
-                        {this._getDOB(this.state.profile.basic.dob)}
-                      </Text>
-                    </View>
-                  ) : null}
-                  <View key={`pelt-${Math.random(1)}`} style={styles.item}>
-                    <Icon
-                      name="venus-mars"
-                      size={18}
-                      color={Colors.primaryDark}
-                    />
-                    <Text style={styles.itemText}>
-                      {I18n.t("Gender")} : {this.state.profile.basic.gender}
-                    </Text>
-                  </View>
-                  {this.state.profile.basic.bio ? (
-                    <View key={`pelt-${Math.random(1)}`} style={styles.item}>
-                      <Icon
-                        name="id-badge"
-                        size={18}
-                        color={Colors.primaryDark}
-                      />
-                      <Text style={styles.itemText}>
-                        {I18n.t("About_Me")} : {this.state.profile.basic.bio}
-                      </Text>
-                    </View>
-                  ) : null}
-                </View>
-              </View>
-              <View style={[styles.container, { width: 0, height: 0 }]}>
-                <View style={styles.bio}>
-                  <View style={{ flexDirection: "row" }}>
-                    <Text
-                      style={{
-                        color: Colors.yellowDark,
-                        fontWeight: "600",
-                        fontSize: 20
-                      }}
-                    >
-                      {I18n.t("Links")}
-                    </Text>
-                  </View>
-                </View>
-                <View style={styles.sectionBody}>
-                  {this.state.profile.basic.bio ? (
-                    <View
-                      key={`pelt-${Math.random(1)}`}
-                      style={{
-                        flexDirection: "column",
-                        paddingBottom: 10
-                      }}
-                    >
-                      {this.state.profile.links != null &&
-                      this.state.profile.links.length > 0 ? (
-                        this.state.profile.links.map(item => {
-                          return (
-                            <View
-                              style={{
-                                flexDirection: "row",
-                                margin: 10
-                              }}
-                            >
-                              {item.type == "email" ? (
-                                <Button
-                                  key={`pelt-${Math.random(1)}`}
-                                  style={{
-                                    flexDirection: "row",
-                                    flex: 1,
-                                    marginLeft: 10
-                                  }}
-                                  onPress={() => this._makeEmail(item.type)}
-                                >
-                                  <Icon
-                                    name="envelope"
-                                    size={18}
-                                    color={Colors.primaryDark}
-                                  />
-                                  <Text style={styles.itemText}>
-                                    {item.value}
-                                  </Text>
-                                </Button>
-                              ) : item.type == "phone" ? (
-                                <Button
-                                  key={`pelt-${Math.random(1)}`}
-                                  style={{
-                                    flexDirection: "row",
-                                    flex: 1,
-                                    marginLeft: 10
-                                  }}
-                                  onPress={() => this._makeCall(item.value)}
-                                >
-                                  <Icon
-                                    name="phone"
-                                    size={18}
-                                    color={Colors.primaryDark}
-                                  />
-                                  <Text style={styles.itemText}>
-                                    {item.value}
-                                  </Text>
-                                </Button>
-                              ) : (
-                                <View
-                                  style={{
-                                    flexDirection: "row",
-                                    flex: 1,
-                                    marginLeft: 10
-                                  }}
-                                >
-                                  <Icon
-                                    name={item.type}
-                                    color={Colors.primaryDark}
-                                    style={{
-                                      fontSize: 16
-                                    }}
-                                  />
-                                  <Text style={[styles.itemText, { flex: 1 }]}>
-                                    {item.value}
-                                  </Text>
-                                </View>
-                              )}
-
-                              {this.state.profile.editable ? (
-                                <Button
-                                  onPress={() => this._removeCompany(item)}
-                                  style={{
-                                    alignItems: "flex-end",
-                                    marginEnd: 10
-                                  }}
-                                >
-                                  <Icon
-                                    name="trash"
-                                    size={15}
-                                    color={Colors.primaryDark}
-                                    style={{
-                                      alignItems: "flex-end"
-                                    }}
-                                  />
-                                </Button>
-                              ) : null}
-                            </View>
-                          );
-                        })
-                      ) : (
-                        <View
-                          key={`pelt-${Math.random(1)}`}
-                          style={[styles.item, { alignItems: "center" }]}
-                        >
-                          <View>
-                            <Text style={[styles.itemText, { paddingTop: 5 }]}>
-                              {I18n.t("Links_not_updated")}
-                            </Text>
-                          </View>
-                        </View>
-                      )}
-                    </View>
-                  ) : null}
-                </View>
-              </View>
-              <View style={[styles.container, { marginTop: -13 }]}>
-                <View style={styles.bio}>
-                  <View style={{ flexDirection: "row" }}>
-                    <Text
-                      style={{
-                        color: Colors.yellowDark,
-                        fontWeight: "600",
-                        fontSize: 20
-                      }}
-                    >
-                      {I18n.t("Experience")}
-                    </Text>
-                    {this.state.profile.editable ? (
-                      <Button onPress={this._navigateToAddCompany}>
-                        <Icon
-                          name="plus-circle"
-                          color={Colors.yellowDark}
-                          style={{ fontSize: 16, marginLeft: 10, marginTop: 3 }}
-                        ></Icon>
-                      </Button>
-                    ) : null}
-                  </View>
-                </View>
-                <View style={styles.sectionBody}>
-                  {this.state.profile.companies.length > 0 ? (
-                    this.state.profile.companies.map(item => {
-                      return (
-                        <View
-                          key={`pelt-${Math.random(1)}`}
-                          style={[styles.item, { alignItems: "flex-start" }]}
-                        >
-                          <Icon
-                            name="building"
-                            size={35}
-                            color={Colors.primaryDark}
-                            style={{ padding: 10 }}
-                          />
-                          <View style={{ flex: 1 }}>
-                            {item.designation ? (
-                              <Text
-                                style={[
-                                  styles.itemText,
-                                  { fontWeight: "600", fontSize: 16 }
-                                ]}
-                              >
-                                {item.designation}
-                              </Text>
-                            ) : null}
-                            <Text style={[styles.itemText, { paddingTop: 5 }]}>
-                              {item.name}
-                            </Text>
-                          </View>
-                          {this.state.profile.editable ? (
-                            <Button onPress={() => this._removeCompany(item)}>
-                              <Icon
-                                name="trash"
-                                size={18}
-                                color={Colors.primaryDark}
-                                style={{ padding: 10 }}
-                              />
-                            </Button>
-                          ) : null}
-                        </View>
-                      );
-                    })
-                  ) : (
-                    <View
-                      key={`pelt-${Math.random(1)}`}
-                      style={[styles.item, { alignItems: "center" }]}
-                    >
-                      <View>
-                        <Text style={[styles.itemText, { paddingTop: 5 }]}>
-                          {I18n.t("Experience_not_updated")}
-                        </Text>
-                      </View>
-                    </View>
-                  )}
-                </View>
-              </View>
-              <View style={styles.container}>
-                <View style={styles.bio}>
-                  <View style={{ flexDirection: "row" }}>
-                    <Text
-                      style={{
-                        color: Colors.yellowDark,
-                        fontWeight: "600",
-                        fontSize: 20
-                      }}
-                    >
-                      {I18n.t("Education")}
-                    </Text>
-                    {this.state.profile.editable ? (
-                      <Button onPress={this._navigateToEducation}>
-                        <Icon
-                          name="plus-circle"
-                          color={Colors.yellowDark}
-                          style={{ fontSize: 16, marginLeft: 10, marginTop: 3 }}
-                        ></Icon>
-                      </Button>
-                    ) : null}
-                  </View>
-                </View>
-                <View style={styles.sectionBody}>
-                  {this.state.profile.educations.length > 0 ? (
-                    this.state.profile.educations.map(item => {
-                      return (
-                        <View
-                          key={`pelt-${Math.random(1)}`}
-                          style={[styles.item, { alignItems: "flex-start" }]}
-                        >
-                          <Icon
-                            name="book"
-                            size={35}
-                            color={Colors.primaryDark}
-                            style={{ padding: 10 }}
-                          />
-                          <View style={{ flex: 1 }}>
-                            <Text
-                              style={[
-                                styles.itemText,
-                                { fontWeight: "600", fontSize: 16 }
-                              ]}
-                            >
-                              {item.college_name}
-                            </Text>
-                            <Text style={[styles.itemText, { paddingTop: 5 }]}>
-                              {item.degree_name}
-                            </Text>
-                          </View>
-                          {this.state.profile.editable ? (
-                            <Button onPress={() => this._removeEducation(item)}>
-                              <Icon
-                                name="trash"
-                                size={18}
-                                color={Colors.primaryDark}
-                                style={{ padding: 10 }}
-                              />
-                            </Button>
-                          ) : null}
-                        </View>
-                      );
-                    })
-                  ) : (
-                    <View
-                      key={`pelt-${Math.random(1)}`}
-                      style={[styles.item, { alignItems: "center" }]}
-                    >
-                      <View>
-                        <Text style={[styles.itemText, { paddingTop: 5 }]}>
-                          {I18n.t("Education_details_not_updated")}
-                        </Text>
-                      </View>
-                    </View>
-                  )}
-                </View>
-              </View>
-              <View style={styles.container}>
-                <View style={styles.bio}>
-                  <View style={{ flexDirection: "row" }}>
-                    <Text
-                      style={{
-                        color: Colors.yellowDark,
-                        fontWeight: "600",
-                        fontSize: 20
-                      }}
-                    >
-                      {I18n.t("Tags")}
-                    </Text>
-                    {this.state.profile.editable ? (
-                      <Button onPress={this._toggleModal}>
-                        <Icon
-                          name="plus-circle"
-                          color={Colors.yellowDark}
-                          style={{ fontSize: 16, marginLeft: 10, marginTop: 3 }}
-                        ></Icon>
-                      </Button>
-                    ) : null}
-                  </View>
-                </View>
-                <View style={[styles.sectionBody, { paddingBottom: 20 }]}>
-                  <View>
-                    <Modal
-                      animationType="fade"
-                      transparent={true}
-                      visible={this.state.isTagModal}
-                      onRequestClose={this._toggleModal}
-                    >
-                      <TouchableWithoutFeedback onPress={this._toggleModal}>
-                        <View
-                          style={{
-                            flex: 1,
-                            backgroundColor: "#00000070",
-                            justifyContent: "center",
-                            alignItems: "center",
-                            color: "#FFFFFF",
-                            paddingHorizontal: 20
-                          }}
-                        >
-                          <View
-                            style={{
-                              backgroundColor: Colors.surface,
-                              width: "100%",
-                              padding: 20,
-                              borderRadius: 20
-                            }}
-                          >
-                            <Text>{I18n.t("Enter_Tags_Comma")}</Text>
-                            <TextInput
-                              style={styles.textInput}
-                              multiline
-                              placeholder="Add new tag"
-                              onChangeText={this._addTag}
-                              allowFontScaling={false}
-                            />
-                            <Button
-                              style={styles.button}
-                              title={I18n.t("Save")}
-                              color={Colors.alternative}
-                              onPress={this._submitNewTag}
-                            ></Button>
-                            <Button
-                              style={{
-                                backgroundColor: Colors.yellowDark,
-                                justifyContent: "center",
-                                alignItems: "center",
-                                borderRadius: 30,
-                                paddingVertical: 15,
-                                marginVertical: 10
-                              }}
-                              title={I18n.t("Close")}
-                              color={Colors.onPrimary}
-                              onPress={this._toggleModal}
-                            ></Button>
-                          </View>
-                        </View>
-                      </TouchableWithoutFeedback>
-                    </Modal>
-                  </View>
-                  {this.state.profile.tags.length > 0 ? (
-                    this.state.profile.tags.map((l, i) => (
-                      <ListItem
-                        // leftAvatar={{ source: { uri: l.avatar_url } }}
-                        title={l.name}
-                        rightIcon={
-                          this.state.profile.editable ? (
-                            <Button onPress={() => this._deleteTag(l)}>
-                              <Icon name="trash"></Icon>
-                            </Button>
-                          ) : null
-                        }
-                      />
-                    ))
-                  ) : (
-                    <View>
-                      <Text style={[styles.itemText, { paddingTop: 5 }]}>
-                        {I18n.t("Tags_not_updated")}
-                      </Text>
-                    </View>
-                  )}
-                </View>
-              </View>
-              {this.state.profile.editable ? (
-                <RNButton
-                  containerStyle={{ margin: 10 }}
-                  buttonStyle={{ backgroundColor: Colors.yellowDark }}
-                  title={I18n.t("Privacy_Setting")}
-                  onPress={this._navigateToPrivacy}
-                />
-              ) : null}
+              {this.renderTabs()}
+              {this.state.isSelectionId == 1 ? this.renderAboutMe() : this.renderUserFeeds()}
             </SafeAreaView>
           </View>
         </ScrollView>
       );
     return <Text>Unable to locate Profile</Text>;
   }
+
+  renderTabs(){
+    return (<View
+      style={{
+        flex:1,
+        justifyContent: 'space-around',
+        height: width / 7,
+        alignItems: 'center',
+        flexDirection: 'row',
+        backgroundColor: 'white',
+      }}>
+      <TouchableOpacity
+        onPress={() => this.setState({isSelectionId: 0})}>
+        <Icon
+          style={{color: Colors.colorTheme}}
+          size={23}
+          name={'stream'}
+        />
+      </TouchableOpacity>
+      <View
+        style={{
+          borderLeftWidth: 1,
+          height: '50%',
+          alignSelf: 'center',
+          borderLeftColor: Colors.colorTheme,
+        }}
+      />
+      <TouchableOpacity
+        onPress={() => this.setState({isSelectionId: 1})}>
+        <Icon
+          style={{color: Colors.colorTheme}}
+          size={25}
+          name={'edit'}
+        />
+      </TouchableOpacity>
+
+
+    </View>);
+  }
+
+  renderAboutMe(){
+    return(
+      <View>
+    <View style={styles.container}>
+
+      <View style={styles.bio}>
+        <View style={{ flexDirection: "row" }}>
+          <Text
+            style={{
+              color: Colors.yellowDark,
+              fontWeight: "600",
+              fontSize: 20
+            }}
+          >
+            {this.state.profile.basic.salutation +
+              " " +
+              this.state.profile.basic.f_name +
+              " " +
+              this.state.profile.basic.l_name}
+          </Text>
+          <View style={{ alignItems: "flex-end" }}>
+            {this.state.profile.editable ? (
+              <Button onPress={this._navigateToSettings}>
+                <Icon
+                  name="edit"
+                  color={Colors.yellowDark}
+                  style={{
+                    fontSize: 16,
+                    marginLeft: 10,
+                    marginTop: 5
+                  }}
+                ></Icon>
+              </Button>
+            ) : null}
+          </View>
+        </View>
+      </View>
+      <View>
+        <View key={`pelt-${Math.random(1)}`} style={styles.item}>
+          <Icon
+            name="smile-wink"
+            size={18}
+            color={Colors.primaryDark}
+          />
+          <Text style={styles.itemText}>
+            {I18n.t("Nick_Name")} :{" "}
+            {this.state.profile.basic.nick_name}
+          </Text>
+        </View>
+        {this.state.profile.basic.phone_number ? (
+          <Button
+            key={`pelt-${Math.random(1)}`}
+            style={styles.item}
+            onPress={() =>
+              this._makeCall(this.state.profile.basic.phone_number)
+            }
+          >
+            <Icon name="phone" size={18} color={Colors.primaryDark} />
+            <Text style={styles.itemText}>
+              {I18n.t("Phone_Number")} :{" "}
+              {this.state.profile.basic.phone_number}
+            </Text>
+          </Button>
+        ) : null}
+        {this.state.profile.basic.email ? (
+          <Button
+            key={`pelt-${Math.random(1)}`}
+            style={styles.item}
+            onPress={() =>
+              this._makeEmail(this.state.profile.basic.email)
+            }
+          >
+            <Entypo
+              name="email"
+              size={18}
+              color={Colors.primaryDark}
+            />
+            <Text style={styles.itemText}>
+              {I18n.t("Email")} : {this.state.profile.basic.email}
+            </Text>
+          </Button>
+        ) : null}
+        {this.state.profile.basic.website ? (
+          <View key={`pelt-${Math.random(1)}`} style={styles.item}>
+            <Entypo
+              name="network"
+              size={18}
+              color={Colors.primaryDark}
+            />
+            <Text style={styles.itemText}>
+              {I18n.t("Website")} : {this.state.profile.basic.website}
+            </Text>
+          </View>
+        ) : null}
+        {this.state.profile.basic.dob ? (
+          <View key={`pelt-${Math.random(1)}`} style={styles.item}>
+            <Icon
+              name="calendar-day"
+              size={18}
+              color={Colors.primaryDark}
+            />
+            <Text style={styles.itemText}>
+              {I18n.t("Date_of_Birth")} :{" "}
+              {this._getDOB(this.state.profile.basic.dob)}
+            </Text>
+          </View>
+        ) : null}
+        <View key={`pelt-${Math.random(1)}`} style={styles.item}>
+          <Icon
+            name="venus-mars"
+            size={18}
+            color={Colors.primaryDark}
+          />
+          <Text style={styles.itemText}>
+            {I18n.t("Gender")} : {this.state.profile.basic.gender}
+          </Text>
+        </View>
+        {this.state.profile.basic.bio ? (
+          <View key={`pelt-${Math.random(1)}`} style={styles.item}>
+            <Icon
+              name="id-badge"
+              size={18}
+              color={Colors.primaryDark}
+            />
+            <Text style={styles.itemText}>
+              {I18n.t("About_Me")} : {this.state.profile.basic.bio}
+            </Text>
+          </View>
+        ) : null}
+      </View>
+    </View>
+    <View style={[styles.container, { width: 0, height: 0 }]}>
+      <View style={styles.bio}>
+        <View style={{ flexDirection: "row" }}>
+          <Text
+            style={{
+              color: Colors.yellowDark,
+              fontWeight: "600",
+              fontSize: 20
+            }}
+          >
+            {I18n.t("Links")}
+          </Text>
+        </View>
+      </View>
+      <View style={styles.sectionBody}>
+        {this.state.profile.basic.bio ? (
+          <View
+            key={`pelt-${Math.random(1)}`}
+            style={{
+              flexDirection: "column",
+              paddingBottom: 10
+            }}
+          >
+            {this.state.profile.links != null &&
+            this.state.profile.links.length > 0 ? (
+              this.state.profile.links.map(item => {
+                return (
+                  <View
+                    style={{
+                      flexDirection: "row",
+                      margin: 10
+                    }}
+                  >
+                    {item.type == "email" ? (
+                      <Button
+                        key={`pelt-${Math.random(1)}`}
+                        style={{
+                          flexDirection: "row",
+                          flex: 1,
+                          marginLeft: 10
+                        }}
+                        onPress={() => this._makeEmail(item.type)}
+                      >
+                        <Icon
+                          name="envelope"
+                          size={18}
+                          color={Colors.primaryDark}
+                        />
+                        <Text style={styles.itemText}>
+                          {item.value}
+                        </Text>
+                      </Button>
+                    ) : item.type == "phone" ? (
+                      <Button
+                        key={`pelt-${Math.random(1)}`}
+                        style={{
+                          flexDirection: "row",
+                          flex: 1,
+                          marginLeft: 10
+                        }}
+                        onPress={() => this._makeCall(item.value)}
+                      >
+                        <Icon
+                          name="phone"
+                          size={18}
+                          color={Colors.primaryDark}
+                        />
+                        <Text style={styles.itemText}>
+                          {item.value}
+                        </Text>
+                      </Button>
+                    ) : (
+                      <View
+                        style={{
+                          flexDirection: "row",
+                          flex: 1,
+                          marginLeft: 10
+                        }}
+                      >
+                        <Icon
+                          name={item.type}
+                          color={Colors.primaryDark}
+                          style={{
+                            fontSize: 16
+                          }}
+                        />
+                        <Text style={[styles.itemText, { flex: 1 }]}>
+                          {item.value}
+                        </Text>
+                      </View>
+                    )}
+
+                    {this.state.profile.editable ? (
+                      <Button
+                        onPress={() => this._removeCompany(item)}
+                        style={{
+                          alignItems: "flex-end",
+                          marginEnd: 10
+                        }}
+                      >
+                        <Icon
+                          name="trash"
+                          size={15}
+                          color={Colors.primaryDark}
+                          style={{
+                            alignItems: "flex-end"
+                          }}
+                        />
+                      </Button>
+                    ) : null}
+                  </View>
+                );
+              })
+            ) : (
+              <View
+                key={`pelt-${Math.random(1)}`}
+                style={[styles.item, { alignItems: "center" }]}
+              >
+                <View>
+                  <Text style={[styles.itemText, { paddingTop: 5 }]}>
+                    {I18n.t("Links_not_updated")}
+                  </Text>
+                </View>
+              </View>
+            )}
+          </View>
+        ) : null}
+      </View>
+    </View>
+    <View style={[styles.container, { marginTop: -13 }]}>
+      <View style={styles.bio}>
+        <View style={{ flexDirection: "row" }}>
+          <Text
+            style={{
+              color: Colors.yellowDark,
+              fontWeight: "600",
+              fontSize: 20
+            }}
+          >
+            {I18n.t("Experience")}
+          </Text>
+          {this.state.profile.editable ? (
+            <Button onPress={this._navigateToAddCompany}>
+              <Icon
+                name="plus-circle"
+                color={Colors.yellowDark}
+                style={{ fontSize: 16, marginLeft: 10, marginTop: 3 }}
+              ></Icon>
+            </Button>
+          ) : null}
+        </View>
+      </View>
+      <View style={styles.sectionBody}>
+        {this.state.profile.companies.length > 0 ? (
+          this.state.profile.companies.map(item => {
+            return (
+              <View
+                key={`pelt-${Math.random(1)}`}
+                style={[styles.item, { alignItems: "flex-start" }]}
+              >
+                <Icon
+                  name="building"
+                  size={35}
+                  color={Colors.primaryDark}
+                  style={{ padding: 10 }}
+                />
+                <View style={{ flex: 1 }}>
+                  {item.designation ? (
+                    <Text
+                      style={[
+                        styles.itemText,
+                        { fontWeight: "600", fontSize: 16 }
+                      ]}
+                    >
+                      {item.designation}
+                    </Text>
+                  ) : null}
+                  <Text style={[styles.itemText, { paddingTop: 5 }]}>
+                    {item.name}
+                  </Text>
+                </View>
+                {this.state.profile.editable ? (
+                  <Button onPress={() => this._removeCompany(item)}>
+                    <Icon
+                      name="trash"
+                      size={18}
+                      color={Colors.primaryDark}
+                      style={{ padding: 10 }}
+                    />
+                  </Button>
+                ) : null}
+              </View>
+            );
+          })
+        ) : (
+          <View
+            key={`pelt-${Math.random(1)}`}
+            style={[styles.item, { alignItems: "center" }]}
+          >
+            <View>
+              <Text style={[styles.itemText, { paddingTop: 5 }]}>
+                {I18n.t("Experience_not_updated")}
+              </Text>
+            </View>
+          </View>
+        )}
+      </View>
+    </View>
+    <View style={styles.container}>
+      <View style={styles.bio}>
+        <View style={{ flexDirection: "row" }}>
+          <Text
+            style={{
+              color: Colors.yellowDark,
+              fontWeight: "600",
+              fontSize: 20
+            }}
+          >
+            {I18n.t("Education")}
+          </Text>
+          {this.state.profile.editable ? (
+            <Button onPress={this._navigateToEducation}>
+              <Icon
+                name="plus-circle"
+                color={Colors.yellowDark}
+                style={{ fontSize: 16, marginLeft: 10, marginTop: 3 }}
+              ></Icon>
+            </Button>
+          ) : null}
+        </View>
+      </View>
+      <View style={styles.sectionBody}>
+        {this.state.profile.educations.length > 0 ? (
+          this.state.profile.educations.map(item => {
+            return (
+              <View
+                key={`pelt-${Math.random(1)}`}
+                style={[styles.item, { alignItems: "flex-start" }]}
+              >
+                <Icon
+                  name="book"
+                  size={35}
+                  color={Colors.primaryDark}
+                  style={{ padding: 10 }}
+                />
+                <View style={{ flex: 1 }}>
+                  <Text
+                    style={[
+                      styles.itemText,
+                      { fontWeight: "600", fontSize: 16 }
+                    ]}
+                  >
+                    {item.college_name}
+                  </Text>
+                  <Text style={[styles.itemText, { paddingTop: 5 }]}>
+                    {item.degree_name}
+                  </Text>
+                </View>
+                {this.state.profile.editable ? (
+                  <Button onPress={() => this._removeEducation(item)}>
+                    <Icon
+                      name="trash"
+                      size={18}
+                      color={Colors.primaryDark}
+                      style={{ padding: 10 }}
+                    />
+                  </Button>
+                ) : null}
+              </View>
+            );
+          })
+        ) : (
+          <View
+            key={`pelt-${Math.random(1)}`}
+            style={[styles.item, { alignItems: "center" }]}
+          >
+            <View>
+              <Text style={[styles.itemText, { paddingTop: 5 }]}>
+                {I18n.t("Education_details_not_updated")}
+              </Text>
+            </View>
+          </View>
+        )}
+      </View>
+    </View>
+    <View style={styles.container}>
+      <View style={styles.bio}>
+        <View style={{ flexDirection: "row" }}>
+          <Text
+            style={{
+              color: Colors.yellowDark,
+              fontWeight: "600",
+              fontSize: 20
+            }}
+          >
+            {I18n.t("Tags")}
+          </Text>
+          {this.state.profile.editable ? (
+            <Button onPress={this._toggleModal}>
+              <Icon
+                name="plus-circle"
+                color={Colors.yellowDark}
+                style={{ fontSize: 16, marginLeft: 10, marginTop: 3 }}
+              ></Icon>
+            </Button>
+          ) : null}
+        </View>
+      </View>
+      <View style={[styles.sectionBody, { paddingBottom: 20 }]}>
+        <View>
+          <Modal
+            animationType="fade"
+            transparent={true}
+            visible={this.state.isTagModal}
+            onRequestClose={this._toggleModal}
+          >
+            <TouchableWithoutFeedback onPress={this._toggleModal}>
+              <View
+                style={{
+                  flex: 1,
+                  backgroundColor: "#00000070",
+                  justifyContent: "center",
+                  alignItems: "center",
+                  color: "#FFFFFF",
+                  paddingHorizontal: 20
+                }}
+              >
+                <View
+                  style={{
+                    backgroundColor: Colors.surface,
+                    width: "100%",
+                    padding: 20,
+                    borderRadius: 20
+                  }}
+                >
+                  <Text>{I18n.t("Enter_Tags_Comma")}</Text>
+                  <TextInput
+                    style={styles.textInput}
+                    multiline
+                    placeholder="Add new tag"
+                    onChangeText={this._addTag}
+                    allowFontScaling={false}
+                  />
+                  <Button
+                    style={styles.button}
+                    title={I18n.t("Save")}
+                    color={Colors.alternative}
+                    onPress={this._submitNewTag}
+                  ></Button>
+                  <Button
+                    style={{
+                      backgroundColor: Colors.yellowDark,
+                      justifyContent: "center",
+                      alignItems: "center",
+                      borderRadius: 30,
+                      paddingVertical: 15,
+                      marginVertical: 10
+                    }}
+                    title={I18n.t("Close")}
+                    color={Colors.onPrimary}
+                    onPress={this._toggleModal}
+                  ></Button>
+                </View>
+              </View>
+            </TouchableWithoutFeedback>
+          </Modal>
+        </View>
+        {this.state.profile.tags.length > 0 ? (
+          this.state.profile.tags.map((l, i) => (
+            <ListItem
+              // leftAvatar={{ source: { uri: l.avatar_url } }}
+              title={l.name}
+              rightIcon={
+                this.state.profile.editable ? (
+                  <Button onPress={() => this._deleteTag(l)}>
+                    <Icon name="trash"></Icon>
+                  </Button>
+                ) : null
+              }
+            />
+          ))
+        ) : (
+          <View>
+            <Text style={[styles.itemText, { paddingTop: 5 }]}>
+              {I18n.t("Tags_not_updated")}
+            </Text>
+          </View>
+        )}
+      </View>
+    </View>
+    {this.state.profile.editable ? (
+      <RNButton
+        containerStyle={{ margin: 10 }}
+        buttonStyle={{ backgroundColor: Colors.yellowDark }}
+        title={I18n.t("Privacy_Setting")}
+        onPress={this._navigateToPrivacy}
+      />
+    ) : null}
+    </View>);
+  }
+
+  _openFeed = item => {
+    this.props.navigation.navigate("OpenFeed", { comment: false, item: item });
+  };
+
+  _comment = item => {
+    this.props.navigation.navigate("OpenFeed", { comment: true, item: item });
+  };
+
+  _like = item => {
+    console.log("item after like: ", item);
+    Manager.like(item.resource_url + "/likes", "POST", { body: item.likes });
+  };
+
+
+  renderUserFeeds(){
+
+    return(<View>
+      <FlatList
+        data={this.state.data}
+        keyExtractor={this._keyExtractor}
+        renderItem={this._renderFeeds}
+        ItemSeparatorComponent={this._itemSeparator}
+        ListEmptyComponent={this._renderEmptyList}
+        ListFooterComponent={this._listFooter}
+        //onEndReached={this._loadMore}
+        onEndReachedThreshold={0.5}
+        // onRefresh={this._refresh}
+        refreshing={this.state.refreshing}
+        style={{ backgroundColor: Colors.background,marginTop:'1.5%' }}
+      />
+      </View>);
+  }
+
+  _renderFeeds = ({ item }) => {
+    return (
+      <Feed
+        data={item}
+        callback={() => this._openFeed(item)}
+        commentCallback={() => this._comment(item)}
+        instituteCallback={() => this._institute(item)}
+        profileCallback={() => this._profile(item)}
+        likeCallback={() => this._like(item)}
+        reportCallback={() => this._flag(item)}
+        onBackPressCallback={() => this._onBackPress()}
+        onReloadCallback={()=> this._onReload()}
+        touchable
+      />
+    );
+  };
+
+  _keyExtractor = (item, index) => `nsfd-${Math.random(1)}`;
+
+  _itemSeparator = props => {
+    return <View style={{ backgroundColor: Colors.background }} />;
+  };
+
+  _renderEmptyList = () => {
+    const { loading } = this.state;
+    if (!loading) {
+      return (
+        <View
+          style={{
+            backgroundColor: Colors.background,
+            justifyContent: "center",
+            alignItems: "center",
+            opacity: 1,
+            height: "100%",
+            width: "100%"
+          }}
+        >
+          <Text
+            style={{
+              color: Colors.secondaryDark,
+              fontSize: 22,
+              fontWeight: "700",
+              opacity: 0.4
+            }}
+          >
+            {I18n.t("Data_Unavailable")}
+          </Text>
+        </View>
+      );
+    }
+    return null;
+  };
+
+  _listFooter = () => {
+    const { loading } = this.state;
+    if (!loading && this.data) {
+      return (
+        <View
+          style={{
+            backgroundColor: Colors.backgroun,
+            padding: 10,
+            justifyContent: "center",
+            alignItems: "center"
+          }}
+        >
+          <Text
+            style={{
+              color: Colors.secondaryDark,
+              fontWeight: "500",
+              opacity: 0.4
+            }}
+          >
+            {I18n.t("Data_Unavailable")}
+          </Text>
+        </View>
+      );
+    } else {
+      return (
+        <View
+          style={{
+            backgroundColor: Colors.background,
+            padding: 10,
+            paddingTop: 20,
+            justifyContent: "center",
+            alignItems: "center"
+          }}
+        >
+          <ActivityIndicator
+            animating={this.state.loading}
+            size="large"
+            color={Colors.secondaryDark}
+          />
+        </View>
+      );
+    }
+  };
+
+  _institute = item => {
+    console.log("reached institute callback with ", item);
+    this.props.navigation.navigate("Institution", {
+      item: item.created_by.name
+    });
+  };
+
+  _profile = item => {
+    this.props.navigation.navigate("Profile", {
+      url: `/api/professionals/${item.created_by.id}`,
+      title: "View profile"
+    });
+  };
 
   //to render hexagon view for profile pic
   renderHex() {
@@ -1169,6 +1477,7 @@ export default class Profile extends React.Component {
           navigation={navigation}
           isBack={false}
         />
+
         {this.state.loading ? (
           <View
             style={{
@@ -1186,6 +1495,7 @@ export default class Profile extends React.Component {
         ) : (
           this._renderProfile()
         )}
+
       </View>
     );
   }

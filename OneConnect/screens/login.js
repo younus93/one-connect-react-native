@@ -113,8 +113,10 @@ export default class LoginScreen extends Component<Props> {
     try {
       await GoogleSignin.hasPlayServices();
       const userInfo = await GoogleSignin.signIn();
+        if(userData!=null){
       this.setState({ userData: userInfo });
       console.log("info", userInfo);
+
       let userData = {
         name: userInfo.user.name,
         email: userInfo.user.email,
@@ -136,6 +138,7 @@ export default class LoginScreen extends Component<Props> {
           fcm_token: tokenVal.toString()
         });
       });
+    }
     } catch (error) {
       //alert(error.toString());
 
@@ -696,8 +699,7 @@ export default class LoginScreen extends Component<Props> {
                       />
                       <Text
                         style={{
-                          flex: 1,
-                          flexWrap: "wrap",
+
                           color: "white",
                           fontWeight: "bold"
                         }}
@@ -875,11 +877,9 @@ const styles = StyleSheet.create({
     justifyContent: "center"
   },
   loginGmail: {
-    height: screenWidth / 7,
-    width: screenWidth / 3,
     backgroundColor: Colors.colorGmail,
     alignItems: "center",
-    borderRadius: 3,
+    borderRadius: 5,
     flexDirection: "row",
     padding: 10,
     justifyContent: "center"

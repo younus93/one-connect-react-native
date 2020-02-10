@@ -56,6 +56,7 @@ export default class NewsFeed extends React.Component {
   }
 
   componentDidMount() {
+
     console.log("news feed component did mount");
     Manager.addListener("NEWS_S", this._newsSuccess);
     Manager.addListener("NEWS_E", this._newsError);
@@ -117,8 +118,10 @@ export default class NewsFeed extends React.Component {
   }
 
   _handleAppStateChange = (nextAppState) => {
-       if (this.state.appState.match(/inactive|background/) && nextAppState === 'active') {
-         Manager.newsFeeds("/api/newsfeeds?page=1", "GET");
+    if (this.state.appState!=undefined && this.state.appState.match(/inactive|background/) != undefined && this.state.appState.match(/inactive|background/) && nextAppState === 'active') {
+      if(this.state.data.length == 0){
+        Manager.newsFeeds("/api/newsfeeds?page=1", "GET");
+      }
          AsyncStorage.getItem("@id")
            .then(res => {
              console.log("id in comment", res);

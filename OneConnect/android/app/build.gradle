@@ -149,6 +149,7 @@ android {
 }
 
 dependencies {
+    implementation project(':react-native-fbsdk')
     implementation project(':react-native-google-signin')
     implementation project(':react-native-gesture-handler')
     implementation project(':rn-fetch-blob')
