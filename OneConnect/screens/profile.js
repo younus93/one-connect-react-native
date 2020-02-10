@@ -218,7 +218,7 @@ export default class Profile extends React.Component {
     //     return !item.is_flagged;
     //   })
     // ];
-
+    if(this.state.data.length == 0){
       this.setState(state => ({
         loading: false,
         refreshing: false,
@@ -226,7 +226,7 @@ export default class Profile extends React.Component {
         faceData: [],
         remainingFaces: 0
       }));
-
+}
   };
 
   userTimelineError = error => {
@@ -1262,7 +1262,7 @@ export default class Profile extends React.Component {
     console.log("news_feed1",this.state.data);
     return (
       <View>
-        {this.state.data.length > 0 ? (
+        
           <FlatList
             data={this.state.data}
             keyExtractor={this._keyExtractor}
@@ -1276,23 +1276,7 @@ export default class Profile extends React.Component {
             refreshing={this.state.refreshing}
             style={{ backgroundColor: Colors.background, marginTop: "1.5%" }}
           />
-        ) : this.state.data.length == 0 ? this._renderEmptyList : (
-          <View
-            style={{
-              backgroundColor: Colors.background,
-              padding: 10,
-              paddingTop: 20,
-              justifyContent: "center",
-              alignItems: "center"
-            }}
-          >
-            <ActivityIndicator
-              animating={true}
-              size="large"
-              color={Colors.colorTheme}
-            />
-          </View>
-        )}
+         
       </View>
     );
   }
@@ -1455,7 +1439,9 @@ export default class Profile extends React.Component {
     const { navigation } = this.props;
 
     // console.log("news_feed12345",this.state.profile.basic.id);
-
+if (this.state.profile.basic !=null && this.state.profile.basic !=undefined && this.state.profile.basic.id!=null && this.state.profile.basic.id != undefined) {
+      Manager.myTimeline("/api/professionals/" + this.state.profile.basic.id + "/posts", "GET");
+    }
 
     //below if condition stops other user profile saving
     if (this.state.profile.editable) {

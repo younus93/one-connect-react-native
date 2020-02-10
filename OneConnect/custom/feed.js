@@ -364,7 +364,7 @@ onDeletePostError = error => {
                     {data.created_by != null &&
                     data.created_by.name != null &&
                     data.created_by.name != undefined
-                      ? ConvertCamelCase(data.created_by.name)
+                      ? data.created_by.name
                       : I18n.t("Institute")}
                   </Text>
                   <Text style={styles.headerSubText}>{data.created_at}</Text>

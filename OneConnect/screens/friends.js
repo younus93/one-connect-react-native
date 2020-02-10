@@ -124,7 +124,7 @@ export default class Friends extends React.Component {
 
   _navigateMate = item => {
     console.log("pressed item :", item);
-    this.props.navigation.navigate("Profile", { url: item.resource_url });
+    this.props.navigation.navigate("Profile", { url: item.resource_url,isBackArrow:true, });
   };
 
   _renderMateList = ({ item }) => {
