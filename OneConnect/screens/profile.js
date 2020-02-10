@@ -1291,8 +1291,9 @@ export default class Profile extends React.Component {
 
   renderUserFeeds(){
 
-    return(<View>
-      <FlatList
+    return(
+      <View>
+      {this.state.data.length>0 ? (<FlatList
         data={this.state.data}
         keyExtractor={this._keyExtractor}
         renderItem={this._renderFeeds}
@@ -1304,7 +1305,22 @@ export default class Profile extends React.Component {
         // onRefresh={this._refresh}
         refreshing={this.state.refreshing}
         style={{ backgroundColor: Colors.background,marginTop:'1.5%' }}
-      />
+      />) : (<View
+        style={{
+          backgroundColor: Colors.background,
+          padding: 10,
+          paddingTop: 20,
+          justifyContent: "center",
+          alignItems: "center"
+        }}
+      >
+        <ActivityIndicator
+          animating={true}
+          size="large"
+          color={Colors.secondaryDark}
+        />
+      </View>)}
+
       </View>);
   }
 
