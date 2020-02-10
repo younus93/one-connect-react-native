@@ -127,13 +127,13 @@ export default class Profile extends React.Component {
     Manager.addListener("LANG_U", this._updateNews);
     Manager.addListener("MY_TIMELINE_S", this.userTimelineSuccess);
     Manager.addListener("MY_TIMELINE_E", this.userTimelineError);
-
+    if (this.state.profile.basic !=null && this.state.profile.basic !=undefined && this.state.profile.basic.id!=null && this.state.profile.basic.id != undefined) {
+      Manager.myTimeline("/api/professionals/" + this.state.profile.basic.id + "/posts", "GET");
+    }
     AsyncStorage.getItem("@id")
       .then(res => {
         console.log("id in comment", res);
-        if (this.state.data.length == 0) {
-          Manager.myTimeline("/api/professionals/" + res + "/posts", "GET");
-        }
+
         this.setState({
           userId: res
         });
@@ -170,6 +170,9 @@ export default class Profile extends React.Component {
     Manager.removeListener("LANG_U", this._updateNews);
     Manager.addListener("MY_TIMELINE_S", this.userTimelineSuccess);
     Manager.addListener("MY_TIMELINE_E", this.userTimelineError);
+    if (this.state.profile.basic !=null && this.state.profile.basic !=undefined && this.state.profile.basic.id!=null && this.state.profile.basic.id != undefined) {
+      Manager.myTimeline("/api/professionals/" + this.state.profile.basic.id + "/posts", "GET");
+    }
   }
 
   _handleAppStateChange = nextAppState => {
@@ -182,9 +185,7 @@ export default class Profile extends React.Component {
       AsyncStorage.getItem("@id")
         .then(res => {
           console.log("id in comment", res);
-          if (this.state.data.length == 0) {
-            Manager.myTimeline("/api/professionals/" + res + "/posts", "GET");
-          }
+
           this.setState({
             userId: res
           });
@@ -209,7 +210,7 @@ export default class Profile extends React.Component {
   };
 
   userTimelineSuccess = data => {
-    console.log("news_feed : ", data.data, this.data);
+    console.log("news_feed123: ", data,this.state.data);
     // TODO: FIX IT.
     // this.data = [
     //   ...this.data,
@@ -218,7 +219,7 @@ export default class Profile extends React.Component {
     //   })
     // ];
 
-    if (this.state.data.length == 0) {
+    if(this.state.data.length ==0){
       this.setState(state => ({
         loading: false,
         refreshing: false,
@@ -235,7 +236,7 @@ export default class Profile extends React.Component {
       loading: false,
       refreshing: false,
       error: true,
-      data: []
+
     });
   };
 
@@ -264,7 +265,7 @@ export default class Profile extends React.Component {
       profile: data.data,
       errorText: null
     });
-    console.log(this.state);
+    console.log("profile success",this.state);
   };
 
   _removeCompanySuccess = data => {
@@ -1259,6 +1260,7 @@ export default class Profile extends React.Component {
   };
 
   renderUserFeeds() {
+    console.log("news_feed1",this.state.data);
     return (
       <View>
         {this.state.data.length > 0 ? (
@@ -1288,7 +1290,7 @@ export default class Profile extends React.Component {
             <ActivityIndicator
               animating={true}
               size="large"
-              color={Colors.secondaryDark}
+              color={Colors.colorTheme}
             />
           </View>
         )}
@@ -1453,7 +1455,10 @@ export default class Profile extends React.Component {
   render() {
     const { navigation } = this.props;
 
-    console.log("isBackArrow",navigation.getParam("isBackArrow"));
+    // console.log("news_feed12345",this.state.profile.basic.id);
+    if (this.state.profile.basic !=null && this.state.profile.basic !=undefined && this.state.profile.basic.id!=null && this.state.profile.basic.id != undefined) {
+      Manager.myTimeline("/api/professionals/" + this.state.profile.basic.id + "/posts", "GET");
+    }
 
     //below if condition stops other user profile saving
     if (this.state.profile.editable) {

@@ -76,7 +76,7 @@ class Header extends Component {
               }}
 
             >
-            <View style={{  paddingTop:width/15,paddingLeft:width/18}}>
+            <View style={{  paddingTop:Platform.OS == 'ios' ? width/15 : -(width/18),paddingLeft: width/18  }}>
               <Image
                 style={{
                   width: width / 18,
@@ -92,7 +92,7 @@ class Header extends Component {
                 navigation.goBack(null);
               }}
             >
-            <View style={{  paddingTop:width/15,paddingLeft:width/18}}>
+            <View style={{  paddingTop:Platform.OS == 'ios' ? width/15 : -(width/18),paddingLeft: width/18  }}>
               <Icon style={styles.header_icon} size={25} name={"arrow-left"} />
               </View>
             </TouchableWithoutFeedback>
