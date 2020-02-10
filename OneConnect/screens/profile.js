@@ -56,7 +56,7 @@ export default class Profile extends React.Component {
     let options = {
       title: navigation.getParam("title"),
       header: null,
-      hamPressed: navigation.getParam("hamPressed")
+      isBackArrow: navigation.getParam("isBackArrow")
     };
     if (accessLevel) {
       options["headerLeft"] = (
@@ -1453,6 +1453,8 @@ export default class Profile extends React.Component {
   render() {
     const { navigation } = this.props;
 
+    console.log("isBackArrow",navigation.getParam("isBackArrow"));
+
     //below if condition stops other user profile saving
     if (this.state.profile.editable) {
       this.storeData();
@@ -1463,7 +1465,7 @@ export default class Profile extends React.Component {
         <Header
           title={I18n.t("Profile")}
           navigation={navigation}
-          isBack={this.state.profile.editable ? false : true}
+          isBack={navigation.getParam("isBackArrow")!= undefined && navigation.getParam("isBackArrow")!=null && navigation.getParam("isBackArrow") === true ? true : false}
         />
 
         {this.state.loading ? (

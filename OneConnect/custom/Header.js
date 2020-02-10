@@ -64,37 +64,43 @@ class Header extends Component {
 
     return (
       <View style={styles.header_container}>
-      <View>
-        {!isBack ? (
-          <TouchableWithoutFeedback
-            onPress={() => {
-              navigation.dispatch(DrawerActions.toggleDrawer());
-            }}
-          >
-            <Image
-              style={{
-                width: width / 18,
-                height: width / 18
-              }}
-              source={require("../resources/ic_logo_trans.png")}
-            />
-          </TouchableWithoutFeedback>
-        ) : (
-          <TouchableWithoutFeedback
-            onPress={() => {
-              navigation.goBack(null);
-            }}
-          >
-            <Icon style={styles.header_icon} size={25} name={"arrow-left"} />
-          </TouchableWithoutFeedback>
-        )}
 
-
-        <View style={styles.header_icon} />
-        </View>
         <Text style={styles.header_title} size={25}>
           {title}
         </Text>
+        <View style={{position:'absolute'}}>
+          {!isBack ? (
+            <TouchableWithoutFeedback
+              onPress={() => {
+                navigation.dispatch(DrawerActions.toggleDrawer());
+              }}
+
+            >
+            <View style={{  paddingTop:width/15,paddingLeft:width/18}}>
+              <Image
+                style={{
+                  width: width / 18,
+                    height: width / 18,
+                }}
+                source={require("../resources/ic_logo_trans.png")}
+              />
+              </View>
+            </TouchableWithoutFeedback>
+          ) : (
+            <TouchableWithoutFeedback
+              onPress={() => {
+                navigation.goBack(null);
+              }}
+            >
+            <View style={{  paddingTop:width/15,paddingLeft:width/18}}>
+              <Icon style={styles.header_icon} size={25} name={"arrow-left"} />
+              </View>
+            </TouchableWithoutFeedback>
+          )}
+
+
+          <View style={styles.header_icon} />
+          </View>
       </View>
     );
   }
@@ -124,11 +130,9 @@ const styles = StyleSheet.create({
     marginLeft: Platform.OS == 'ios' ? 0 : -(width/15),
     justifyContent:'center',
     width:width,
-    position:'absolute',
     alignItems:'center',
     alignSelf:'center',
     textAlign:'center',
-    paddingVertical:width/5
   }
 });
 

@@ -53,7 +53,8 @@ export default class SearchUserList extends React.Component {
     console.log(item);
     this.props.navigation.navigate("Profile", {
       url: `/api/professionals/${item.id}`,
-      title: "View profile"
+      title: "View profile",
+      isBackArrow:true,
     });
   };
 
