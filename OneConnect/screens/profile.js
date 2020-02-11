@@ -127,9 +127,7 @@ export default class Profile extends React.Component {
     Manager.addListener("LANG_U", this._updateNews);
     Manager.addListener("MY_TIMELINE_S", this.userTimelineSuccess);
     Manager.addListener("MY_TIMELINE_E", this.userTimelineError);
-    if (this.state.profile.basic !=null && this.state.profile.basic !=undefined && this.state.profile.basic.id!=null && this.state.profile.basic.id != undefined) {
-      Manager.myTimeline("/api/professionals/" + this.state.profile.basic.id + "/posts", "GET");
-    }
+
     AsyncStorage.getItem("@id")
       .then(res => {
         console.log("id in comment", res);
@@ -170,9 +168,7 @@ export default class Profile extends React.Component {
     Manager.removeListener("LANG_U", this._updateNews);
     Manager.addListener("MY_TIMELINE_S", this.userTimelineSuccess);
     Manager.addListener("MY_TIMELINE_E", this.userTimelineError);
-    if (this.state.profile.basic !=null && this.state.profile.basic !=undefined && this.state.profile.basic.id!=null && this.state.profile.basic.id != undefined) {
-      Manager.myTimeline("/api/professionals/" + this.state.profile.basic.id + "/posts", "GET");
-    }
+
   }
 
   _handleAppStateChange = nextAppState => {
@@ -309,6 +305,7 @@ export default class Profile extends React.Component {
         style={styles.lightBoxImage}
         resizeMode="contain"
         source={{ uri: this.state.profile.basic.profile_pic }}
+        defaultSource={require("../resources/dummy_profile.png")}
       />
     );
   };
@@ -336,6 +333,7 @@ export default class Profile extends React.Component {
           style={{ flex: 1, height: 200 }}
           resizeMode="contain"
           source={{ uri: this.state.profile.basic.profile_pic }}
+          defaultSource={require("../resources/dummy_profile.png")}
         />
       </Lightbox>
     );
@@ -638,7 +636,7 @@ export default class Profile extends React.Component {
 
   _renderProfile() {
     console.log("profile", this.state.profile);
-    if (this.state.profile && this.state.profile.basic)
+    if (this.state.profile && this.state.profile.basic!=undefined && this.state.profile.basic)
       return (
         <ScrollView style={{ backgroundColor: Colors.background }}>
           <View>
@@ -659,6 +657,7 @@ export default class Profile extends React.Component {
                     height: 150
                   }}
                   source={{ uri: this.state.profile.basic.profile_pic }}
+                  defaultSource={require("../resources/dummy_profile.png")}
                   onPress={this._editPhoto}
                 />
 
@@ -783,7 +782,7 @@ export default class Profile extends React.Component {
                 {I18n.t("Nick_Name")} : {this.state.profile.basic.nick_name}
               </Text>
             </View>
-            {this.state.profile.basic.phone_number ? (
+            {this.state.profile.basic !=undefined && this.state.profile.basic.phone_number ? (
               <Button
                 key={`pelt-${Math.random(1)}`}
                 style={styles.item}
@@ -810,7 +809,7 @@ export default class Profile extends React.Component {
                 </Text>
               </Button>
             ) : null}
-            {this.state.profile.basic.website ? (
+            {this.state.profile.basic !=undefined && this.state.profile.basic.website ? (
               <View key={`pelt-${Math.random(1)}`} style={styles.item}>
                 <Entypo name="network" size={18} color={Colors.primaryDark} />
                 <Text style={styles.itemText}>
@@ -818,7 +817,7 @@ export default class Profile extends React.Component {
                 </Text>
               </View>
             ) : null}
-            {this.state.profile.basic.dob ? (
+            {this.state.profile.basic != undefined && this.state.profile.basic.dob ? (
               <View key={`pelt-${Math.random(1)}`} style={styles.item}>
                 <Icon
                   name="calendar-day"
@@ -837,7 +836,7 @@ export default class Profile extends React.Component {
                 {I18n.t("Gender")} : {this.state.profile.basic.gender}
               </Text>
             </View>
-            {this.state.profile.basic.bio ? (
+            {this.state.profile.basic != undefined && this.state.profile.basic.bio ? (
               <View key={`pelt-${Math.random(1)}`} style={styles.item}>
                 <Icon name="id-badge" size={18} color={Colors.primaryDark} />
                 <Text style={styles.itemText}>
@@ -862,7 +861,7 @@ export default class Profile extends React.Component {
             </View>
           </View>
           <View style={styles.sectionBody}>
-            {this.state.profile.basic.bio ? (
+            {this.state.profile.basic != undefined && this.state.profile.basic.bio ? (
               <View
                 key={`pelt-${Math.random(1)}`}
                 style={{
@@ -1262,7 +1261,7 @@ export default class Profile extends React.Component {
     console.log("news_feed1",this.state.data);
     return (
       <View>
-        
+
           <FlatList
             data={this.state.data}
             keyExtractor={this._keyExtractor}
@@ -1276,7 +1275,7 @@ export default class Profile extends React.Component {
             refreshing={this.state.refreshing}
             style={{ backgroundColor: Colors.background, marginTop: "1.5%" }}
           />
-         
+
       </View>
     );
   }
@@ -1439,7 +1438,7 @@ export default class Profile extends React.Component {
     const { navigation } = this.props;
 
     // console.log("news_feed12345",this.state.profile.basic.id);
-if (this.state.profile.basic !=null && this.state.profile.basic !=undefined && this.state.profile.basic.id!=null && this.state.profile.basic.id != undefined) {
+if (this.state.profile.basic !=undefined && this.state.profile.basic.id!=null && this.state.profile.basic.id != undefined) {
       Manager.myTimeline("/api/professionals/" + this.state.profile.basic.id + "/posts", "GET");
     }
 
@@ -1587,7 +1586,7 @@ const styles = StyleSheet.create({
     borderRadius: 5
   },
   button: {
-    backgroundColor: Colors.secondaryDark,
+    backgroundColor: Colors.safeDark,
     justifyContent: "center",
     alignItems: "center",
     borderRadius: 30,

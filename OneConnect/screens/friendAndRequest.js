@@ -209,7 +209,7 @@ export default class FriendAndRequest extends React.Component {
                   <Text
                     style={{
                       textAlign: "center",
-                      color: Colors.white,
+
                       fontSize: 17
                     }}
                   >
@@ -220,7 +220,6 @@ export default class FriendAndRequest extends React.Component {
                   style={{
                     width: "10%",
                     textAlign: "center",
-                    color: Colors.white,
                     fontSize: 17
                   }}
                 >
@@ -236,7 +235,6 @@ export default class FriendAndRequest extends React.Component {
                   <Text
                     style={{
                       textAlign: "center",
-                      color: Colors.white,
                       fontSize: 17
                     }}
                   >

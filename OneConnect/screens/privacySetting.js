@@ -45,13 +45,15 @@ export default class Privacy extends React.Component {
 
     this.state = {
       data: this.data,
-      loading: false,
+      loading: true,
       error: false,
-      errorText: null
+      errorText: null,
+      save:false
     };
   }
 
   componentDidMount() {
+    Manager.privacy("/api/profile/privacy","GET");
     Manager.addListener("PRIVACY_S", this._privacySuccess);
     Manager.addListener("PRIVACY_E", this._privacyError);
     Manager.addListener("LANG_U", this._updateLanguage);
@@ -70,23 +72,55 @@ export default class Privacy extends React.Component {
     });
   };
 
+  _toggleError = (state = null) => {
+    console.log("toggling error");
+    this.setState(previousState => ({
+      error: state ? state : !previousState.error,
+      errorText: null,
+      modalBackground: null
+    }));
+  };
+
   _privacySuccess = data => {
     console.log("privacy successful, data received :", data);
-    // this.data = data
+     this.data = data
+     if(this.state.save){
     this.setState({
+      data:data,
       loading: false,
-      error: false,
-      errorText: null
+      error: true,
+      errorText: "Settings Updated Successfully",
+      modalBackground:Colors.safeDark,
+      save:false,
     });
+  }else{
+    this.setState({
+
+      loading: false,
+
+      save:false,
+    });
+  }
   };
 
   _privacyError = error => {
     console.log("privacy, error received :", error);
+    if(this.state.save){
     this.setState({
       loading: false,
       error: true,
-      errorText: null
+      errorText: "Something went wrong.please try again",
+      modalBackground:Colors.error,
+      save:false
     });
+  }else{
+    this.setState({
+
+      loading: false,
+
+      save:false,
+    });
+  }
   };
 
   _toggleSwitch = (newValue, item, index) => {
@@ -124,7 +158,7 @@ export default class Privacy extends React.Component {
             <Text style={styles.header}>{I18n.t(this._getItem(item))}</Text>
           </View>
           <View style={styles.sectionBody}>
-            {this.data[item].map((value, index) => {
+            {this.data[item]!=undefined && this.data[item].map((value, index) => {
               return (
                 <View key={`prng-${Math.random(1)}`}>
                   <Text style={styles.bodyTextstyle}>
@@ -155,7 +189,8 @@ export default class Privacy extends React.Component {
     if (this.settingChanges) {
       console.log("save");
       this.setState({
-        loading: true
+        loading: true,
+        save:true
       });
 
       Animated.timing(this.opacity, {
@@ -189,7 +224,16 @@ export default class Privacy extends React.Component {
             navigation={navigation}
             isBack={true}
           />
-          <ScrollView>
+
+          {this.state.loading ? (
+            <View style={{flex:1,justifyContent:'center'}}>
+              <ActivityIndicator
+                animating={this.state.loading}
+                size="large"
+                color={Colors.secondaryDark}
+              />
+            </View>
+          ) : <ScrollView>
             {this._renderSetting()}
             <Button
               onPress={this._save}
@@ -197,28 +241,7 @@ export default class Privacy extends React.Component {
               title={I18n.t("Save")}
               color={Colors.white}
             />
-          </ScrollView>
-          {this.state.loading ? (
-            <Animated.View
-              style={{
-                position: "absolute",
-                top: 0,
-                left: 0,
-                height: "100%",
-                width: "100%",
-                backgroundColor: "black",
-                justifyContent: "center",
-                alignItems: "center",
-                opacity: this.opacity
-              }}
-            >
-              <ActivityIndicator
-                animating={this.state.loading}
-                size="large"
-                color={Colors.secondaryDark}
-              />
-            </Animated.View>
-          ) : null}
+          </ScrollView>}
         </View>
       </ErrorHandler>
     );
@@ -303,7 +326,7 @@ const styles = StyleSheet.create({
     borderRadius: 5
   },
   button: {
-    backgroundColor: Colors.primary,
+    backgroundColor: Colors.safeDark,
     justifyContent: "center",
     alignItems: "center",
     borderRadius: 30,

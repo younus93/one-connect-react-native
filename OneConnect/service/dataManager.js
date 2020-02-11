@@ -164,7 +164,9 @@ class dataManager {
   newsFeeds = (uri, method, data = null) => {
     Call(uri, method, data, this.token)
       .then(response => {
+        if(response.message!="Too Many Attempts."){
         this.eventEmitter.emit("NEWS_S", response);
+      }
       })
       .catch(error => {
         this.eventEmitter.emit("NEWS_E", error);
@@ -461,11 +463,13 @@ class dataManager {
     Call(uri, method, data, this.token)
       .then(response => {
         console.log("MY_TIMELINE_S",response);
+        if(response.message!="Too Many Attempts."){
         if(response.data.action === true){
           this.eventEmitter.emit("MY_TIMELINE_S",response);
         }else{
           this.eventEmitter.emit("MY_TIMELINE_S",response);
         }
+      }
       })
       .catch(error => {
         console.log("error", error);
