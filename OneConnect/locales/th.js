@@ -73,7 +73,7 @@ export default {
   Unsend: "ยกเลิกคำขอ",
   Public: "สาธารณะ",
   Location: "ที่ตั้ง",
-  Version: "เวอร์ชัน 5.2.4",
+  Version: "เวอร์ชัน 5.3",
   PrivacyPolicy: "ข้อตกลงและเงื่อนไข",
   Requests: "การร้องขอ",
   Links: "ข้อมูลสังคม",
