@@ -34,6 +34,7 @@ let remainingFaces = 0;
 let userId = -1;
 var isPermissionGranted = false;
 var isDeletePostCalled = 0;
+var isProfile = false;
 
 //convert camel case format
 function ConvertCamelCase(str) {
@@ -82,7 +83,7 @@ export default class Feed extends React.Component {
   componentDidLoad() {}
 
   componentWillReceiveProps(nextProps) {
-    console.log("feeds received props");
+    console.log("dataPp",nextProps.data);
     if (this.data !== nextProps.data) {
       console.log("current feeds state and next props not match");
       this.setState({
@@ -209,6 +210,7 @@ export default class Feed extends React.Component {
   componentWillUnmount() {
     Manager.removeListener("DELETE_POST_ERROR",this.onDeletePostError)
     isDeletePostCalled =0;
+    isProfile = false;
     console.warn("delete_post2",isDeletePostCalled);
 
 }
@@ -225,18 +227,34 @@ onPostDelete(data,isTrue){
 
 onDeletePost = data => {
   //post delete success / error
-  isDeletePostCalled = isDeletePostCalled + 1;
-  console.warn("delete_post2",isDeletePostCalled);
-  if(data.status && isDeletePostCalled == 1){
-    Alert.alert(
-  'Delete',
-  data.messages,
-  [{text: 'Cancel', onPress: ()=> this.props.onReloadCallback()},
-    {text: 'OK', onPress: () => this.props.onReloadCallback()},
-  ],
-  { cancelable: false }
-)
+  if(isProfile){
+    isDeletePostCalled = isDeletePostCalled + 1;
+    console.warn("delete_post2",isDeletePostCalled);
+    if(data.status && isDeletePostCalled == 1){
+      Alert.alert(
+    'Delete',
+    data.messages,
+    [{text: 'Cancel', onPress: ()=> this.props.onProfileReload()},
+      {text: 'OK', onPress: () => this.props.onProfileReload()},
+    ],
+    { cancelable: false }
+  )
+    }
+  }else{
+    isDeletePostCalled = isDeletePostCalled + 1;
+    console.warn("delete_post2",isDeletePostCalled);
+    if(data.status && isDeletePostCalled == 1){
+      Alert.alert(
+    'Delete',
+    data.messages,
+    [{text: 'Cancel', onPress: ()=> this.props.onReloadCallback()},
+      {text: 'OK', onPress: () => this.props.onReloadCallback()},
+    ],
+    { cancelable: false }
+  )
+    }
   }
+
 
 }
 
@@ -286,9 +304,15 @@ onDeletePostError = error => {
 
   render() {
     console.log("pic", this.state.pic);
-    const { data, navigation } = this.props;
+    const { data, navigation,page } = this.props;
     console.log("response", data);
-    console.log("id--",userId+" : "+data.created_by.id );
+    console.log("page",this.props.page );
+
+    if(this.props.page!=null && this.props.page!=undefined){
+      if(this.props.page == 'profile'){
+        isProfile = true;
+      }
+    }
     let faces = this.props.data.likers;
 
     const images = [

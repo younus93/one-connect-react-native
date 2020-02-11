@@ -141,6 +141,10 @@ export default class Profile extends React.Component {
       });
 
     AppState.addEventListener("change", this._handleAppStateChange);
+
+    Manager.addListener("POST_FLAG_S", this._flagPostSuccess);
+    Manager.addListener("POST_FLAG_E", this._flagPostError);
+
   }
 
   refreshPage = () => {
@@ -168,7 +172,9 @@ export default class Profile extends React.Component {
     Manager.removeListener("LANG_U", this._updateNews);
     Manager.addListener("MY_TIMELINE_S", this.userTimelineSuccess);
     Manager.addListener("MY_TIMELINE_E", this.userTimelineError);
-
+    
+    Manager.addListener("POST_FLAG_S", this._flagPostSuccess);
+    Manager.addListener("POST_FLAG_E", this._flagPostError);
   }
 
   _handleAppStateChange = nextAppState => {
@@ -251,6 +257,40 @@ export default class Profile extends React.Component {
       updateToggle: !previousState.updateToggle
     }));
   };
+
+  _flagPostSuccess = data => {
+    console.log("Flag Post success", data);
+  };
+
+  _flagPostError = data => {
+    console.log("Flag Post error", data);
+  };
+
+  _flag = item => {
+    console.log("Item to be flagged", item);
+    Manager.flagPost(`${item.resource_url}/flag`, "POST");
+    var data = this.state.data.filter(data => {
+      return data.resource_url != item.resource_url;
+    });
+    this.setState({ data: data });
+    console.log("State is :", this.state.data);
+    Toast.showWithGravity("Thanks for reporting!", Toast.SHORT, Toast.TOP);
+  };
+
+  _onBackPress = isOnBackPress => {
+    this.props.navigation.goBack(null);
+    this._onReload();
+  };
+
+  _onReload = item => {
+    console.log("delete_post3",'data.status');
+    this.setState({loading:true});
+    if (this.state.profile.basic !=null && this.state.profile.basic !=undefined && this.state.profile.basic.id!=null && this.state.profile.basic.id != undefined) {
+      Manager.myTimeline("/api/professionals/" + this.state.profile.basic.id + "/posts", "GET");
+    }
+    this.props.navigation.navigate("Profile");
+  }
+
 
   _profileSuccess = data => {
     this.data = data.data;
@@ -1291,7 +1331,8 @@ export default class Profile extends React.Component {
         likeCallback={() => this._like(item)}
         reportCallback={() => this._flag(item)}
         onBackPressCallback={() => this._onBackPress()}
-        onReloadCallback={() => this._onReload()}
+        onProfileReload={() => this._onReload()}
+        page={'profile'}
         touchable
       />
     );
